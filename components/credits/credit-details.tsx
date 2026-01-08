@@ -94,7 +94,7 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">{credit.name}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{credit.name}</h1>
           <p className="text-slate-600">Detalles del crédito</p>
         </div>
         <Button variant="outline" asChild>
@@ -200,9 +200,9 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
           ) : (
             <div className="space-y-3">
               {payments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div key={payment.id} className="flex items-center justify-between p-3  rounded-lg">
                   <div>
-                    <p className="font-medium text-slate-900">
+                    <p className="font-medium text-foreground">
                       ${Number(payment.amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
                     </p>
                     <p className="text-sm text-slate-600">

@@ -36,13 +36,17 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
               <div key={transaction.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                    className="h-10 w-10 shrink-0 rounded-lg flex items-center justify-center text-white"
                     style={{ backgroundColor: transaction.categories?.color || "#e2e8f0" }}
                   >
-                    {transaction.type === "income" ? "↑" : "↓"}
+                    {transaction.type === "income" ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg>
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-foreground">
                       {transaction.description || transaction.categories?.name || "Sin descripción"}
                     </p>
                     <p className="text-xs text-slate-600">

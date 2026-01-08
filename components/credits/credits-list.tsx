@@ -75,7 +75,7 @@ export function CreditsList({ credits }: CreditsListProps) {
             <CardContent className="pt-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">{credit.name}</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{credit.name}</h3>
                   <p className="text-sm text-slate-600">{getCreditTypeLabel(credit.type)}</p>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(credit.status)}`}>

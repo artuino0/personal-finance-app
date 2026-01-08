@@ -29,7 +29,7 @@ export function DashboardNav({ userName }: DashboardNavProps) {
   }
 
   return (
-    <nav className="border-b border-slate-200 bg-white">
+    <nav className="sticky top-0 z-50 border-b border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4 md:gap-8">
           {/* Mobile Menu */}
@@ -56,20 +56,20 @@ export function DashboardNav({ userName }: DashboardNavProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/dashboard" className="text-xl font-bold text-slate-900">
+          <Link href="/dashboard" className="text-xl font-bold text-foreground">
             FinanzasApp
           </Link>
           <div className="hidden md:flex gap-6">
-            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Dashboard
             </Link>
-            <Link href="/dashboard/accounts" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+            <Link href="/dashboard/accounts" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Cuentas
             </Link>
-            <Link href="/dashboard/transactions" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+            <Link href="/dashboard/transactions" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Transacciones
             </Link>
-            <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+            <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Créditos
             </Link>
           </div>
@@ -77,8 +77,8 @@ export function DashboardNav({ userName }: DashboardNavProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white text-sm font-medium">
+            <Button variant="ghost" className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <span className="hidden md:inline text-sm font-medium">{userName}</span>

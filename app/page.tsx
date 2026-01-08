@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container max-w-4xl px-6 text-center">
-        <h1 className="text-5xl font-bold text-slate-900 mb-4">FinanzasApp</h1>
+        <h1 className="text-5xl font-bold text-foreground mb-4">FinanzasApp</h1>
         <p className="text-xl text-slate-600 mb-8 text-balance">
           La mejor forma de gestionar tus finanzas personales. Controla tus ingresos, gastos, cuentas y créditos en un
           solo lugar.

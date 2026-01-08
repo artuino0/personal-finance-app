@@ -30,12 +30,12 @@ export default async function CreditsPage() {
   const monthlyPayment = credits?.reduce((sum, credit) => sum + (Number(credit.monthly_payment) || 0), 0) || 0
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Créditos y Préstamos</h1>
+            <h1 className="text-3xl font-bold text-foreground">Créditos y Préstamos</h1>
             <p className="text-slate-600">Gestiona tus deudas y obligaciones financieras</p>
           </div>
           <Button asChild>
@@ -60,7 +60,7 @@ export default async function CreditsPage() {
               <CardTitle className="text-sm font-medium">Créditos Activos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{activeCredits}</div>
+              <div className="text-2xl font-bold text-foreground">{activeCredits}</div>
             </CardContent>
           </Card>
 

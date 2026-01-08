@@ -21,11 +21,11 @@ export default async function NewTransactionPage() {
   const { data: categories } = await supabase.from("categories").select("*").eq("user_id", user.id)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto max-w-2xl p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">Nueva Transacción</h1>
+          <h1 className="text-3xl font-bold text-foreground">Nueva Transacción</h1>
           <p className="text-slate-600">Registra un nuevo ingreso o gasto</p>
         </div>
 

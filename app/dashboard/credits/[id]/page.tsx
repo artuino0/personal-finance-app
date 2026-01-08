@@ -36,7 +36,7 @@ export default async function CreditDetailsPage({ params }: { params: Promise<{ 
     .order("payment_date", { ascending: false })
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto max-w-4xl p-6">
         <CreditDetails credit={credit} payments={payments || []} userId={user.id} />

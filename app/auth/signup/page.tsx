@@ -61,7 +61,7 @@ export default function SignupPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-slate-900">FinanzasApp</h1>
+          <h1 className="text-4xl font-bold text-foreground">FinanzasApp</h1>
           <p className="mt-2 text-slate-600">Gestiona tus finanzas personales</p>
         </div>
         <Card>
