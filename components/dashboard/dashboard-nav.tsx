@@ -1,0 +1,80 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/client"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+interface DashboardNavProps {
+  userName: string
+}
+
+export function DashboardNav({ userName }: DashboardNavProps) {
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push("/auth/login")
+    router.refresh()
+  }
+
+  return (
+    <nav className="border-b border-slate-200 bg-white">
+      <div className="container mx-auto flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-8">
+          <Link href="/dashboard" className="text-xl font-bold text-slate-900">
+            FinanzasApp
+          </Link>
+          <div className="hidden md:flex gap-6">
+            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+              Dashboard
+            </Link>
+            <Link href="/dashboard/accounts" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+              Cuentas
+            </Link>
+            <Link href="/dashboard/transactions" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+              Transacciones
+            </Link>
+            <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+              Créditos
+            </Link>
+          </div>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white text-sm font-medium">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <span className="hidden md:inline text-sm font-medium">{userName}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/profile">Perfil</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/settings">Configuración</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+              Cerrar Sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </nav>
+  )
+}
