@@ -30,14 +30,14 @@ export function UpcomingPayments({ credits }: UpcomingPaymentsProps) {
             <p className="text-sm text-slate-600">No tienes pagos pendientes</p>
           ) : (
             credits.map((credit) => (
-              <div key={credit.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+              <div key={credit.id} className="flex items-center justify-between p-3 rounded-lg ">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{credit.name}</p>
+                  <p className="text-sm font-medium text-foreground">{credit.name}</p>
                   <p className="text-xs text-slate-600">
                     Vence: {credit.due_date ? new Date(credit.due_date).toLocaleDateString("es-ES") : "Sin fecha"}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-foreground">
                   ${credit.monthly_payment?.toLocaleString("es-ES", { minimumFractionDigits: 2 }) || "0.00"}
                 </p>
               </div>

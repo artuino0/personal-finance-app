@@ -57,11 +57,11 @@ export default async function DashboardPage() {
     .limit(3)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-slate-600">Bienvenido de nuevo, {profile?.full_name || "Usuario"}</p>
         </div>
 

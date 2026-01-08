@@ -37,11 +37,11 @@ export function BalanceOverview({ accounts }: BalanceOverviewProps) {
                     {account.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">{account.name}</p>
+                    <p className="text-sm font-medium text-foreground">{account.name}</p>
                     <p className="text-xs text-slate-600 capitalize">{account.type.replace("_", " ")}</p>
                   </div>
                 </div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-foreground">
                   ${Number(account.balance).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
                 </p>
               </div>

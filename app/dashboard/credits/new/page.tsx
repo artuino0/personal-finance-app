@@ -17,11 +17,11 @@ export default async function NewCreditPage() {
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto max-w-2xl p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">Nuevo Crédito</h1>
+          <h1 className="text-3xl font-bold text-foreground">Nuevo Crédito</h1>
           <p className="text-slate-600">Registra un nuevo préstamo o crédito</p>
         </div>
 

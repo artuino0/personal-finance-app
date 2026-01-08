@@ -49,12 +49,12 @@ export default async function TransactionsPage({
   const { data: categories } = await supabase.from("categories").select("id, name, type").eq("user_id", user.id)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
         <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Transacciones</h1>
+            <h1 className="text-3xl font-bold text-foreground">Transacciones</h1>
             <p className="text-slate-600">{transactions?.length || 0} transacciones registradas</p>
           </div>
           <Button asChild>
