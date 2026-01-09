@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { NativeSelect, NativeSelectItem } from "@/components/ui/native-select"
+import { CurrencyInput } from "@/components/ui/currency-input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useIsIOS } from "@/lib/hooks/use-is-ios"
@@ -139,13 +140,11 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
 
           <div className="space-y-2">
             <Label htmlFor="amount">Monto</Label>
-            <Input
+            <CurrencyInput
               id="amount"
-              type="number"
-              step="0.01"
               placeholder="0.00"
               value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, amount: value })}
               required
             />
           </div>
