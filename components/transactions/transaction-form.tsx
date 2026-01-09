@@ -10,8 +10,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { NativeSelect, NativeSelectItem } from "@/components/ui/native-select"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useIsIOS } from "@/lib/hooks/use-is-ios"
 
 interface Account {
   id: string
@@ -45,6 +47,7 @@ interface TransactionFormProps {
 export function TransactionForm({ userId, accounts, categories, transaction }: TransactionFormProps) {
   const router = useRouter()
   const supabase = createClient()
+  const isIOS = useIsIOS()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -149,41 +152,72 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
 
           <div className="space-y-2">
             <Label htmlFor="account">Cuenta</Label>
-            <Select
-              value={formData.account_id}
-              onValueChange={(value) => setFormData({ ...formData, account_id: value })}
-              required
-            >
-              <SelectTrigger id="account">
-                <SelectValue placeholder="Selecciona una cuenta" />
-              </SelectTrigger>
-              <SelectContent>
+            {isIOS ? (
+              <NativeSelect
+                id="account"
+                value={formData.account_id}
+                onValueChange={(value) => setFormData({ ...formData, account_id: value })}
+                placeholder="Selecciona una cuenta"
+                required
+              >
                 {accounts.map((account) => (
-                  <SelectItem key={account.id} value={account.id}>
+                  <NativeSelectItem key={account.id} value={account.id}>
                     {account.name}
-                  </SelectItem>
+                  </NativeSelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+              </NativeSelect>
+            ) : (
+              <Select
+                value={formData.account_id}
+                onValueChange={(value) => setFormData({ ...formData, account_id: value })}
+                required
+              >
+                <SelectTrigger id="account">
+                  <SelectValue placeholder="Selecciona una cuenta" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="category">Categoría</Label>
-            <Select
-              value={formData.category_id}
-              onValueChange={(value) => setFormData({ ...formData, category_id: value })}
-            >
-              <SelectTrigger id="category">
-                <SelectValue placeholder="Selecciona una categoría" />
-              </SelectTrigger>
-              <SelectContent>
+            {isIOS ? (
+              <NativeSelect
+                id="category"
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+                placeholder="Selecciona una categoría"
+              >
                 {filteredCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <NativeSelectItem key={category.id} value={category.id}>
                     {category.name}
-                  </SelectItem>
+                  </NativeSelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+              </NativeSelect>
+            ) : (
+              <Select
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+              >
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Selecciona una categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">
