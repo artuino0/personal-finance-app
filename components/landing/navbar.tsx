@@ -30,11 +30,11 @@ export function Navbar() {
                 <div className="flex items-center gap-4">
                     <Link
                         href="/auth/login"
-                        className="hidden text-sm font-medium underline-offset-4 hover:underline sm:block transition-colors hover:text-foreground text-muted-foreground"
+                        className="text-sm font-medium underline-offset-4 hover:underline transition-colors hover:text-foreground text-muted-foreground border rounded-md px-4 py-2"
                     >
                         Iniciar sesión
                     </Link>
-                    <Button asChild className="rounded-md font-medium shadow-sm">
+                    <Button asChild className="hidden sm:flex rounded-md font-medium shadow-sm">
                         <Link href="/auth/signup">
                             Crear cuenta
                         </Link>
