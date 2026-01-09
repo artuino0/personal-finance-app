@@ -121,7 +121,7 @@ export function TransactionsList({ transactions, userId }: TransactionsListProps
                   </div>
                 </TableCell>
                 <TableCell className="font-medium text-slate-700">
-                  {new Date(transaction.date).toLocaleDateString("es-ES")}
+                  {new Date(transaction.date).toLocaleDateString("en-US")}
                 </TableCell>
                 <TableCell className="max-w-[250px] truncate font-medium" title={transaction.description || "Sin descripción"}>
                   {transaction.description || "Sin descripción"}
@@ -141,7 +141,7 @@ export function TransactionsList({ transactions, userId }: TransactionsListProps
                     }`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  {Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </TableCell>
                 <TableCell className="text-right pr-5">
                   <div className="flex justify-end gap-2">

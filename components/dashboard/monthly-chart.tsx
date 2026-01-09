@@ -35,7 +35,7 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
           transactions?.filter((t) => t.type === "expense").reduce((sum, t) => sum + Number(t.amount), 0) || 0
 
         months.push({
-          month: date.toLocaleDateString("es-ES", { month: "short" }),
+          month: date.toLocaleDateString("en-US", { month: "short" }),
           ingresos: income,
           gastos: expense,
         })

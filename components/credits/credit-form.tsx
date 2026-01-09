@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CurrencyInput } from "@/components/ui/currency-input"
 
 interface CreditFormProps {
   userId: string
@@ -107,26 +108,22 @@ export function CreditForm({ userId }: CreditFormProps) {
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="total_amount">Monto Total</Label>
-              <Input
+              <CurrencyInput
                 id="total_amount"
-                type="number"
-                step="0.01"
                 placeholder="0.00"
                 value={formData.total_amount}
-                onChange={(e) => setFormData({ ...formData, total_amount: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, total_amount: value })}
                 required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="remaining_amount">Monto Restante</Label>
-              <Input
+              <CurrencyInput
                 id="remaining_amount"
-                type="number"
-                step="0.01"
                 placeholder="0.00"
                 value={formData.remaining_amount}
-                onChange={(e) => setFormData({ ...formData, remaining_amount: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, remaining_amount: value })}
               />
               <p className="text-xs text-slate-600">Dejar vacío para usar el monto total</p>
             </div>
@@ -147,13 +144,11 @@ export function CreditForm({ userId }: CreditFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="monthly_payment">Pago Mensual</Label>
-              <Input
+              <CurrencyInput
                 id="monthly_payment"
-                type="number"
-                step="0.01"
                 placeholder="0.00"
                 value={formData.monthly_payment}
-                onChange={(e) => setFormData({ ...formData, monthly_payment: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, monthly_payment: value })}
               />
             </div>
           </div>

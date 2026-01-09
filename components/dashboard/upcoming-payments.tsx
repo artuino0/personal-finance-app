@@ -34,11 +34,11 @@ export function UpcomingPayments({ credits }: UpcomingPaymentsProps) {
                 <div>
                   <p className="text-sm font-medium text-foreground">{credit.name}</p>
                   <p className="text-xs text-slate-600">
-                    Vence: {credit.due_date ? new Date(credit.due_date).toLocaleDateString("es-ES") : "Sin fecha"}
+                    Vence: {credit.due_date ? new Date(credit.due_date).toLocaleDateString("en-US") : "Sin fecha"}
                   </p>
                 </div>
                 <p className="text-sm font-semibold text-foreground">
-                  ${credit.monthly_payment?.toLocaleString("es-ES", { minimumFractionDigits: 2 }) || "0.00"}
+                  ${credit.monthly_payment?.toLocaleString("en-US", { minimumFractionDigits: 2 }) || "0.00"}
                 </p>
               </div>
             ))

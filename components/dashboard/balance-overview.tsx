@@ -42,7 +42,7 @@ export function BalanceOverview({ accounts }: BalanceOverviewProps) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-foreground">
-                  ${Number(account.balance).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  ${Number(account.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))

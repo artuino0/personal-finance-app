@@ -6,6 +6,7 @@ import { BalanceOverview } from "@/components/dashboard/balance-overview"
 import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { MonthlyChart } from "@/components/dashboard/monthly-chart"
 import { UpcomingPayments } from "@/components/dashboard/upcoming-payments"
+import { formatCurrency } from "@/lib/utils/currency"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -75,7 +76,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${totalBalance.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                ${formatCurrency(totalBalance)}
               </div>
               <p className="text-xs text-slate-600 mt-1">{accounts?.length || 0} cuentas</p>
             </CardContent>
@@ -87,7 +88,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                +${monthlyIncome.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                +${formatCurrency(monthlyIncome)}
               </div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>
@@ -99,7 +100,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                -${monthlyExpense.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                -${formatCurrency(monthlyExpense)}
               </div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>
@@ -111,7 +112,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                ${(monthlyIncome - monthlyExpense).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                ${formatCurrency(monthlyIncome - monthlyExpense)}
               </div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>

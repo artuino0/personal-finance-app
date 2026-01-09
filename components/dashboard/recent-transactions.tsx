@@ -50,7 +50,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                       {transaction.description || transaction.categories?.name || "Sin descripción"}
                     </p>
                     <p className="text-xs text-slate-600">
-                      {transaction.accounts?.name} • {new Date(transaction.date).toLocaleDateString("es-ES")}
+                      {transaction.accounts?.name} • {new Date(transaction.date).toLocaleDateString("en-US")}
                     </p>
                   </div>
                 </div>
@@ -58,7 +58,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   className={`text-sm font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  {Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))
