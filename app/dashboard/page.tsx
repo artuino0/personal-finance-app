@@ -58,7 +58,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>

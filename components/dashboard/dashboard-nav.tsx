@@ -16,9 +16,11 @@ import {
 
 interface DashboardNavProps {
   userName: string
+  userAvatar?: string
+  userEmail?: string
 }
 
-export function DashboardNav({ userName }: DashboardNavProps) {
+export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -57,7 +59,7 @@ export function DashboardNav({ userName }: DashboardNavProps) {
           </DropdownMenu>
 
           <Link href="/dashboard" className="text-xl font-bold text-foreground">
-            FinanzasApp
+            FindexApp
           </Link>
           <div className="hidden md:flex gap-6">
             <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-foreground">
@@ -78,8 +80,12 @@ export function DashboardNav({ userName }: DashboardNavProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
-                {userName.charAt(0).toUpperCase()}
+              <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
+                {userAvatar ? (
+                  <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
+                ) : (
+                  userName.charAt(0).toUpperCase()
+                )}
               </div>
               <span className="hidden md:inline text-sm font-medium">{userName}</span>
             </Button>
