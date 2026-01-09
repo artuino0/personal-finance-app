@@ -60,10 +60,15 @@ export default function SignupPage() {
   /* New Google Login Logic */
   const handleGoogleLogin = async () => {
     const supabase = createClient()
+
+    // Ensure accurate URL handling by removing any trailing slash from the base URL
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || window.location.origin).replace(/\/$/, "")
+    const redirectTo = `${appUrl}/auth/callback`
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/callback`,
+        redirectTo,
         queryParams: {
           access_type: "offline",
           prompt: "consent",
