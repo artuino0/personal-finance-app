@@ -42,6 +42,7 @@ export default function LoginPage() {
   /* New Google Login Logic */
   const handleGoogleLogin = async () => {
     const supabase = createClient()
+    console.log("handleGoogleLogin: ", process.env.NEXT_PUBLIC_APP_URL)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
