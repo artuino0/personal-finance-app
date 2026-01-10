@@ -50,7 +50,12 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
 
   const getDaysUntil = (dateString: string) => {
     const today = new Date()
-    const paymentDate = new Date(dateString)
+    today.setHours(0, 0, 0, 0)
+
+    // Parse YYYY-MM-DD as local date to avoid timezone shift
+    const [year, month, day] = dateString.split("-").map(Number)
+    const paymentDate = new Date(year, month - 1, day)
+
     const diffTime = paymentDate.getTime() - today.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
@@ -79,9 +84,10 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
               const isUrgent = daysUntil >= 0 && daysUntil <= 7
 
               return (
-                <div
+                <Link
                   key={`${payment.type}-${payment.id}`}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${isUrgent ? "border-orange-200 bg-orange-50" : ""}`}
+                  href={`/dashboard/transactions/new?description=${encodeURIComponent(payment.name)}&amount=${payment.amount}&categoryName=${encodeURIComponent(payment.type === "credit" ? "Servicios" : "Servicios")}`}
+                  className={`flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-secondary/30 ${isUrgent ? "border-orange-200 bg-orange-50 hover:bg-orange-100" : ""}`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -114,7 +120,7 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
                       {payment.type === "credit" ? "Crédito" : "Servicio"}
                     </Badge>
                   </div>
-                </div>
+                </Link>
               )
             })
           )}

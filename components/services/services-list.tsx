@@ -90,7 +90,7 @@ export function ServicesList({ services, userId }: ServicesListProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {services.map((service) => {
         const Icon = CATEGORY_ICONS[service.category as keyof typeof CATEGORY_ICONS]
         const daysUntil = getDaysUntilPayment(service.next_payment_date)
@@ -117,6 +117,22 @@ export function ServicesList({ services, userId }: ServicesListProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const d = new Date()
+                        const year = d.getFullYear()
+                        const month = String(d.getMonth() + 1).padStart(2, "0")
+                        const day = String(d.getDate()).padStart(2, "0")
+                        const today = `${year}-${month}-${day}`
+
+                        router.push(
+                          `/dashboard/transactions/new?description=${encodeURIComponent(service.name)}&amount=${service.amount}&date=${today}&accountId=${service.account_id || ""}&categoryName=${encodeURIComponent("Servicios")}`,
+                        )
+                      }}
+                    >
+                      <Zap className="mr-2 h-4 w-4" />
+                      Registrar Pago
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push(`/dashboard/services/${service.id}`)}>
                       <Edit className="mr-2 h-4 w-4" />
                       Editar
@@ -153,7 +169,14 @@ export function ServicesList({ services, userId }: ServicesListProps) {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Próximo pago:</span>
-                    <span className="font-medium">{new Date(service.next_payment_date).toLocaleDateString()}</span>
+                    <span className="font-medium">
+                      {new Date(service.next_payment_date + "T00:00:00").toLocaleDateString("es-MX", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        timeZone: "UTC", // Treat the appended UTC time as UTC to keep the date stable, OR just parse the string parts.
+                      })}
+                    </span>
                   </div>
                   {daysUntil >= 0 && daysUntil <= 7 && service.is_active && (
                     <Badge variant="destructive" className="w-full justify-center">

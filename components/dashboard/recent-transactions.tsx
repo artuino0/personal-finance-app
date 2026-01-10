@@ -50,7 +50,13 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                       {transaction.description || transaction.categories?.name || "Sin descripción"}
                     </p>
                     <p className="text-xs text-slate-600">
-                      {transaction.accounts?.name} • {new Date(transaction.date).toLocaleDateString("en-US")}
+                      {transaction.accounts?.name} •{" "}
+                      {(() => {
+                        const [year, month, day] = transaction.date.split("-").map(Number)
+                        const dayStr = String(day).padStart(2, "0")
+                        const monthStr = String(month).padStart(2, "0")
+                        return `${dayStr}/${monthStr}/${year}`
+                      })()}
                     </p>
                   </div>
                 </div>

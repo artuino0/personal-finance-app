@@ -121,7 +121,12 @@ export function TransactionsList({ transactions, userId }: TransactionsListProps
                   </div>
                 </TableCell>
                 <TableCell className="font-medium text-slate-700">
-                  {new Date(transaction.date).toLocaleDateString("en-US")}
+                  {(() => {
+                    const [year, month, day] = transaction.date.split("-").map(Number)
+                    const dayStr = String(day).padStart(2, "0")
+                    const monthStr = String(month).padStart(2, "0")
+                    return `${dayStr}/${monthStr}/${year}`
+                  })()}
                 </TableCell>
                 <TableCell className="max-w-[250px] truncate font-medium" title={transaction.description || "Sin descripción"}>
                   {transaction.description || "Sin descripción"}

@@ -39,7 +39,7 @@ export default async function ServicesPage() {
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
-      <main className="container mx-auto max-w-7xl p-6">
+      <main className="container mx-auto p-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Servicios Recurrentes</h1>
@@ -53,10 +53,10 @@ export default async function ServicesPage() {
           </Link>
         </div>
 
-        <div className="mb-6 rounded-lg border bg-card p-6">
+        <div className="mb-6 rounded-lg border bg-background p-6">
           <div className="text-center">
-            <p className="text-sm text-slate-600">Gasto Mensual Estimado</p>
-            <p className="font-bold text-3xl">${totalMonthly.toFixed(2)}</p>
+            <p className="text-sm text-foreground/60">Gasto Mensual Estimado</p>
+            <p className="font-bold text-foreground/80 text-3xl">${totalMonthly.toFixed(2)}</p>
           </div>
         </div>
 
