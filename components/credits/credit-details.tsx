@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import { Pencil } from "lucide-react"
 
 interface Credit {
   id: string
@@ -97,9 +98,17 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
           <h1 className="text-3xl font-bold text-foreground">{credit.name}</h1>
           <p className="text-slate-600">Detalles del crédito</p>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/dashboard/credits">Volver</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`/dashboard/credits/${credit.id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Editar
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/credits">Volver</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
