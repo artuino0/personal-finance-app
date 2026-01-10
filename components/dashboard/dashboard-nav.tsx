@@ -53,6 +53,9 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
                 <Link href="/dashboard/transactions">Transacciones</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
+                <Link href="/dashboard/services">Servicios</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/dashboard/credits">Créditos</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -71,6 +74,9 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             <Link href="/dashboard/transactions" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Transacciones
             </Link>
+            <Link href="/dashboard/services" className="text-sm font-medium text-slate-700 hover:text-foreground">
+              Servicios
+            </Link>
             <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Créditos
             </Link>
@@ -79,10 +85,13 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
+            >
               <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
                 {userAvatar ? (
-                  <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
+                  <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
                 ) : (
                   userName.charAt(0).toUpperCase()
                 )}

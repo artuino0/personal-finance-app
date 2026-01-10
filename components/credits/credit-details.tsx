@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import { Pencil } from "lucide-react"
 
 interface Credit {
   id: string
@@ -97,9 +98,17 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
           <h1 className="text-3xl font-bold text-foreground">{credit.name}</h1>
           <p className="text-slate-600">Detalles del crédito</p>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/dashboard/credits">Volver</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`/dashboard/credits/${credit.id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Editar
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/credits">Volver</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -112,13 +121,13 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
               <div>
                 <p className="text-sm text-slate-600">Monto Total</p>
                 <p className="text-lg font-semibold">
-                  ${Number(credit.total_amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  ${Number(credit.total_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-slate-600">Restante</p>
                 <p className="text-lg font-semibold text-red-600">
-                  ${Number(credit.remaining_amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  ${Number(credit.remaining_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
@@ -133,7 +142,7 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
               <div>
                 <p className="text-sm text-slate-600">Pago Mensual</p>
                 <p className="text-base font-semibold">
-                  ${(credit.monthly_payment || 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                  ${(credit.monthly_payment || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
               </div>
               <div>
@@ -145,12 +154,12 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-slate-600">Fecha de Inicio</p>
-                <p className="text-base font-semibold">{new Date(credit.start_date).toLocaleDateString("es-ES")}</p>
+                <p className="text-base font-semibold">{new Date(credit.start_date).toLocaleDateString("en-US")}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600">Próximo Vencimiento</p>
                 <p className="text-base font-semibold">
-                  {credit.due_date ? new Date(credit.due_date).toLocaleDateString("es-ES") : "Sin fecha"}
+                  {credit.due_date ? new Date(credit.due_date).toLocaleDateString("en-US") : "Sin fecha"}
                 </p>
               </div>
             </div>
@@ -183,7 +192,7 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
             <div className="mt-6 pt-6 border-t">
               <p className="text-sm text-slate-600 mb-2">Total pagado</p>
               <p className="text-2xl font-bold text-green-600">
-                ${totalPaid.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                ${totalPaid.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
           </CardContent>
@@ -203,10 +212,10 @@ export function CreditDetails({ credit, payments, userId }: CreditDetailsProps) 
                 <div key={payment.id} className="flex items-center justify-between p-3  rounded-lg">
                   <div>
                     <p className="font-medium text-foreground">
-                      ${Number(payment.amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                      ${Number(payment.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                     <p className="text-sm text-slate-600">
-                      {new Date(payment.payment_date).toLocaleDateString("es-ES")}
+                      {new Date(payment.payment_date).toLocaleDateString("en-US")}
                     </p>
                   </div>
                 </div>

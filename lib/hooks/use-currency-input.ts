@@ -8,6 +8,35 @@ interface UseCurrencyInputProps {
     onValueChange?: (value: string) => void
 }
 
+const formatCurrency = (value: string, decimals: number) => {
+    // Remove all non-numeric characters except decimal point
+    const cleaned = value.replaceAll(/[^\d.]/g, "")
+
+    // Split into integer and decimal parts
+    const parts = cleaned.split(".")
+    let integerPart = parts[0] || ""
+    let decimalPart = parts[1] || ""
+
+    // Limit decimal places
+    if (decimalPart.length > decimals) {
+        decimalPart = decimalPart.slice(0, decimals)
+    }
+
+    // Add thousand separators to integer part
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+
+    // Combine parts
+    if (parts.length > 1) {
+        return `${integerPart}.${decimalPart}`
+    }
+    return integerPart
+}
+
+const getRawValue = (formattedValue: string): string => {
+    // Remove commas to get the raw numeric value
+    return formattedValue.replaceAll(",", "")
+}
+
 export function useCurrencyInput({
     initialValue = "",
     maxDecimals = 2,
@@ -18,35 +47,6 @@ export function useCurrencyInput({
         const num = typeof initialValue === "string" ? Number.parseFloat(initialValue) : initialValue
         return Number.isNaN(num) ? "" : formatCurrency(num.toString(), maxDecimals)
     })
-
-    const formatCurrency = useCallback((value: string, decimals: number) => {
-        // Remove all non-numeric characters except decimal point
-        const cleaned = value.replaceAll(/[^\d.]/g, "")
-
-        // Split into integer and decimal parts
-        const parts = cleaned.split(".")
-        let integerPart = parts[0] || ""
-        let decimalPart = parts[1] || ""
-
-        // Limit decimal places
-        if (decimalPart.length > decimals) {
-            decimalPart = decimalPart.slice(0, decimals)
-        }
-
-        // Add thousand separators to integer part
-        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-
-        // Combine parts
-        if (parts.length > 1) {
-            return `${integerPart}.${decimalPart}`
-        }
-        return integerPart
-    }, [])
-
-    const getRawValue = useCallback((formattedValue: string): string => {
-        // Remove commas to get the raw numeric value
-        return formattedValue.replaceAll(",", "")
-    }, [])
 
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +78,7 @@ export function useCurrencyInput({
             setDisplayValue(formatted)
             onValueChange?.(getRawValue(formatted))
         },
-        [formatCurrency, getRawValue, maxDecimals, onValueChange]
+        [maxDecimals, onValueChange]
     )
 
     const setValue = useCallback(
@@ -91,7 +91,7 @@ export function useCurrencyInput({
             const formatted = formatCurrency(numValue, maxDecimals)
             setDisplayValue(formatted)
         },
-        [formatCurrency, maxDecimals]
+        [maxDecimals]
     )
 
     return {

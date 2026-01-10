@@ -50,7 +50,7 @@ export default async function CreditsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                ${totalDebt.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                ${totalDebt.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
             </CardContent>
           </Card>
@@ -70,7 +70,7 @@ export default async function CreditsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">
-                ${monthlyPayment.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                ${monthlyPayment.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
             </CardContent>
           </Card>

@@ -96,13 +96,13 @@ export function CreditsList({ credits }: CreditsListProps) {
                   <div>
                     <p className="text-xs text-slate-600">Total</p>
                     <p className="text-sm font-semibold">
-                      ${Number(credit.total_amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                      ${Number(credit.total_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-600">Restante</p>
                     <p className="text-sm font-semibold text-red-600">
-                      ${Number(credit.remaining_amount).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                      ${Number(credit.remaining_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
@@ -111,13 +111,13 @@ export function CreditsList({ credits }: CreditsListProps) {
                   <div>
                     <p className="text-xs text-slate-600">Pago Mensual</p>
                     <p className="text-sm font-semibold">
-                      ${(credit.monthly_payment || 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+                      ${(credit.monthly_payment || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-600">Próximo Vencimiento</p>
                     <p className="text-sm font-semibold">
-                      {credit.due_date ? new Date(credit.due_date).toLocaleDateString("es-ES") : "Sin fecha"}
+                      {credit.due_date ? new Date(credit.due_date).toLocaleDateString("en-US") : "Sin fecha"}
                     </p>
                   </div>
                 </div>

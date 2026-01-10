@@ -115,7 +115,7 @@ export function AccountsList({ accounts, userId }: AccountsListProps) {
             <h3 className="text-lg font-semibold text-foreground mb-1">{account.name}</h3>
             <p className="text-sm text-slate-600 mb-3">{getAccountTypeLabel(account.type)}</p>
             <p className="text-2xl font-bold text-foreground">
-              ${Number(account.balance).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+              ${Number(account.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-slate-600 mt-1">{account.currency}</p>
           </CardContent>

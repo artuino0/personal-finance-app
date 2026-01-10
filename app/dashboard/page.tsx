@@ -6,6 +6,7 @@ import { BalanceOverview } from "@/components/dashboard/balance-overview"
 import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { MonthlyChart } from "@/components/dashboard/monthly-chart"
 import { UpcomingPayments } from "@/components/dashboard/upcoming-payments"
+import { formatCurrency } from "@/lib/utils/currency"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -56,10 +57,20 @@ export default async function DashboardPage() {
     .order("due_date", { ascending: true })
     .limit(3)
 
+  const { data: services } = await supabase
+    .from("recurring_services")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .order("next_payment_date", { ascending: true })
+    .limit(5)
+
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav
-        userName={profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Usuario"}
+        userName={
+          profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Usuario"
+        }
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
       />
       <main className="container mx-auto p-6">
@@ -74,9 +85,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium">Balance Total</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                ${totalBalance.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
-              </div>
+              <div className="text-2xl font-bold">${formatCurrency(totalBalance)}</div>
               <p className="text-xs text-slate-600 mt-1">{accounts?.length || 0} cuentas</p>
             </CardContent>
           </Card>
@@ -86,9 +95,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium">Ingresos del Mes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                +${monthlyIncome.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
-              </div>
+              <div className="text-2xl font-bold text-green-600">+${formatCurrency(monthlyIncome)}</div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>
           </Card>
@@ -98,9 +105,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium">Gastos del Mes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                -${monthlyExpense.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
-              </div>
+              <div className="text-2xl font-bold text-red-600">-${formatCurrency(monthlyExpense)}</div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>
           </Card>
@@ -110,9 +115,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium">Ahorro</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                ${(monthlyIncome - monthlyExpense).toLocaleString("es-ES", { minimumFractionDigits: 2 })}
-              </div>
+              <div className="text-2xl font-bold text-blue-600">${formatCurrency(monthlyIncome - monthlyExpense)}</div>
               <p className="text-xs text-slate-600 mt-1">Este mes</p>
             </CardContent>
           </Card>
@@ -125,7 +128,7 @@ export default async function DashboardPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <RecentTransactions transactions={transactions || []} />
-          <UpcomingPayments credits={credits || []} />
+          <UpcomingPayments credits={credits || []} services={services || []} />
         </div>
       </main>
     </div>

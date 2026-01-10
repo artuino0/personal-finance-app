@@ -34,7 +34,7 @@ export default async function AccountsPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Cuentas</h1>
             <p className="text-slate-600">
-              Balance total: ${totalBalance.toLocaleString("es-ES", { minimumFractionDigits: 2 })}
+              Balance total: ${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
           </div>
           <Button asChild>

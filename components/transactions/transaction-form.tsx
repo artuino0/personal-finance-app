@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -49,16 +49,41 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
   const router = useRouter()
   const supabase = createClient()
   const isIOS = useIsIOS()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Find category by name if provided
+  const categoryNameParam = searchParams.get("categoryName")
+  const categoryIdParam = searchParams.get("categoryId")
+
+  let initialCategoryId = transaction?.category_id || categoryIdParam || ""
+
+  if (!initialCategoryId && categoryNameParam) {
+    const foundCategory = categories.find(
+      (c) => c.name.toLowerCase() === categoryNameParam.toLowerCase() && c.type === (transaction?.type || "expense"),
+    )
+    if (foundCategory) {
+      initialCategoryId = foundCategory.id
+    }
+  }
+
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateString = () => {
+    const d = new Date()
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
+
   const [formData, setFormData] = useState({
     type: transaction?.type || "expense",
-    amount: transaction?.amount?.toString() || "",
-    description: transaction?.description || "",
-    date: transaction?.date || new Date().toISOString().split("T")[0],
-    account_id: transaction?.account_id || "",
-    category_id: transaction?.category_id || "",
+    amount: transaction?.amount?.toString() || searchParams.get("amount") || "",
+    description: transaction?.description || searchParams.get("description") || "",
+    date: transaction?.date || searchParams.get("date") || getLocalDateString(),
+    account_id: transaction?.account_id || searchParams.get("accountId") || "",
+    category_id: initialCategoryId,
   })
 
   const filteredCategories = categories.filter((cat) => cat.type === formData.type)
@@ -253,6 +278,6 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
           </div>
         </form>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
