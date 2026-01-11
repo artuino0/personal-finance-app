@@ -30,7 +30,7 @@ export default async function AccountsPage() {
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Cuentas</h1>
             <p className="text-slate-600">
