@@ -56,7 +56,9 @@ export default async function ServicesPage() {
         <div className="mb-6 rounded-lg border bg-background p-6">
           <div className="text-center">
             <p className="text-sm text-foreground/60">Gasto Mensual Estimado</p>
-            <p className="font-bold text-foreground/80 text-3xl">${totalMonthly.toFixed(2)}</p>
+            <p className="font-bold text-foreground/80 text-3xl">
+              ${totalMonthly.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
           </div>
         </div>
 
