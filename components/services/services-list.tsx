@@ -160,7 +160,9 @@ export function ServicesList({ services, userId }: ServicesListProps) {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-2xl">${service.amount.toFixed(2)}</span>
+                  <span className="font-bold text-2xl">
+                    ${service.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                   <Badge variant="secondary">
                     {FREQUENCY_LABELS[service.frequency as keyof typeof FREQUENCY_LABELS]}
                   </Badge>
