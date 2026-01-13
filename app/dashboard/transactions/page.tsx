@@ -5,6 +5,8 @@ import { TransactionsList } from "@/components/transactions/transactions-list"
 import { TransactionsFilter } from "@/components/transactions/transactions-filter"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
+import { PageHeader } from "@/components/dashboard/page-header"
 
 export default async function TransactionsPage({
   searchParams,
@@ -24,11 +26,14 @@ export default async function TransactionsPage({
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
-  // Build query
+  const selectedAccountId = (await getSelectedAccountId()) || user.id
+  const permissions = await getAccountPermissions(selectedAccountId, "transactions")
+  const isSharedAccount = selectedAccountId !== user.id
+
   let query = supabase
     .from("transactions")
     .select("*, account_id, accounts(name, color), categories(name, color, icon)")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
 
   if (params.type) {
@@ -43,28 +48,36 @@ export default async function TransactionsPage({
 
   const { data: transactions } = await query
 
-  // Get accounts and categories for filters
-  const { data: accounts } = await supabase.from("accounts").select("id, name").eq("user_id", user.id)
+  const { data: accounts } = await supabase.from("accounts").select("id, name").eq("user_id", selectedAccountId)
 
-  const { data: categories } = await supabase.from("categories").select("id, name, type").eq("user_id", user.id)
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, name, type")
+    .eq("user_id", selectedAccountId)
 
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
-        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Transacciones</h1>
-            <p className="text-slate-600">{transactions?.length || 0} transacciones registradas</p>
-          </div>
-          <Button asChild>
-            <Link href="/dashboard/transactions/new">+ Nueva Transacción</Link>
-          </Button>
-        </div>
+        <PageHeader
+          title="Transacciones"
+          description={`${transactions?.length || 0} transacciones registradas`}
+          currentUserId={user.id}
+          currentUserName={profile?.full_name || user.email || "Usuario"}
+          currentUserEmail={user.email || ""}
+          selectedAccountId={selectedAccountId}
+          isSharedAccount={isSharedAccount}
+          permissions={permissions}
+          actions={
+            <Button asChild>
+              <Link href="/dashboard/transactions/new">+ Nueva Transacción</Link>
+            </Button>
+          }
+        />
 
         <TransactionsFilter accounts={accounts || []} categories={categories || []} />
 
-        <TransactionsList transactions={transactions || []} userId={user.id} />
+        <TransactionsList transactions={transactions || []} userId={selectedAccountId} permissions={permissions} />
       </main>
     </div>
   )

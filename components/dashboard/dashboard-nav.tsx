@@ -58,6 +58,9 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/credits">Créditos</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/sharing">Compartir</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -79,6 +82,9 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             </Link>
             <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Créditos
+            </Link>
+            <Link href="/dashboard/sharing" className="text-sm font-medium text-slate-700 hover:text-foreground">
+              Compartir
             </Link>
           </div>
         </div>

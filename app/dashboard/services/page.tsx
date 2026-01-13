@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { ServicesList } from "@/components/services/services-list"
+import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
+import { PageHeader } from "@/components/dashboard/page-header"
 
 export default async function ServicesPage() {
   const supabase = await createClient()
@@ -19,10 +21,14 @@ export default async function ServicesPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
+  const selectedAccountId = (await getSelectedAccountId()) || user.id
+  const permissions = await getAccountPermissions(selectedAccountId, "services")
+  const isSharedAccount = selectedAccountId !== user.id
+
   const { data: services } = await supabase
     .from("recurring_services")
     .select("*, accounts(name)")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .order("next_payment_date", { ascending: true })
 
   const activeServices = services?.filter((s) => s.is_active) || []
@@ -40,18 +46,24 @@ export default async function ServicesPage() {
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
-        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div>
-            <h1 className="font-bold text-3xl">Servicios Recurrentes</h1>
-            <p className="text-slate-600">Gestiona tus suscripciones y pagos recurrentes</p>
-          </div>
-          <Link href="/dashboard/services/new">
+        <PageHeader
+          title="Servicios Recurrentes"
+          description="Gestiona tus suscripciones y pagos recurrentes"
+          currentUserId={user.id}
+          currentUserName={profile?.full_name || user.email || "Usuario"}
+          currentUserEmail={user.email || ""}
+          selectedAccountId={selectedAccountId}
+          isSharedAccount={isSharedAccount}
+          permissions={permissions}
+          actions={
             <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nuevo Servicio
+              <Link href="/dashboard/services/new" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Nuevo Servicio
+              </Link>
             </Button>
-          </Link>
-        </div>
+          }
+        />
 
         <div className="mb-6 rounded-lg border bg-background p-6">
           <div className="text-center">
@@ -65,13 +77,13 @@ export default async function ServicesPage() {
         <div className="space-y-6">
           <div>
             <h2 className="mb-4 font-semibold text-lg">Servicios Activos ({activeServices.length})</h2>
-            <ServicesList services={activeServices} userId={user.id} />
+            <ServicesList services={activeServices} userId={selectedAccountId} permissions={permissions} />
           </div>
 
           {inactiveServices.length > 0 && (
             <div>
               <h2 className="mb-4 font-semibold text-lg">Servicios Inactivos ({inactiveServices.length})</h2>
-              <ServicesList services={inactiveServices} userId={user.id} />
+              <ServicesList services={inactiveServices} userId={selectedAccountId} permissions={permissions} />
             </div>
           )}
         </div>

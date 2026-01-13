@@ -29,11 +29,20 @@ interface Account {
 interface AccountsListProps {
   accounts: Account[]
   userId: string
+  permissions?: {
+    view: boolean
+    create: boolean
+    edit: boolean
+    delete: boolean
+  }
 }
 
-export function AccountsList({ accounts, userId }: AccountsListProps) {
+export function AccountsList({ accounts, userId, permissions }: AccountsListProps) {
   const router = useRouter()
   const supabase = createClient()
+
+  const canEdit = permissions?.edit ?? true
+  const canDelete = permissions?.delete ?? true
 
   const handleDelete = async (accountId: string) => {
     const { error } = await supabase.from("accounts").delete().eq("id", accountId).eq("user_id", userId)
@@ -61,10 +70,12 @@ export function AccountsList({ accounts, userId }: AccountsListProps) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-slate-600 mb-4">No tienes cuentas registradas</p>
-          <Button asChild>
-            <Link href="/dashboard/accounts/new">Crear mi primera cuenta</Link>
-          </Button>
+          <p className="text-slate-600 mb-4">No hay cuentas registradas</p>
+          {permissions?.create !== false && (
+            <Button asChild>
+              <Link href="/dashboard/accounts/new">Crear mi primera cuenta</Link>
+            </Button>
+          )}
         </CardContent>
       </Card>
     )
@@ -82,35 +93,42 @@ export function AccountsList({ accounts, userId }: AccountsListProps) {
               >
                 {account.name.charAt(0).toUpperCase()}
               </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/dashboard/accounts/${account.id}`}>Editar</Link>
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                      Eliminar
+              {(canEdit || canDelete) && (
+                <div className="flex gap-2">
+                  {canEdit && (
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`/dashboard/accounts/${account.id}`}>Editar</Link>
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Se eliminará la cuenta y todas sus transacciones asociadas.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(account.id)}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+                  )}
+                  {canDelete && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                          Eliminar
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Se eliminará la cuenta y todas sus transacciones
+                            asociadas.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(account.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Eliminar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </div>
+              )}
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1">{account.name}</h3>
             <p className="text-sm text-slate-600 mb-3">{getAccountTypeLabel(account.type)}</p>
