@@ -115,7 +115,6 @@ export function InviteForm({ userId }: InviteFormProps) {
         .insert({
           owner_id: userId,
           invited_email: email.toLowerCase(),
-          invited_user_id: foundUserId, // Store the user ID if they exist
           permissions: permissions,
           status: "pending",
         })
