@@ -109,7 +109,14 @@ export function InviteForm({ userId }: InviteFormProps) {
     setError(null)
 
     try {
-      // Create invitation
+      // Get current user profile for email
+      const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", userId).single()
+
+      const inviterName = profile?.full_name || "Un usuario"
+
+      // Generate unique token
+      const token = crypto.randomUUID()
+
       const { data: invitation, error: inviteError } = await supabase
         .from("share_invitations")
         .insert({
@@ -117,16 +124,32 @@ export function InviteForm({ userId }: InviteFormProps) {
           invited_email: email.toLowerCase(),
           permissions: permissions,
           status: "pending",
+          token: token,
         })
         .select()
         .single()
 
       if (inviteError) throw inviteError
 
-      // If user exists, we can create the share immediately (they just need to accept)
-      if (userExists && invitation) {
-        // TODO: Send email notification
-        console.log("[v0] Invitation created:", invitation.id)
+      const emailResponse = await fetch("/api/send-invitation-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invitedEmail: email.toLowerCase(),
+          inviterName: inviterName,
+          token: token,
+          userExists: userExists,
+          permissions: permissions,
+        }),
+      })
+
+      if (!emailResponse.ok) {
+        console.error("[v0] Failed to send email, but invitation was created")
+        // Don't fail the entire operation if email fails
+      } else {
+        console.log("[v0] Invitation email sent successfully")
       }
 
       router.push("/dashboard/sharing")
