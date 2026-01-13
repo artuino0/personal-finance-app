@@ -55,14 +55,15 @@ export function InviteForm({ userId }: InviteFormProps) {
     setUserName(null)
 
     try {
-      // Check if user exists in auth.users via a profiles query
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("id, full_name")
-        .eq("id", await supabase.rpc("get_user_id_by_email", { user_email: email }))
+        .select("id, full_name, email")
+        .eq("email", email)
         .single()
 
-      if (profile) {
+      console.log("[v0] Profile lookup result:", { profile, profileError })
+
+      if (profile && !profileError) {
         setUserExists(true)
         setUserName(profile.full_name)
       } else {
