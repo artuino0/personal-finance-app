@@ -32,6 +32,7 @@ export function InviteForm({ userId }: InviteFormProps) {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
   const [userExists, setUserExists] = useState<boolean | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
+  const [foundUserId, setFoundUserId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentStep, setCurrentStep] = useState<"email" | "permissions">("email")
@@ -53,25 +54,34 @@ export function InviteForm({ userId }: InviteFormProps) {
     setError(null)
     setUserExists(null)
     setUserName(null)
+    setFoundUserId(null)
 
     try {
-      const { data, error: rpcError } = await supabase.rpc("get_user_by_email", { user_email: email })
+      const response = await fetch("/api/verify-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.toLowerCase() }),
+      })
 
-      console.log("[v0] User lookup result:", { data, rpcError })
+      const result = await response.json()
 
-      if (rpcError) {
-        console.log("[v0] RPC Error:", rpcError)
-        setUserExists(false)
-      } else if (data && data.length > 0) {
-        const user = data[0]
+      if (!response.ok) {
+        setError(result.error || "Error al verificar el email")
+        return
+      }
+
+      if (result.exists) {
         setUserExists(true)
-        setUserName(user.full_name || user.email)
+        setUserName(result.user.name)
+        setFoundUserId(result.user.id)
       } else {
         setUserExists(false)
       }
     } catch (err) {
-      console.log("[v0] Error checking email:", err)
-      setUserExists(false)
+      console.error("[v0] Error checking email:", err)
+      setError("Error al verificar el email")
     } finally {
       setIsCheckingEmail(false)
     }
@@ -104,7 +114,8 @@ export function InviteForm({ userId }: InviteFormProps) {
         .from("share_invitations")
         .insert({
           owner_id: userId,
-          invited_email: email,
+          invited_email: email.toLowerCase(),
+          invited_user_id: foundUserId, // Store the user ID if they exist
           permissions: permissions,
           status: "pending",
         })
@@ -143,6 +154,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                 setEmail(e.target.value)
                 setUserExists(null)
                 setUserName(null)
+                setFoundUserId(null)
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
