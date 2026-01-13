@@ -55,17 +55,17 @@ export function InviteForm({ userId }: InviteFormProps) {
     setUserName(null)
 
     try {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, full_name, email")
-        .eq("email", email)
-        .single()
+      const { data, error: rpcError } = await supabase.rpc("get_user_by_email", { user_email: email })
 
-      console.log("[v0] Profile lookup result:", { profile, profileError })
+      console.log("[v0] User lookup result:", { data, rpcError })
 
-      if (profile && !profileError) {
+      if (rpcError) {
+        console.log("[v0] RPC Error:", rpcError)
+        setUserExists(false)
+      } else if (data && data.length > 0) {
+        const user = data[0]
         setUserExists(true)
-        setUserName(profile.full_name)
+        setUserName(user.full_name || user.email)
       } else {
         setUserExists(false)
       }
