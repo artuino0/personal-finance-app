@@ -34,30 +34,29 @@ BEGIN
     );
   END IF;
 
-  -- Remove updated_at, use accepted_at instead
+  -- Use accepted_at instead of updated_at
   UPDATE share_invitations
   SET status = 'accepted',
       accepted_at = now()
   WHERE id = v_invitation.id;
 
-  -- Add shared_with_email to the insert
+  -- Include shared_with_email in insert
   INSERT INTO account_shares (owner_id, shared_with_id, shared_with_email, is_active)
   VALUES (v_invitation.owner_id, p_user_id, v_user_email, true)
   RETURNING id INTO v_share_id;
 
-  -- Create permissions
+  -- Removed specific_accounts column which doesn't exist
+  -- Create permissions from invitation JSON
   FOR v_permission IN 
     SELECT * FROM jsonb_each(v_invitation.permissions)
   LOOP
-    -- Extract permission values
     INSERT INTO share_permissions (
       share_id,
       resource_type,
       can_view,
       can_create,
       can_edit,
-      can_delete,
-      specific_accounts
+      can_delete
     )
     VALUES (
       v_share_id,
@@ -65,12 +64,7 @@ BEGIN
       COALESCE((v_permission.value->>'view')::boolean, false),
       COALESCE((v_permission.value->>'create')::boolean, false),
       COALESCE((v_permission.value->>'edit')::boolean, false),
-      COALESCE((v_permission.value->>'delete')::boolean, false),
-      CASE 
-        WHEN v_permission.value->'accounts' IS NOT NULL 
-        THEN (v_permission.value->'accounts')::jsonb 
-        ELSE NULL 
-      END
+      COALESCE((v_permission.value->>'delete')::boolean, false)
     );
   END LOOP;
 
