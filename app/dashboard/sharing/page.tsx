@@ -21,37 +21,50 @@ export default async function SharingPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
-  console.log("[v0] Current user ID:", user.id)
-  console.log("[v0] Current user email:", user.email)
-
-  // Get active shares (people I've shared with)
-  const { data: activeShares, error: sharesError } = await supabase
+  const { data: activeShares } = await supabase
     .from("account_shares")
     .select("*")
     .eq("owner_id", user.id)
     .eq("is_active", true)
-    .order("created_at", { ascending: false })
+    .order("shared_at", { ascending: false })
 
-  console.log("[v0] Active shares (outgoing):", activeShares)
-  console.log("[v0] Shares error:", sharesError)
-
-  // Get permissions for each share
-  if (activeShares) {
+  // Load related data for each share
+  if (activeShares && activeShares.length > 0) {
     for (const share of activeShares) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
-      share.share_permissions = permissions || []
-
-      // Get profile of shared_with user
       const { data: sharedProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.shared_with_id)
         .single()
-      share.profiles = sharedProfile
+
+      share.share_permissions = permissions || []
+      share.profiles = sharedProfile || { full_name: share.shared_with_email }
     }
   }
 
-  // Get pending invitations I've sent
+  const { data: sharedWithMe } = await supabase
+    .from("account_shares")
+    .select("*")
+    .eq("shared_with_id", user.id)
+    .eq("is_active", true)
+    .order("shared_at", { ascending: false })
+
+  // Load related data for shares I received
+  if (sharedWithMe && sharedWithMe.length > 0) {
+    for (const share of sharedWithMe) {
+      const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", share.owner_id)
+        .single()
+
+      share.share_permissions = permissions || []
+      share.profiles = ownerProfile || { full_name: "Usuario" }
+    }
+  }
+
   const { data: pendingInvitations } = await supabase
     .from("share_invitations")
     .select("*")
@@ -59,7 +72,6 @@ export default async function SharingPage() {
     .eq("status", "pending")
     .order("created_at", { ascending: false })
 
-  // Get invitations I've received
   const { data: receivedInvitations } = await supabase
     .from("share_invitations")
     .select("*")
@@ -67,42 +79,15 @@ export default async function SharingPage() {
     .eq("status", "pending")
     .order("created_at", { ascending: false })
 
-  // Get owner profiles for received invitations
-  if (receivedInvitations) {
+  // Load owner profiles for received invitations
+  if (receivedInvitations && receivedInvitations.length > 0) {
     for (const invitation of receivedInvitations) {
       const { data: ownerProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", invitation.owner_id)
         .single()
-      invitation.profiles = ownerProfile
-    }
-  }
-
-  // Get shares where I'm the recipient
-  const { data: sharedWithMe, error: sharedError } = await supabase
-    .from("account_shares")
-    .select("*")
-    .eq("shared_with_id", user.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-
-  console.log("[v0] Shared with me (incoming):", sharedWithMe)
-  console.log("[v0] Shared with me error:", sharedError)
-
-  // Get permissions and owner profile for each share
-  if (sharedWithMe) {
-    for (const share of sharedWithMe) {
-      const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
-      share.share_permissions = permissions || []
-
-      // Get profile of owner
-      const { data: ownerProfile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", share.owner_id)
-        .single()
-      share.profiles = ownerProfile
+      invitation.profiles = ownerProfile || { full_name: "Usuario" }
     }
   }
 
@@ -143,28 +128,33 @@ export default async function SharingPage() {
           </Card>
         </div>
 
-        {pendingInvitations && pendingInvitations.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Invitaciones Enviadas</CardTitle>
-              <CardDescription>Invitaciones pendientes de aceptación</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <InvitationsList invitations={pendingInvitations} type="sent" userId={user.id} />
-            </CardContent>
-          </Card>
-        )}
+        {((pendingInvitations && pendingInvitations.length > 0) ||
+          (receivedInvitations && receivedInvitations.length > 0)) && (
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            {pendingInvitations && pendingInvitations.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Invitaciones Enviadas</CardTitle>
+                  <CardDescription>Invitaciones pendientes de aceptación</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <InvitationsList invitations={pendingInvitations} type="sent" userId={user.id} />
+                </CardContent>
+              </Card>
+            )}
 
-        {receivedInvitations && receivedInvitations.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Invitaciones Recibidas</CardTitle>
-              <CardDescription>Invitaciones para acceder a las finanzas de otros usuarios</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <InvitationsList invitations={receivedInvitations} type="received" userId={user.id} />
-            </CardContent>
-          </Card>
+            {receivedInvitations && receivedInvitations.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Invitaciones Recibidas</CardTitle>
+                  <CardDescription>Invitaciones para acceder a las finanzas de otros usuarios</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <InvitationsList invitations={receivedInvitations} type="received" userId={user.id} />
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
       </main>
     </div>
