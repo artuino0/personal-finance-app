@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Settings, Eye, Edit, Trash2, Plus } from "lucide-react"
+import { Settings } from "lucide-react"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
@@ -47,10 +47,18 @@ export function SharesList({ shares, type }: SharesListProps) {
   }
 
   const getPermissionBadges = (permissions: Share["share_permissions"]) => {
+    const resourceLabels: Record<string, string> = {
+      accounts: "Cuentas",
+      transactions: "Transacciones",
+      credits: "Créditos",
+      services: "Servicios",
+      categories: "Categorías",
+    }
+
     const activeResources = permissions.filter((p) => p.can_view)
     return activeResources.map((p) => {
-      const level = p.can_delete ? "Total" : p.can_edit ? "Edición" : p.can_create ? "Crear" : "Ver"
-      return { resource: p.resource_type, level }
+      const level = p.can_delete ? "Total" : p.can_edit ? "Editar" : p.can_create ? "Crear" : "Ver"
+      return { resource: resourceLabels[p.resource_type] || p.resource_type, level }
     })
   }
 
@@ -58,46 +66,58 @@ export function SharesList({ shares, type }: SharesListProps) {
     <div className="space-y-3">
       {shares.map((share) => {
         const permissions = getPermissionBadges(share.share_permissions)
+        const displayName =
+          type === "incoming"
+            ? share.profiles?.full_name || "Usuario"
+            : share.profiles?.full_name || share.shared_with_email.split("@")[0]
+
+        const displayEmail =
+          type === "incoming"
+            ? null // Don't show email for incoming shares if we have the name
+            : share.shared_with_email
+
         return (
-          <Card key={share.id}>
-            <CardContent className="pt-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium truncate">{share.profiles?.full_name || share.shared_with_email}</p>
-                    {share.is_active ? (
-                      <Badge variant="secondary" className="text-xs">
-                        Activo
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs">
-                        Inactivo
-                      </Badge>
-                    )}
+          <Card key={share.id} className="overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-sm truncate max-w-[180px]">{displayName}</p>
+                      {share.is_active ? (
+                        <Badge variant="default" className="text-xs shrink-0">
+                          Activo
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs shrink-0">
+                          Inactivo
+                        </Badge>
+                      )}
+                    </div>
+                    {displayEmail && <p className="text-xs text-muted-foreground mt-1 truncate">{displayEmail}</p>}
                   </div>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Compartido {formatDistanceToNow(new Date(share.shared_at), { addSuffix: true, locale: es })}
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {permissions.map((p) => (
-                      <Badge key={p.resource} variant="outline" className="text-xs capitalize">
-                        {p.resource === "accounts" && <Eye className="h-3 w-3 mr-1" />}
-                        {p.resource === "transactions" && <Edit className="h-3 w-3 mr-1" />}
-                        {p.resource === "credits" && <Plus className="h-3 w-3 mr-1" />}
-                        {p.resource === "services" && <Settings className="h-3 w-3 mr-1" />}
-                        {p.resource === "categories" && <Trash2 className="h-3 w-3 mr-1" />}
-                        {p.resource}: {p.level}
-                      </Badge>
-                    ))}
-                  </div>
+                  {type === "outgoing" && (
+                    <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" asChild>
+                      <Link href={`/dashboard/sharing/${share.id}`}>
+                        <Settings className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </div>
-                {type === "outgoing" && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/dashboard/sharing/${share.id}`}>
-                      <Settings className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                )}
+
+                <p className="text-xs text-muted-foreground">
+                  Compartido {formatDistanceToNow(new Date(share.shared_at), { addSuffix: true, locale: es })}
+                </p>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {permissions.map((p) => (
+                    <div key={p.resource} className="flex items-center gap-1.5 text-xs">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                      <span className="font-medium truncate">{p.resource}:</span>
+                      <span className="text-muted-foreground">{p.level}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>

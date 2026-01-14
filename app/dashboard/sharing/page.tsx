@@ -32,14 +32,30 @@ export default async function SharingPage() {
   if (activeShares && activeShares.length > 0) {
     for (const share of activeShares) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+
+      // Try to get profile, if not found try to get from auth.users metadata
       const { data: sharedProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.shared_with_id)
-        .single()
+        .maybeSingle()
+
+      // If no profile, try to get user metadata
+      let displayName = share.shared_with_email
+      if (sharedProfile?.full_name) {
+        displayName = sharedProfile.full_name
+      } else {
+        // Try to get from auth metadata using admin client
+        const { data: userData } = await supabase.auth.admin.getUserById(share.shared_with_id)
+        if (userData?.user?.user_metadata?.full_name) {
+          displayName = userData.user.user_metadata.full_name
+        } else if (userData?.user?.user_metadata?.name) {
+          displayName = userData.user.user_metadata.name
+        }
+      }
 
       share.share_permissions = permissions || []
-      share.profiles = sharedProfile || { full_name: share.shared_with_email }
+      share.profiles = { full_name: displayName }
     }
   }
 
@@ -54,14 +70,30 @@ export default async function SharingPage() {
   if (sharedWithMe && sharedWithMe.length > 0) {
     for (const share of sharedWithMe) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+
       const { data: ownerProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.owner_id)
-        .single()
+        .maybeSingle()
+
+      // If no profile, try to get from auth metadata
+      let displayName = "Usuario"
+      if (ownerProfile?.full_name) {
+        displayName = ownerProfile.full_name
+      } else {
+        const { data: userData } = await supabase.auth.admin.getUserById(share.owner_id)
+        if (userData?.user?.user_metadata?.full_name) {
+          displayName = userData.user.user_metadata.full_name
+        } else if (userData?.user?.user_metadata?.name) {
+          displayName = userData.user.user_metadata.name
+        } else if (userData?.user?.email) {
+          displayName = userData.user.email.split("@")[0]
+        }
+      }
 
       share.share_permissions = permissions || []
-      share.profiles = ownerProfile || { full_name: "Usuario" }
+      share.profiles = { full_name: displayName }
     }
   }
 
@@ -103,66 +135,72 @@ export default async function SharingPage() {
         userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
       />
-      <main className="container mx-auto p-6">
-        <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+      <main className="container mx-auto p-4 md:p-6 max-w-7xl">
+        <div className="mb-6 space-y-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Compartir Finanzas</h1>
-            <p className="text-slate-600">Gestiona el acceso compartido a tus finanzas</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Compartir Finanzas</h1>
+            <p className="text-sm text-muted-foreground mt-1">Gestiona el acceso compartido a tus finanzas</p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full md:w-auto">
             <Link href="/dashboard/sharing/invite">+ Invitar Usuario</Link>
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>He Compartido Con</CardTitle>
-              <CardDescription>Personas que tienen acceso a mis finanzas</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SharesList shares={activeShares || []} userId={user.id} type="outgoing" />
-            </CardContent>
-          </Card>
+        <div className="space-y-6">
+          {/* Shares section - stack on mobile */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">He Compartido Con</CardTitle>
+                <CardDescription className="text-xs">Personas que tienen acceso a mis finanzas</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SharesList shares={activeShares || []} userId={user.id} type="outgoing" />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Compartido Conmigo</CardTitle>
-              <CardDescription>Finanzas de otros usuarios a las que tengo acceso</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SharesList shares={sharedWithMe || []} userId={user.id} type="incoming" />
-            </CardContent>
-          </Card>
-        </div>
-
-        {hasPendingInvitations && (
-          <div className={`grid gap-6 ${hasOnlyOneInvitationType ? "md:grid-cols-1" : "md:grid-cols-2"}`}>
-            {pendingInvitations && pendingInvitations.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Invitaciones Enviadas</CardTitle>
-                  <CardDescription>Invitaciones pendientes de aceptación</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <InvitationsList invitations={pendingInvitations} type="sent" userId={user.id} />
-                </CardContent>
-              </Card>
-            )}
-
-            {receivedInvitations && receivedInvitations.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Invitaciones Recibidas</CardTitle>
-                  <CardDescription>Invitaciones para acceder a las finanzas de otros usuarios</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <InvitationsList invitations={receivedInvitations} type="received" userId={user.id} />
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Compartido Conmigo</CardTitle>
+                <CardDescription className="text-xs">Finanzas de otros usuarios a las que tengo acceso</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SharesList shares={sharedWithMe || []} userId={user.id} type="incoming" />
+              </CardContent>
+            </Card>
           </div>
-        )}
+
+          {/* Invitations section - always full width on mobile */}
+          {hasPendingInvitations && (
+            <div className={`grid gap-6 ${hasOnlyOneInvitationType ? "" : "lg:grid-cols-2"}`}>
+              {pendingInvitations && pendingInvitations.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">Invitaciones Enviadas</CardTitle>
+                    <CardDescription className="text-xs">Invitaciones pendientes de aceptación</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <InvitationsList invitations={pendingInvitations} type="sent" userId={user.id} />
+                  </CardContent>
+                </Card>
+              )}
+
+              {receivedInvitations && receivedInvitations.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">Invitaciones Recibidas</CardTitle>
+                    <CardDescription className="text-xs">
+                      Invitaciones para acceder a las finanzas de otros usuarios
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <InvitationsList invitations={receivedInvitations} type="received" userId={user.id} />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   )
