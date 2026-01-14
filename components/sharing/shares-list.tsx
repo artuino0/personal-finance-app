@@ -66,6 +66,16 @@ export function SharesList({ shares, type }: SharesListProps) {
     <div className="space-y-3">
       {shares.map((share) => {
         const permissions = getPermissionBadges(share.share_permissions)
+        const displayName =
+          type === "incoming"
+            ? share.profiles?.full_name || "Usuario"
+            : share.profiles?.full_name || share.shared_with_email.split("@")[0]
+
+        const displayEmail =
+          type === "incoming"
+            ? null // Don't show email for incoming shares if we have the name
+            : share.shared_with_email
+
         return (
           <Card key={share.id} className="overflow-hidden">
             <CardContent className="p-4">
@@ -73,9 +83,7 @@ export function SharesList({ shares, type }: SharesListProps) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-semibold text-sm truncate max-w-[180px]">
-                        {share.profiles?.full_name || share.shared_with_email.split("@")[0]}
-                      </p>
+                      <p className="font-semibold text-sm truncate max-w-[180px]">{displayName}</p>
                       {share.is_active ? (
                         <Badge variant="default" className="text-xs shrink-0">
                           Activo
@@ -86,7 +94,7 @@ export function SharesList({ shares, type }: SharesListProps) {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1 truncate">{share.shared_with_email}</p>
+                    {displayEmail && <p className="text-xs text-muted-foreground mt-1 truncate">{displayEmail}</p>}
                   </div>
                   {type === "outgoing" && (
                     <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" asChild>
