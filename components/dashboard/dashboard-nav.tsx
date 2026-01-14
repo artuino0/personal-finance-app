@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { Menu } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { useState } from "react"
 
 interface DashboardNavProps {
   userName: string
@@ -23,7 +25,9 @@ interface DashboardNavProps {
 
 export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClient()
+  const [open, setOpen] = useState(false)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -31,73 +35,78 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
     router.refresh()
   }
 
+  const navItems = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/accounts", label: "Cuentas" },
+    { href: "/dashboard/transactions", label: "Transacciones" },
+    { href: "/dashboard/services", label: "Servicios" },
+    { href: "/dashboard/credits", label: "Créditos" },
+    { href: "/dashboard/sharing", label: "Compartir" },
+  ]
+
   return (
     <nav className="sticky top-0 z-50 border-b border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4 md:gap-8">
-          {/* Mobile Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Menú</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[200px]">
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/accounts">Cuentas</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/transactions">Transacciones</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/services">Servicios</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/credits">Créditos</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/sharing">Compartir</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[280px] sm:w-[320px]">
+              <SheetHeader>
+                <SheetTitle className="text-left">FindexApp</SheetTitle>
+              </SheetHeader>
+              <div className="mt-8 flex flex-col gap-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${
+                      pathname === item.href ? "bg-muted text-foreground" : "text-slate-700"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
                 <ReportGeneratorDialog>
-                  <div className="w-full flex items-center cursor-default">Reportes</div>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="flex items-center rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-muted w-full"
+                  >
+                    Reportes
+                  </button>
                 </ReportGeneratorDialog>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           <Link href="/dashboard" className="text-xl font-bold text-foreground">
             FindexApp
           </Link>
+          {/* Desktop Navigation */}
           <div className="hidden md:flex gap-6">
-            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Dashboard
-            </Link>
-            <Link href="/dashboard/accounts" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Cuentas
-            </Link>
-            <Link href="/dashboard/transactions" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Transacciones
-            </Link>
-            <Link href="/dashboard/services" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Servicios
-            </Link>
-            <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Créditos
-            </Link>
-            <Link href="/dashboard/sharing" className="text-sm font-medium text-slate-700 hover:text-foreground">
-              Compartir
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                  pathname === item.href ? "text-foreground" : "text-slate-700"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
             <ReportGeneratorDialog>
               <span className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">Reportes</span>
             </ReportGeneratorDialog>
           </div>
         </div>
 
+        {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

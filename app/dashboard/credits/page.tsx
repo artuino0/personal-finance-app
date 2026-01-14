@@ -37,13 +37,16 @@ export default async function CreditsPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto p-6">
         <PageHeader
           title="Créditos y Préstamos"
           description="Gestiona tus deudas y obligaciones financieras"
           currentUserId={user.id}
-          currentUserName={profile?.full_name || user.email || "Usuario"}
+          currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
           selectedAccountId={selectedAccountId}
           isSharedAccount={isSharedAccount}
