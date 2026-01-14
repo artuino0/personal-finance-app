@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies()
 
     // Set cookie with selected account ID
-    cookieStore.set("selectedAccountId", accountId, {
+    cookieStore.set("selected_account_id", accountId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

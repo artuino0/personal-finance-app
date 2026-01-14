@@ -44,7 +44,7 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
     }
 
     fetchData()
-  }, [userId, supabase])
+  }, [userId])
 
   return (
     <Card>
