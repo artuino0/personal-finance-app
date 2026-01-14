@@ -124,7 +124,7 @@ export function InviteForm({ userId }: InviteFormProps) {
           invited_email: email.toLowerCase(),
           permissions: permissions,
           status: "pending",
-          token: token,
+          invitation_token: token,
         })
         .select()
         .single()
