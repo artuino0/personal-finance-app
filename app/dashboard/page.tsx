@@ -25,8 +25,18 @@ export default async function DashboardPage() {
   const cookieStore = await cookies()
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || user.id
 
-  // Get profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+
+  const { data: selectedProfile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", selectedAccountId)
+    .maybeSingle()
+
+  const isViewingOwnAccount = selectedAccountId === user.id
+  const displayName = isViewingOwnAccount
+    ? profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"
+    : selectedProfile?.full_name || "Usuario Compartido"
 
   const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", selectedAccountId)
 
@@ -79,7 +89,11 @@ export default async function DashboardPage() {
         <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-slate-600">Bienvenido de nuevo, {profile?.full_name || "Usuario"}</p>
+            <p className="text-slate-600">
+              {isViewingOwnAccount
+                ? `Bienvenido de nuevo, ${profile?.full_name || "Usuario"}`
+                : `Viendo finanzas de ${displayName}`}
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <AccountSelector

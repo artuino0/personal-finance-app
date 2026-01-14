@@ -51,7 +51,7 @@ export function AccountSelector({
       const options: AccountOption[] = [
         {
           id: currentUserId,
-          name: currentUserName,
+          name: "Mis Finanzas",
           email: currentUserEmail,
           isOwn: true,
         },
@@ -63,11 +63,13 @@ export function AccountSelector({
             .from("profiles")
             .select("full_name")
             .eq("id", share.owner_id)
-            .single()
+            .maybeSingle()
+
+          const displayName = ownerProfile?.full_name || share.shared_with_email || "Usuario"
 
           options.push({
             id: share.owner_id,
-            name: ownerProfile?.full_name || "Usuario",
+            name: displayName,
             email: share.shared_with_email,
             isOwn: false,
           })
@@ -76,7 +78,7 @@ export function AccountSelector({
 
       setAccounts(options)
     } catch (error) {
-      console.error("[v0] Error loading shared accounts:", error)
+      console.error("Error loading shared accounts:", error)
     }
   }
 
@@ -90,9 +92,9 @@ export function AccountSelector({
         body: JSON.stringify({ accountId }),
       })
 
-      router.refresh()
+      window.location.reload()
     } catch (error) {
-      console.error("[v0] Error setting account:", error)
+      console.error("Error setting account:", error)
     }
   }
 
