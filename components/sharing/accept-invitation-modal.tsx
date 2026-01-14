@@ -78,7 +78,7 @@ export function AcceptInvitationModal() {
   }
 
   const handleAccept = async () => {
-    if (!invitation) return
+    if (!invitation || processing) return // Added processing check
 
     setProcessing(true)
     const supabase = createClient()
@@ -97,32 +97,40 @@ export function AcceptInvitationModal() {
       return
     }
 
-    const { data, error } = await supabase.rpc("accept_share_invitation", {
-      p_invitation_token: invitation.invitation_token,
-      p_user_id: user.id,
-    })
+    try {
+      const { data, error } = await supabase.rpc("accept_share_invitation", {
+        p_invitation_token: invitation.invitation_token,
+        p_user_id: user.id,
+      })
 
-    if (error || !data?.success) {
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || "No se pudo aceptar la invitación")
+      }
+
+      toast({
+        title: "¡Éxito!",
+        description: "Invitación aceptada correctamente",
+      })
+
+      setOpen(false)
+
+      // Remove the accept parameter from URL
+      router.push("/dashboard/sharing")
+      router.refresh()
+    } catch (err: any) {
+      console.error("[v0] Error accepting invitation:", err)
       toast({
         title: "Error",
-        description: data?.error || "No se pudo aceptar la invitación",
+        description: err.message || "No se pudo aceptar la invitación",
         variant: "destructive",
       })
+    } finally {
       setProcessing(false)
-      return
     }
-
-    toast({
-      title: "¡Éxito!",
-      description: "Invitación aceptada correctamente",
-    })
-
-    setOpen(false)
-    setProcessing(false)
-
-    // Remove the accept parameter from URL
-    router.push("/dashboard/sharing")
-    router.refresh()
   }
 
   const handleReject = async () => {
