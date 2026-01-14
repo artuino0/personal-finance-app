@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -19,9 +19,6 @@ interface Invitation {
   permissions: Record<string, { view: boolean; create: boolean; edit: boolean; delete: boolean }>
   created_at: string
   expires_at: string
-  profiles?: {
-    full_name: string
-  }
 }
 
 interface InvitationsListProps {
@@ -34,6 +31,28 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState<string | null>(null)
+  const [ownerNames, setOwnerNames] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (type === "received" && invitations.length > 0) {
+      const fetchOwnerNames = async () => {
+        const ownerIds = [...new Set(invitations.map((inv) => inv.owner_id))]
+        const { data } = await supabase.from("profiles").select("id, full_name").in("id", ownerIds)
+
+        if (data) {
+          const namesMap = data.reduce(
+            (acc, profile) => {
+              acc[profile.id] = profile.full_name
+              return acc
+            },
+            {} as Record<string, string>,
+          )
+          setOwnerNames(namesMap)
+        }
+      }
+      fetchOwnerNames()
+    }
+  }, [invitations, type])
 
   const handleAccept = async (invitation: Invitation) => {
     setLoading(invitation.id)
@@ -44,7 +63,6 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
 
       if (!user) throw new Error("User not authenticated")
 
-      // Create account share
       const { data: share, error: shareError } = await supabase
         .from("account_shares")
         .insert({
@@ -58,7 +76,6 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
 
       if (shareError) throw shareError
 
-      // Create permissions
       const permissionsToInsert = Object.entries(invitation.permissions).map(([resource, perms]) => ({
         share_id: share.id,
         resource_type: resource,
@@ -72,7 +89,6 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
 
       if (permsError) throw permsError
 
-      // Update invitation status
       const { error: updateError } = await supabase
         .from("share_invitations")
         .update({ status: "accepted", accepted_at: new Date().toISOString() })
@@ -144,7 +160,7 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
             return (
               <TableRow key={invitation.id}>
                 <TableCell className="font-medium">
-                  {type === "sent" ? invitation.invited_email : invitation.profiles?.full_name || "Usuario"}
+                  {type === "sent" ? invitation.invited_email : ownerNames[invitation.owner_id] || "Usuario"}
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="text-xs">

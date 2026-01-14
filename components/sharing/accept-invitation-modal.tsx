@@ -22,9 +22,6 @@ interface Invitation {
   invited_email: string
   permissions: any
   status: string
-  profiles?: {
-    full_name: string
-  }
 }
 
 export function AcceptInvitationModal() {
@@ -35,6 +32,7 @@ export function AcceptInvitationModal() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [invitation, setInvitation] = useState<Invitation | null>(null)
+  const [ownerName, setOwnerName] = useState<string>("")
 
   const token = searchParams.get("accept")
 
@@ -50,7 +48,7 @@ export function AcceptInvitationModal() {
 
     const { data, error } = await supabase
       .from("share_invitations")
-      .select("*, profiles!share_invitations_owner_profile_fkey(full_name)")
+      .select("*")
       .eq("invitation_token", token)
       .eq("status", "pending")
       .single()
@@ -66,6 +64,14 @@ export function AcceptInvitationModal() {
     }
 
     setInvitation(data)
+
+    // Fetch owner profile separately
+    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", data.owner_id).single()
+
+    if (profile) {
+      setOwnerName(profile.full_name)
+    }
+
     setOpen(true)
     setLoading(false)
   }
@@ -231,9 +237,7 @@ export function AcceptInvitationModal() {
             <CheckCircle2 className="h-6 w-6 text-green-600" />
             Invitación para Compartir Finanzas
           </DialogTitle>
-          <DialogDescription>
-            {invitation?.profiles?.full_name || "Un usuario"} te ha invitado a ver sus finanzas
-          </DialogDescription>
+          <DialogDescription>{ownerName || "Un usuario"} te ha invitado a ver sus finanzas</DialogDescription>
         </DialogHeader>
 
         {invitation && (
