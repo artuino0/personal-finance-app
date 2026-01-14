@@ -139,12 +139,11 @@ export async function POST(request: NextRequest) {
         </p>
       </div>
 
-      ${
-        userExists
-          ? `
+      ${userExists
+        ? `
       <p>Ya tienes una cuenta en FindexApp, simplemente acepta la invitación haciendo clic en el botón de abajo:</p>
       `
-          : `
+        : `
       <p>Para aceptar esta invitación, primero debes crear una cuenta en FindexApp:</p>
       `
       }
@@ -172,7 +171,7 @@ export async function POST(request: NextRequest) {
 
     // Send email
     const { data, error } = await resend.emails.send({
-      from: "FindexApp <onboarding@resend.dev>", // Change this to your verified domain
+      from: "FindexApp <onboarding@agendemosapp.com>", // Change this to your verified domain
       to: [invitedEmail],
       subject: `${inviterName} te ha invitado a colaborar en FindexApp`,
       html: emailHtml,

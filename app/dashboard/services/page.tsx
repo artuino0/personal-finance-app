@@ -77,13 +77,13 @@ export default async function ServicesPage() {
         <div className="space-y-6">
           <div>
             <h2 className="mb-4 font-semibold text-lg">Servicios Activos ({activeServices.length})</h2>
-            <ServicesList services={activeServices} userId={selectedAccountId} permissions={permissions} />
+            <ServicesList services={activeServices} userId={selectedAccountId} />
           </div>
 
           {inactiveServices.length > 0 && (
             <div>
               <h2 className="mb-4 font-semibold text-lg">Servicios Inactivos ({inactiveServices.length})</h2>
-              <ServicesList services={inactiveServices} userId={selectedAccountId} permissions={permissions} />
+              <ServicesList services={inactiveServices} userId={selectedAccountId} />
             </div>
           )}
         </div>

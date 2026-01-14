@@ -3,7 +3,14 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Check, X, Trash2, Loader2 } from "lucide-react"
@@ -121,77 +128,86 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
   }
 
   return (
-    <div className="space-y-3">
-      {invitations.map((invitation) => {
-        const resourceCount = Object.values(invitation.permissions).filter((p) => p.view).length
-        return (
-          <Card key={invitation.id}>
-            <CardContent className="pt-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium truncate">
-                      {type === "sent" ? invitation.invited_email : invitation.profiles?.full_name || "Usuario"}
-                    </p>
-                    <Badge variant="secondary" className="text-xs">
-                      <Clock className="h-3 w-3 mr-1" />
-                      Pendiente
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Enviada {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true, locale: es })}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {resourceCount} {resourceCount === 1 ? "recurso" : "recursos"} compartidos
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  {type === "received" ? (
-                    <>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Usuario</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Enviado</TableHead>
+            <TableHead>Recursos</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {invitations.map((invitation) => {
+            const resourceCount = Object.values(invitation.permissions).filter((p) => p.view).length
+            return (
+              <TableRow key={invitation.id}>
+                <TableCell className="font-medium">
+                  {type === "sent" ? invitation.invited_email : invitation.profiles?.full_name || "Usuario"}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary" className="text-xs">
+                    <Clock className="h-3 w-3 mr-1" />
+                    Pendiente
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true, locale: es })}
+                </TableCell>
+                <TableCell>
+                  {resourceCount} {resourceCount === 1 ? "recurso" : "recursos"}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    {type === "received" ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => handleAccept(invitation)}
+                          disabled={loading === invitation.id}
+                        >
+                          {loading === invitation.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Check className="h-4 w-4 mr-1" />
+                              Aceptar
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleReject(invitation.id)}
+                          disabled={loading === invitation.id}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
                       <Button
                         size="sm"
-                        variant="default"
-                        onClick={() => handleAccept(invitation)}
+                        variant="ghost"
+                        onClick={() => handleCancel(invitation.id)}
                         disabled={loading === invitation.id}
                       >
                         {loading === invitation.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <>
-                            <Check className="h-4 w-4 mr-1" />
-                            Aceptar
-                          </>
+                          <Trash2 className="h-4 w-4" />
                         )}
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleReject(invitation.id)}
-                        disabled={loading === invitation.id}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleCancel(invitation.id)}
-                      disabled={loading === invitation.id}
-                    >
-                      {loading === invitation.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      })}
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
     </div>
   )
 }

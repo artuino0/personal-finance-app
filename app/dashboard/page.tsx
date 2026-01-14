@@ -7,6 +7,7 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { MonthlyChart } from "@/components/dashboard/monthly-chart"
 import { UpcomingPayments } from "@/components/dashboard/upcoming-payments"
 import { formatCurrency } from "@/lib/utils/currency"
+import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -74,9 +75,12 @@ export default async function DashboardPage() {
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
       />
       <main className="container mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-slate-600">Bienvenido de nuevo, {profile?.full_name || "Usuario"}</p>
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-slate-600">Bienvenido de nuevo, {profile?.full_name || "Usuario"}</p>
+          </div>
+          <ReportGeneratorDialog />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">

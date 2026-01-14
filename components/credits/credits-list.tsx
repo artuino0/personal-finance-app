@@ -20,9 +20,15 @@ interface Credit {
 interface CreditsListProps {
   credits: Credit[]
   userId: string
+  permissions: {
+    view: boolean
+    create: boolean
+    edit: boolean
+    delete: boolean
+  }
 }
 
-export function CreditsList({ credits }: CreditsListProps) {
+export function CreditsList({ credits, userId, permissions }: CreditsListProps) {
   const getCreditTypeLabel = (type: string) => {
     const types: Record<string, string> = {
       loan: "Préstamo",

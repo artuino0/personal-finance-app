@@ -103,7 +103,7 @@ export default async function SharingPage() {
         )}
 
         {receivedInvitations && receivedInvitations.length > 0 && (
-          <Card className="mt-6">
+          <Card>
             <CardHeader>
               <CardTitle>Invitaciones Recibidas</CardTitle>
               <CardDescription>Invitaciones para acceder a las finanzas de otros usuarios</CardDescription>
