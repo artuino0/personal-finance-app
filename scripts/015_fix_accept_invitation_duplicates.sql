@@ -20,11 +20,12 @@ BEGIN
   FROM auth.users
   WHERE id = p_user_id;
 
-  -- Get the invitation
+  -- Get the invitation with lock to prevent race conditions
   SELECT * INTO v_invitation
   FROM share_invitations
   WHERE invitation_token = p_invitation_token
-    AND status = 'pending';
+    AND status = 'pending'
+  FOR UPDATE;
 
   -- Check if invitation exists
   IF NOT FOUND THEN
@@ -58,8 +59,14 @@ BEGIN
         accepted_at = now()
     WHERE id = v_invitation.id;
 
+    -- Added ON CONFLICT to handle race condition if share is created between check and insert
     INSERT INTO account_shares (owner_id, shared_with_id, shared_with_email, is_active)
     VALUES (v_invitation.owner_id, p_user_id, v_user_email, true)
+    ON CONFLICT (owner_id, shared_with_id) 
+    DO UPDATE SET 
+      shared_with_email = EXCLUDED.shared_with_email,
+      is_active = EXCLUDED.is_active,
+      updated_at = now()
     RETURNING id INTO v_share_id;
   END IF;
 
