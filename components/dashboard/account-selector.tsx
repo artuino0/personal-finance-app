@@ -86,13 +86,15 @@ export function AccountSelector({
     setSelectedId(accountId)
 
     try {
-      await fetch("/api/set-account", {
+      const response = await fetch("/api/set-account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountId }),
       })
 
-      window.location.reload()
+      if (response.ok) {
+        router.refresh()
+      }
     } catch (error) {
       console.error("Error setting account:", error)
     }
