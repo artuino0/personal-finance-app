@@ -1,10 +1,10 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Check, X, Trash2, Loader2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
@@ -143,86 +143,76 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Usuario</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead>Enviado</TableHead>
-            <TableHead>Recursos</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invitations.map((invitation) => {
-            const resourceCount = Object.values(invitation.permissions).filter((p) => p.view).length
-            return (
-              <TableRow key={invitation.id}>
-                <TableCell className="font-medium">
+    <div className="space-y-3">
+      {invitations.map((invitation) => {
+        const resourceCount = Object.values(invitation.permissions).filter((p) => p.view).length
+        const isLoading = loading === invitation.id
+
+        return (
+          <div key={invitation.id} className="rounded-lg border bg-card p-4">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm truncate">
                   {type === "sent" ? invitation.invited_email : ownerNames[invitation.owner_id] || "Usuario"}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="text-xs">
-                    <Clock className="h-3 w-3 mr-1" />
-                    Pendiente
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
                   {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true, locale: es })}
-                </TableCell>
-                <TableCell>
-                  {resourceCount} {resourceCount === 1 ? "recurso" : "recursos"}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    {type === "received" ? (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleAccept(invitation)}
-                          disabled={loading === invitation.id}
-                        >
-                          {loading === invitation.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <>
-                              <Check className="h-4 w-4 mr-1" />
-                              Aceptar
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleReject(invitation.id)}
-                          disabled={loading === invitation.id}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </>
+                </p>
+              </div>
+              <Badge variant="secondary" className="text-xs shrink-0">
+                <Clock className="h-3 w-3 mr-1" />
+                Pendiente
+              </Badge>
+            </div>
+
+            {/* Resources info */}
+            <div className="mb-3 pb-3 border-b">
+              <p className="text-xs text-muted-foreground">
+                Acceso a {resourceCount} {resourceCount === 1 ? "recurso" : "recursos"}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              {type === "received" ? (
+                <>
+                  <Button size="sm" className="flex-1" onClick={() => handleAccept(invitation)} disabled={isLoading}>
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleCancel(invitation.id)}
-                        disabled={loading === invitation.id}
-                      >
-                        {loading === invitation.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
+                      <>
+                        <Check className="h-4 w-4 mr-1" />
+                        Aceptar
+                      </>
                     )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleReject(invitation.id)} disabled={isLoading}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => handleCancel(invitation.id)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Cancelar invitación
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
