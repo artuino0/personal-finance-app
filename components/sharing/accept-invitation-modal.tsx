@@ -50,7 +50,7 @@ export function AcceptInvitationModal() {
 
     const { data, error } = await supabase
       .from("share_invitations")
-      .select("*, profiles!share_invitations_owner_id_fkey(full_name)")
+      .select("*, profiles!share_invitations_owner_profile_fkey(full_name)")
       .eq("invitation_token", token)
       .eq("status", "pending")
       .single()

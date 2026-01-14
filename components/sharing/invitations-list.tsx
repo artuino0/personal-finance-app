@@ -3,14 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Check, X, Trash2, Loader2 } from "lucide-react"
@@ -45,13 +38,19 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
   const handleAccept = async (invitation: Invitation) => {
     setLoading(invitation.id)
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) throw new Error("User not authenticated")
+
       // Create account share
       const { data: share, error: shareError } = await supabase
         .from("account_shares")
         .insert({
           owner_id: invitation.owner_id,
           shared_with_id: userId,
-          shared_with_email: invitation.invited_email,
+          shared_with_email: user.email || invitation.invited_email,
           is_active: true,
         })
         .select()
