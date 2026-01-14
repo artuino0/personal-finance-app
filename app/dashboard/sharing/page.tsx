@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 import { SharesList } from "@/components/sharing/shares-list"
 import { InvitationsList } from "@/components/sharing/invitations-list"
+import { AcceptInvitationModal } from "@/components/sharing/accept-invitation-modal"
 
 export default async function SharingPage() {
   const supabase = await createClient()
@@ -54,6 +55,7 @@ export default async function SharingPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
+      <AcceptInvitationModal />
       <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
       <main className="container mx-auto p-6">
         <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
