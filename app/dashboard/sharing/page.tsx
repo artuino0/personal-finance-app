@@ -24,10 +24,26 @@ export default async function SharingPage() {
   // Get active shares (people I've shared with)
   const { data: activeShares } = await supabase
     .from("account_shares")
-    .select("*, share_permissions(*), profiles!account_shares_shared_with_id_fkey(full_name)")
+    .select("*")
     .eq("owner_id", user.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
+
+  // Get permissions for each share
+  if (activeShares) {
+    for (const share of activeShares) {
+      const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+      share.share_permissions = permissions || []
+
+      // Get profile of shared_with user
+      const { data: sharedProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", share.shared_with_id)
+        .single()
+      share.profiles = sharedProfile
+    }
+  }
 
   // Get pending invitations I've sent
   const { data: pendingInvitations } = await supabase
@@ -40,18 +56,48 @@ export default async function SharingPage() {
   // Get invitations I've received
   const { data: receivedInvitations } = await supabase
     .from("share_invitations")
-    .select("*, profiles!share_invitations_owner_id_fkey(full_name)")
+    .select("*")
     .eq("invited_email", user.email)
     .eq("status", "pending")
     .order("created_at", { ascending: false })
 
+  // Get owner profiles for received invitations
+  if (receivedInvitations) {
+    for (const invitation of receivedInvitations) {
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", invitation.owner_id)
+        .single()
+      invitation.profiles = ownerProfile
+    }
+  }
+
   // Get shares where I'm the recipient
   const { data: sharedWithMe } = await supabase
     .from("account_shares")
-    .select("*, share_permissions(*), profiles!account_shares_owner_id_fkey(full_name)")
+    .select("*")
     .eq("shared_with_id", user.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
+
+  console.log("[v0] Shared with me:", sharedWithMe)
+
+  // Get permissions and owner profile for each share
+  if (sharedWithMe) {
+    for (const share of sharedWithMe) {
+      const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+      share.share_permissions = permissions || []
+
+      // Get profile of owner
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", share.owner_id)
+        .single()
+      share.profiles = ownerProfile
+    }
+  }
 
   return (
     <div className="min-h-screen bg-secondary/30">

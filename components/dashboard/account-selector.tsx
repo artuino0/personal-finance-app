@@ -39,9 +39,11 @@ export function AccountSelector({
     try {
       const { data: sharedAccounts } = await supabase
         .from("account_shares")
-        .select("owner_id, shared_with_email, profiles!account_shares_owner_id_fkey(full_name)")
+        .select("owner_id, shared_with_email")
         .eq("shared_with_id", currentUserId)
         .eq("is_active", true)
+
+      console.log("[v0] Shared accounts loaded:", sharedAccounts)
 
       const options: AccountOption[] = [
         {
@@ -53,14 +55,20 @@ export function AccountSelector({
       ]
 
       if (sharedAccounts) {
-        sharedAccounts.forEach((share) => {
+        for (const share of sharedAccounts) {
+          const { data: ownerProfile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", share.owner_id)
+            .single()
+
           options.push({
             id: share.owner_id,
-            name: share.profiles?.full_name || "Usuario",
+            name: ownerProfile?.full_name || "Usuario",
             email: share.shared_with_email,
             isOwn: false,
           })
-        })
+        }
       }
 
       setAccounts(options)
