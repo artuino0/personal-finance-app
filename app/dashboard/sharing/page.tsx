@@ -32,14 +32,30 @@ export default async function SharingPage() {
   if (activeShares && activeShares.length > 0) {
     for (const share of activeShares) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+
+      // Try to get profile, if not found try to get from auth.users metadata
       const { data: sharedProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.shared_with_id)
-        .single()
+        .maybeSingle()
+
+      // If no profile, try to get user metadata
+      let displayName = share.shared_with_email
+      if (sharedProfile?.full_name) {
+        displayName = sharedProfile.full_name
+      } else {
+        // Try to get from auth metadata using admin client
+        const { data: userData } = await supabase.auth.admin.getUserById(share.shared_with_id)
+        if (userData?.user?.user_metadata?.full_name) {
+          displayName = userData.user.user_metadata.full_name
+        } else if (userData?.user?.user_metadata?.name) {
+          displayName = userData.user.user_metadata.name
+        }
+      }
 
       share.share_permissions = permissions || []
-      share.profiles = sharedProfile || { full_name: share.shared_with_email }
+      share.profiles = { full_name: displayName }
     }
   }
 
@@ -54,14 +70,30 @@ export default async function SharingPage() {
   if (sharedWithMe && sharedWithMe.length > 0) {
     for (const share of sharedWithMe) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+
       const { data: ownerProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.owner_id)
-        .single()
+        .maybeSingle()
+
+      // If no profile, try to get from auth metadata
+      let displayName = "Usuario"
+      if (ownerProfile?.full_name) {
+        displayName = ownerProfile.full_name
+      } else {
+        const { data: userData } = await supabase.auth.admin.getUserById(share.owner_id)
+        if (userData?.user?.user_metadata?.full_name) {
+          displayName = userData.user.user_metadata.full_name
+        } else if (userData?.user?.user_metadata?.name) {
+          displayName = userData.user.user_metadata.name
+        } else if (userData?.user?.email) {
+          displayName = userData.user.email.split("@")[0]
+        }
+      }
 
       share.share_permissions = permissions || []
-      share.profiles = ownerProfile || { full_name: "Usuario" }
+      share.profiles = { full_name: displayName }
     }
   }
 

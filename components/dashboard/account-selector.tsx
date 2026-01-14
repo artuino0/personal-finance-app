@@ -65,7 +65,17 @@ export function AccountSelector({
             .eq("id", share.owner_id)
             .maybeSingle()
 
-          const displayName = ownerProfile?.full_name || share.shared_with_email || "Usuario"
+          let displayName = "Usuario"
+          if (ownerProfile?.full_name) {
+            displayName = ownerProfile.full_name
+            if (displayName.length > 15) {
+              displayName = displayName.substring(0, 12) + "..."
+            }
+            displayName = `Finanzas de ${displayName}`
+          } else if (share.shared_with_email) {
+            const emailUser = share.shared_with_email.split("@")[0]
+            displayName = `Finanzas de ${emailUser.substring(0, 10)}...`
+          }
 
           options.push({
             id: share.owner_id,
