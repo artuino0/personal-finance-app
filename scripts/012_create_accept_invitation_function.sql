@@ -13,7 +13,13 @@ DECLARE
   v_invitation record;
   v_share_id uuid;
   v_permission record;
+  v_user_email text;
 BEGIN
+  -- Get user email
+  SELECT email INTO v_user_email
+  FROM auth.users
+  WHERE id = p_user_id;
+
   -- Get the invitation
   SELECT * INTO v_invitation
   FROM share_invitations
@@ -28,15 +34,15 @@ BEGIN
     );
   END IF;
 
-  -- Update invitation status
+  -- Remove updated_at, use accepted_at instead
   UPDATE share_invitations
   SET status = 'accepted',
-      updated_at = now()
+      accepted_at = now()
   WHERE id = v_invitation.id;
 
-  -- Create account share
-  INSERT INTO account_shares (owner_id, shared_with_id, is_active)
-  VALUES (v_invitation.owner_id, p_user_id, true)
+  -- Add shared_with_email to the insert
+  INSERT INTO account_shares (owner_id, shared_with_id, shared_with_email, is_active)
+  VALUES (v_invitation.owner_id, p_user_id, v_user_email, true)
   RETURNING id INTO v_share_id;
 
   -- Create permissions
