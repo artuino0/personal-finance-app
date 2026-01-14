@@ -21,13 +21,19 @@ export default async function SharingPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
+  console.log("[v0] Current user ID:", user.id)
+  console.log("[v0] Current user email:", user.email)
+
   // Get active shares (people I've shared with)
-  const { data: activeShares } = await supabase
+  const { data: activeShares, error: sharesError } = await supabase
     .from("account_shares")
     .select("*")
     .eq("owner_id", user.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
+
+  console.log("[v0] Active shares (outgoing):", activeShares)
+  console.log("[v0] Shares error:", sharesError)
 
   // Get permissions for each share
   if (activeShares) {
@@ -74,14 +80,15 @@ export default async function SharingPage() {
   }
 
   // Get shares where I'm the recipient
-  const { data: sharedWithMe } = await supabase
+  const { data: sharedWithMe, error: sharedError } = await supabase
     .from("account_shares")
     .select("*")
     .eq("shared_with_id", user.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false })
 
-  console.log("[v0] Shared with me:", sharedWithMe)
+  console.log("[v0] Shared with me (incoming):", sharedWithMe)
+  console.log("[v0] Shared with me error:", sharedError)
 
   // Get permissions and owner profile for each share
   if (sharedWithMe) {

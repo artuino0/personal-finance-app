@@ -37,13 +37,16 @@ export function AccountSelector({
 
   const loadAccounts = async () => {
     try {
-      const { data: sharedAccounts } = await supabase
+      console.log("[v0] Loading accounts for user:", currentUserId)
+
+      const { data: sharedAccounts, error } = await supabase
         .from("account_shares")
         .select("owner_id, shared_with_email")
         .eq("shared_with_id", currentUserId)
         .eq("is_active", true)
 
-      console.log("[v0] Shared accounts loaded:", sharedAccounts)
+      console.log("[v0] Shared accounts query result:", sharedAccounts)
+      console.log("[v0] Shared accounts query error:", error)
 
       const options: AccountOption[] = [
         {
