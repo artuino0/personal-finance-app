@@ -7,6 +7,9 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { MonthlyChart } from "@/components/dashboard/monthly-chart"
 import { UpcomingPayments } from "@/components/dashboard/upcoming-payments"
 import { formatCurrency } from "@/lib/utils/currency"
+import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
+import { AccountSelector } from "@/components/dashboard/account-selector"
+import { cookies } from "next/headers"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -19,28 +22,38 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
-  // Get profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const cookieStore = await cookies()
+  const selectedAccountId = cookieStore.get("selected_account_id")?.value || user.id
 
-  // Get accounts
-  const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", user.id)
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+
+  const { data: selectedProfile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", selectedAccountId)
+    .maybeSingle()
+
+  const isViewingOwnAccount = selectedAccountId === user.id
+  const displayName = isViewingOwnAccount
+    ? profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"
+    : selectedProfile?.full_name || "Usuario Compartido"
+
+  const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", selectedAccountId)
 
   // Calculate total balance
   const totalBalance = accounts?.reduce((sum, account) => sum + Number(account.balance), 0) || 0
 
-  // Get recent transactions
   const { data: transactions } = await supabase
     .from("transactions")
     .select("*, accounts(name), categories(name, color, icon)")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
     .limit(5)
 
-  // Get monthly income/expense
   const { data: monthlyData } = await supabase
     .from("transactions")
     .select("type, amount")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .gte("date", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
 
   const monthlyIncome =
@@ -48,11 +61,10 @@ export default async function DashboardPage() {
   const monthlyExpense =
     monthlyData?.filter((t) => t.type === "expense").reduce((sum, t) => sum + Number(t.amount), 0) || 0
 
-  // Get upcoming credit payments
   const { data: credits } = await supabase
     .from("credits")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .eq("status", "active")
     .order("due_date", { ascending: true })
     .limit(3)
@@ -60,7 +72,7 @@ export default async function DashboardPage() {
   const { data: services } = await supabase
     .from("recurring_services")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", selectedAccountId)
     .eq("is_active", true)
     .order("next_payment_date", { ascending: true })
     .limit(5)
@@ -74,9 +86,24 @@ export default async function DashboardPage() {
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
       />
       <main className="container mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-slate-600">Bienvenido de nuevo, {profile?.full_name || "Usuario"}</p>
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-slate-600">
+              {isViewingOwnAccount
+                ? `Bienvenido de nuevo, ${profile?.full_name || "Usuario"}`
+                : `Viendo finanzas de ${displayName}`}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <AccountSelector
+              currentUserId={user.id}
+              currentUserName={profile?.full_name || user.email || "Usuario"}
+              currentUserEmail={user.email || ""}
+              selectedAccountId={selectedAccountId}
+            />
+            <ReportGeneratorDialog />
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
@@ -122,7 +149,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 mb-6">
-          <MonthlyChart userId={user.id} />
+          <MonthlyChart userId={selectedAccountId} />
           <BalanceOverview accounts={accounts || []} />
         </div>
 

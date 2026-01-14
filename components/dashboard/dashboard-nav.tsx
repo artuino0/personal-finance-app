@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Menu } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +32,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
   }
 
   return (
-    <nav className="sticky top-0 z-50 border-b border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 border-b border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4 md:gap-8">
           {/* Mobile Menu */}
@@ -58,6 +59,14 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/credits">Créditos</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/sharing">Compartir</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
+                <ReportGeneratorDialog>
+                  <div className="w-full flex items-center cursor-default">Reportes</div>
+                </ReportGeneratorDialog>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -80,6 +89,12 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             <Link href="/dashboard/credits" className="text-sm font-medium text-slate-700 hover:text-foreground">
               Créditos
             </Link>
+            <Link href="/dashboard/sharing" className="text-sm font-medium text-slate-700 hover:text-foreground">
+              Compartir
+            </Link>
+            <ReportGeneratorDialog>
+              <span className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">Reportes</span>
+            </ReportGeneratorDialog>
           </div>
         </div>
 
