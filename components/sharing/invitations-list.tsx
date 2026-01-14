@@ -151,19 +151,21 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
         return (
           <div key={invitation.id} className="rounded-lg border bg-card p-4">
             {/* Header */}
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">
+            <div className="mb-3">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <p className="font-semibold text-sm break-all">
                   {type === "sent" ? invitation.invited_email : ownerNames[invitation.owner_id] || "Usuario"}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  <Clock className="h-3 w-3 mr-1" />
+                  Pendiente
+                </Badge>
+                <p className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(invitation.created_at), { addSuffix: true, locale: es })}
                 </p>
               </div>
-              <Badge variant="secondary" className="text-xs shrink-0">
-                <Clock className="h-3 w-3 mr-1" />
-                Pendiente
-              </Badge>
             </div>
 
             {/* Resources info */}
