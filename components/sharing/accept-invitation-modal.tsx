@@ -22,6 +22,7 @@ interface Invitation {
   invited_email: string
   permissions: any
   status: string
+  invitation_token: string
 }
 
 export function AcceptInvitationModal() {
@@ -96,81 +97,19 @@ export function AcceptInvitationModal() {
       return
     }
 
-    // Update invitation status
-    const { error: updateError } = await supabase
-      .from("share_invitations")
-      .update({ status: "accepted" })
-      .eq("id", invitation.id)
-
-    if (updateError) {
-      toast({
-        title: "Error",
-        description: "No se pudo aceptar la invitación",
-        variant: "destructive",
-      })
-      setProcessing(false)
-      return
-    }
-
-    // Create account share
-    const { error: shareError } = await supabase.from("account_shares").insert({
-      owner_id: invitation.owner_id,
-      shared_with_id: user.id,
-      is_active: true,
+    const { data, error } = await supabase.rpc("accept_share_invitation", {
+      p_invitation_token: invitation.invitation_token,
+      p_user_id: user.id,
     })
 
-    if (shareError) {
+    if (error || !data?.success) {
       toast({
         title: "Error",
-        description: "No se pudo crear el acceso compartido",
+        description: data?.error || "No se pudo aceptar la invitación",
         variant: "destructive",
       })
       setProcessing(false)
       return
-    }
-
-    // Get the newly created share ID
-    const { data: shareData } = await supabase
-      .from("account_shares")
-      .select("id")
-      .eq("owner_id", invitation.owner_id)
-      .eq("shared_with_id", user.id)
-      .single()
-
-    if (!shareData) {
-      toast({
-        title: "Error",
-        description: "No se pudo obtener el acceso compartido",
-        variant: "destructive",
-      })
-      setProcessing(false)
-      return
-    }
-
-    // Create permissions
-    const permissions = []
-    for (const [resource, perms] of Object.entries(invitation.permissions)) {
-      if (typeof perms === "object" && perms !== null) {
-        const { view, create, edit, delete: del, accounts } = perms as any
-
-        permissions.push({
-          share_id: shareData.id,
-          resource_type: resource,
-          can_view: view || false,
-          can_create: create || false,
-          can_edit: edit || false,
-          can_delete: del || false,
-          specific_accounts: accounts || null,
-        })
-      }
-    }
-
-    if (permissions.length > 0) {
-      const { error: permsError } = await supabase.from("share_permissions").insert(permissions)
-
-      if (permsError) {
-        console.error("[v0] Error creating permissions:", permsError)
-      }
     }
 
     toast({
