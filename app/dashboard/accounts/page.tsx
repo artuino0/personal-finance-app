@@ -34,13 +34,16 @@ export default async function AccountsPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto p-6">
         <PageHeader
           title="Cuentas"
           description={`Balance total: $${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
           currentUserId={user.id}
-          currentUserName={profile?.full_name || user.email || "Usuario"}
+          currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
           selectedAccountId={selectedAccountId}
           isSharedAccount={isSharedAccount}

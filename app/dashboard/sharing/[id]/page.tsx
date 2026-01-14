@@ -23,10 +23,9 @@ export default async function EditSharePage({ params }: { params: Promise<{ id: 
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
-  // Get share details
   const { data: share } = await supabase
     .from("account_shares")
-    .select("*, share_permissions(*), profiles!account_shares_shared_with_id_fkey(full_name)")
+    .select("*")
     .eq("id", id)
     .eq("owner_id", user.id)
     .single()
@@ -35,13 +34,20 @@ export default async function EditSharePage({ params }: { params: Promise<{ id: 
     redirect("/dashboard/sharing")
   }
 
+  const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
+
+  share.share_permissions = permissions || []
+
   return (
     <div className="min-h-screen bg-secondary/30">
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground">Editar Permisos</h1>
-          <p className="text-slate-600">Compartido con: {share.profiles?.full_name || share.shared_with_email}</p>
+          <p className="text-slate-600">Compartido con: {share.shared_with_email}</p>
         </div>
 
         <div className="max-w-2xl">

@@ -91,10 +91,18 @@ export default async function SharingPage() {
     }
   }
 
+  const hasPendingInvitations =
+    (pendingInvitations && pendingInvitations.length > 0) || (receivedInvitations && receivedInvitations.length > 0)
+  const hasOnlyOneInvitationType =
+    (pendingInvitations && pendingInvitations.length > 0) !== (receivedInvitations && receivedInvitations.length > 0)
+
   return (
     <div className="min-h-screen bg-secondary/30">
       <AcceptInvitationModal />
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto p-6">
         <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
@@ -106,7 +114,7 @@ export default async function SharingPage() {
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 mb-6">
           <Card>
             <CardHeader>
               <CardTitle>He Compartido Con</CardTitle>
@@ -128,9 +136,8 @@ export default async function SharingPage() {
           </Card>
         </div>
 
-        {((pendingInvitations && pendingInvitations.length > 0) ||
-          (receivedInvitations && receivedInvitations.length > 0)) && (
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
+        {hasPendingInvitations && (
+          <div className={`grid gap-6 ${hasOnlyOneInvitationType ? "md:grid-cols-1" : "md:grid-cols-2"}`}>
             {pendingInvitations && pendingInvitations.length > 0 && (
               <Card>
                 <CardHeader>
