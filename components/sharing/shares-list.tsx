@@ -66,15 +66,19 @@ export function SharesList({ shares, type }: SharesListProps) {
     <div className="space-y-3">
       {shares.map((share) => {
         const permissions = getPermissionBadges(share.share_permissions)
+
+        // For incoming shares: show owner's name
+        // For outgoing shares: show shared_with user's name
         const displayName =
           type === "incoming"
             ? share.profiles?.full_name || "Usuario"
             : share.profiles?.full_name || share.shared_with_email.split("@")[0]
 
+        // Show email only for outgoing shares when we don't have a name
         const displayEmail =
           type === "incoming"
-            ? null // Don't show email for incoming shares if we have the name
-            : share.shared_with_email
+            ? null // Don't show email for incoming shares
+            : !share.profiles?.full_name ? share.shared_with_email : null
 
         return (
           <Card key={share.id} className="overflow-hidden">

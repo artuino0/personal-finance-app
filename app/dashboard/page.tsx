@@ -27,6 +27,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
 
+  // Get the profile of the account we're viewing (could be own or shared)
   const { data: selectedProfile } = await supabase
     .from("profiles")
     .select("*")
@@ -34,9 +35,28 @@ export default async function DashboardPage() {
     .maybeSingle()
 
   const isViewingOwnAccount = selectedAccountId === user.id
-  const displayName = isViewingOwnAccount
-    ? profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"
-    : selectedProfile?.full_name || "Usuario Compartido"
+
+  let displayName = "Usuario"
+  if (isViewingOwnAccount) {
+    displayName = profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"
+  } else {
+    // Viewing someone else's account (shared)
+    if (selectedProfile?.full_name) {
+      displayName = selectedProfile.full_name
+    } else {
+      // Fallback: try to get from auth metadata
+      const { data: ownerUser } = await supabase.auth.admin.getUserById(selectedAccountId)
+      if (ownerUser?.user?.user_metadata?.full_name) {
+        displayName = ownerUser.user.user_metadata.full_name
+      } else if (ownerUser?.user?.user_metadata?.name) {
+        displayName = ownerUser.user.user_metadata.name
+      } else if (ownerUser?.user?.email) {
+        displayName = ownerUser.user.email.split("@")[0]
+      } else {
+        displayName = "Usuario Compartido"
+      }
+    }
+  }
 
   const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", selectedAccountId)
 

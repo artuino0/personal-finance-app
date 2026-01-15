@@ -59,12 +59,17 @@ export function AccountSelector({
 
       if (sharedAccounts) {
         for (const share of sharedAccounts) {
+          console.log("[v0] Loading shared account - owner_id:", share.owner_id)
+
           // Fetch OWNER's profile (not shared_with)
-          const { data: ownerProfile } = await supabase
+          const { data: ownerProfile, error: profileError } = await supabase
             .from("profiles")
             .select("full_name")
             .eq("id", share.owner_id)
             .maybeSingle()
+
+          console.log("[v0] Owner profile query result:", ownerProfile)
+          console.log("[v0] Owner profile query error:", profileError)
 
           let displayName = "Usuario"
           let ownerEmail = share.shared_with_email // fallback
@@ -72,16 +77,20 @@ export function AccountSelector({
           if (ownerProfile?.full_name) {
             // Use owner's name from profile
             displayName = ownerProfile.full_name
+            console.log("[v0] Using owner profile name:", displayName)
             if (displayName.length > 15) {
               displayName = displayName.substring(0, 12) + "..."
             }
             displayName = `Finanzas de ${displayName}`
           } else {
+            console.log("[v0] No profile found, trying auth metadata")
             const { data: ownerUser } = await supabase.auth.admin.getUserById(share.owner_id)
+            console.log("[v0] Owner user from auth:", ownerUser?.user?.email, ownerUser?.user?.user_metadata)
             if (ownerUser?.user?.email) {
               ownerEmail = ownerUser.user.email
               const emailUser = ownerEmail.split("@")[0]
               displayName = `Finanzas de ${emailUser.substring(0, 10)}...`
+              console.log("[v0] Using email fallback:", displayName)
             }
           }
 
