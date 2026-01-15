@@ -33,15 +33,15 @@ export default async function SharingPage() {
     for (const share of activeShares) {
       const { data: permissions } = await supabase.from("share_permissions").select("*").eq("share_id", share.id)
 
-      // Try to get profile, if not found try to get from auth.users metadata
+      // Get profile of the person we shared WITH (shared_with_id)
       const { data: sharedProfile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", share.shared_with_id)
         .maybeSingle()
 
-      // If no profile, try to get user metadata
-      let displayName = share.shared_with_email
+      // Determine display name with fallback logic
+      let displayName = share.shared_with_email.split("@")[0] // fallback to email username
       if (sharedProfile?.full_name) {
         displayName = sharedProfile.full_name
       } else {

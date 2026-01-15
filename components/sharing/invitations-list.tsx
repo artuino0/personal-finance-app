@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Check, X, Trash2, Loader2 } from "lucide-react"
+import { Clock, X, Trash2, Loader2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 
@@ -54,54 +54,9 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
     }
   }, [invitations, type])
 
-  const handleAccept = async (invitation: Invitation) => {
-    setLoading(invitation.id)
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) throw new Error("User not authenticated")
-
-      const { data: share, error: shareError } = await supabase
-        .from("account_shares")
-        .insert({
-          owner_id: invitation.owner_id,
-          shared_with_id: userId,
-          shared_with_email: user.email || invitation.invited_email,
-          is_active: true,
-        })
-        .select()
-        .single()
-
-      if (shareError) throw shareError
-
-      const permissionsToInsert = Object.entries(invitation.permissions).map(([resource, perms]) => ({
-        share_id: share.id,
-        resource_type: resource,
-        can_view: perms.view,
-        can_create: perms.create,
-        can_edit: perms.edit,
-        can_delete: perms.delete,
-      }))
-
-      const { error: permsError } = await supabase.from("share_permissions").insert(permissionsToInsert)
-
-      if (permsError) throw permsError
-
-      const { error: updateError } = await supabase
-        .from("share_invitations")
-        .update({ status: "accepted", accepted_at: new Date().toISOString() })
-        .eq("id", invitation.id)
-
-      if (updateError) throw updateError
-
-      router.refresh()
-    } catch (error) {
-      console.error("[v0] Error accepting invitation:", error)
-    } finally {
-      setLoading(null)
-    }
+  const handleAccept = (invitation: Invitation) => {
+    // Navigate to the modal by adding the accept parameter to the URL
+    router.push(`/dashboard/sharing?accept=${invitation.invitation_token}`)
   }
 
   const handleReject = async (invitationId: string) => {
@@ -183,10 +138,7 @@ export function InvitationsList({ invitations, type, userId }: InvitationsListPr
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <>
-                        <Check className="h-4 w-4 mr-1" />
-                        Aceptar
-                      </>
+                      "Aceptar"
                     )}
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => handleReject(invitation.id)} disabled={isLoading}>
