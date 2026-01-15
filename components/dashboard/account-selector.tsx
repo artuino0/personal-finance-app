@@ -59,6 +59,7 @@ export function AccountSelector({
 
       if (sharedAccounts) {
         for (const share of sharedAccounts) {
+          // Fetch OWNER's profile (not shared_with)
           const { data: ownerProfile } = await supabase
             .from("profiles")
             .select("full_name")
@@ -66,21 +67,28 @@ export function AccountSelector({
             .maybeSingle()
 
           let displayName = "Usuario"
+          let ownerEmail = share.shared_with_email // fallback
+
           if (ownerProfile?.full_name) {
+            // Use owner's name from profile
             displayName = ownerProfile.full_name
             if (displayName.length > 15) {
               displayName = displayName.substring(0, 12) + "..."
             }
             displayName = `Finanzas de ${displayName}`
-          } else if (share.shared_with_email) {
-            const emailUser = share.shared_with_email.split("@")[0]
-            displayName = `Finanzas de ${emailUser.substring(0, 10)}...`
+          } else {
+            const { data: ownerUser } = await supabase.auth.admin.getUserById(share.owner_id)
+            if (ownerUser?.user?.email) {
+              ownerEmail = ownerUser.user.email
+              const emailUser = ownerEmail.split("@")[0]
+              displayName = `Finanzas de ${emailUser.substring(0, 10)}...`
+            }
           }
 
           options.push({
             id: share.owner_id,
             name: displayName,
-            email: share.shared_with_email,
+            email: ownerEmail,
             isOwn: false,
           })
         }
