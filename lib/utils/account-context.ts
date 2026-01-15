@@ -11,7 +11,7 @@ export async function getSelectedAccountId(): Promise<string | null> {
 
   // Try to get selected account from cookie
   const cookieStore = await cookies()
-  const selectedAccountCookie = cookieStore.get("selectedAccountId")
+  const selectedAccountCookie = cookieStore.get("selected_account_id") // Fixed: was "selectedAccountId"
 
   if (selectedAccountCookie?.value && selectedAccountCookie.value !== user.id) {
     // Verify user has access to this account
