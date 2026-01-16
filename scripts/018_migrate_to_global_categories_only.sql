@@ -43,10 +43,10 @@ alter table public.transactions
   rename column global_category_id to category_id;
 
 -- Step 7: Drop RLS policies for old categories table
-drop policy if exists "Users can view own categories" on public.categories;
-drop policy if exists "Users can insert own categories" on public.categories;
-drop policy if exists "Users can update own categories" on public.categories;
-drop policy if exists "Users can delete own categories" on public.categories;
+drop policy if exists "Users can view own or shared categories" on public.categories;
+drop policy if exists "Users can insert own categories or with permission" on public.categories;
+drop policy if exists "Users can update own categories or with permission" on public.categories;
+drop policy if exists "Users can delete own categories or with permission" on public.categories;
 
 -- Step 8: Disable RLS on deprecated categories table
 alter table public.categories disable row level security;
@@ -54,16 +54,12 @@ alter table public.categories disable row level security;
 -- Step 9: Add comment to mark table as deprecated
 comment on table public.categories is 'DEPRECATED: Use global_categories instead. This table is kept for historical reference only.';
 
--- Step 10: Update the sharing permissions to remove 'categories' resource
--- Users no longer need permission to view categories as they are global
-update public.share_permissions
-set resource_type = 'deprecated'
+-- Step 10: Delete share permissions for categories resource
+-- Delete instead of update to avoid constraint violation
+delete from public.share_permissions
 where resource_type = 'categories';
 
 -- Step 11: Create index on transactions.category_id for better performance
 create index if not exists transactions_category_id_idx on public.transactions(category_id);
-
--- Step 12: Update the trigger to no longer create user categories
--- (This will be handled in the trigger script update)
 
 comment on column public.transactions.category_id is 'References global_categories.id';
