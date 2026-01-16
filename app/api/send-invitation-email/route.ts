@@ -178,14 +178,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (error) {
-      console.error("[v0] Error sending email:", error)
+      console.error("[Kountly] Error sending email:", error)
       return NextResponse.json({ error: "Error al enviar el correo" }, { status: 500 })
     }
 
-    console.log("[v0] Email sent successfully:", data)
+    console.log("[Kountly] Email sent successfully:", data)
     return NextResponse.json({ success: true, messageId: data?.id })
   } catch (error) {
-    console.error("[v0] Error in send-invitation-email:", error)
+    console.error("[Kountly] Error in send-invitation-email:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 }

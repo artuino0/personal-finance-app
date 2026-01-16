@@ -1,0 +1,435 @@
+{
+    "Index": {
+        "title": "Home"
+    },
+    "Auth": {
+        "login": "Login",
+        "register": "Register"
+    },
+    "Dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome back, {name}",
+        "balanceOverview": "Accounts Overview",
+        "noAccounts": "No accounts registered",
+        "incomeVsExpenses": "Income vs Expenses (Last 6 months)",
+        "recentTransactions": "Recent Transactions",
+        "viewAll": "View all",
+        "noTransactions": "No registered transactions",
+        "noDescription": "No description",
+        "upcomingPayments": "Upcoming Payments",
+        "services": "Services",
+        "credits": "Loans",
+        "noPendingPayments": "No pending payments",
+        "dueToday": "Due today",
+        "dueTomorrow": "Due tomorrow",
+        "inDays": "In {days} days",
+        "overdueDays": "Overdue by {days} days",
+        "credit": "Loan",
+        "service": "Service",
+        "totalBalance": "Total Balance",
+        "monthlyIncome": "Monthly Income",
+        "monthlyExpenses": "Monthly Expenses",
+        "savings": "Savings",
+        "thisMonth": "This month",
+        "accountsCount": "{count} accounts",
+        "viewingFinancesOf": "Viewing finances of {name}",
+        "income": "Income",
+        "expenses": "Expenses"
+    },
+    "Common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "save": "Save",
+        "cancel": "Cancel"
+    },
+    "Navbar": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "about": "About Us",
+        "login": "Log in",
+        "signup": "Sign up"
+    },
+    "Hero": {
+        "badge": "Your financial freedom starts today",
+        "title": "Control your money,",
+        "subtitle": " secure your future.",
+        "description": "The comprehensive platform to manage income, expenses, and budgets. Take full control of your personal finances and make better decisions.",
+        "cta": "Create free account",
+        "points": {
+            "secure": "Secure & Private",
+            "reports": "Detailed Reports",
+            "multicurrency": "Multi-currency"
+        }
+    },
+    "Landing": {
+        "Features": {
+            "title": "Everything you need to master your finances",
+            "subtitle": "Kountly simplifies your money management. Stop guessing and start building your wealth with real data.",
+            "items": {
+                "control": {
+                    "name": "Expense Control",
+                    "description": "Log every purchase and categorize it automatically to know exactly where your money goes."
+                },
+                "budgets": {
+                    "name": "Smart Budgets",
+                    "description": "Define spending limits by category and receive alerts when you are nearing the cap."
+                },
+                "credits": {
+                    "name": "Credit Management",
+                    "description": "Keep track of your debts and payment dates to avoid late interest."
+                },
+                "reports": {
+                    "name": "Detailed Reports",
+                    "description": "Visualize your financial evolution with clear monthly income vs. expense charts."
+                },
+                "mobile": {
+                    "name": "Mobile Access",
+                    "description": "Your financial information synchronized across all your devices, available 24/7."
+                },
+                "security": {
+                    "name": "Bank-Grade Security",
+                    "description": "Your data is encrypted and secure. Your privacy is our number one priority."
+                }
+            }
+        },
+        "Pricing": {
+            "badge": "Transparent Plans",
+            "title": "Invest in your financial peace of mind",
+            "subtitle": "Start for free and upgrade when you need more tools. No forced commitments.",
+            "recommended": "RECOMMENDED",
+            "plans": {
+                "basic": {
+                    "name": "Basic",
+                    "description": "To start organizing your accounts.",
+                    "priceNote": "/mo",
+                    "cta": "Start for Free",
+                    "features": {
+                        "0": "Up to 2 bank accounts",
+                        "1": "Manual expense logging",
+                        "2": "Basic monthly reports",
+                        "3": "CSV Export"
+                    }
+                },
+                "pro": {
+                    "name": "Pro",
+                    "description": "To maximize your savings.",
+                    "priceNote": "MXN/mo",
+                    "cta": "Choose Pro Plan",
+                    "features": {
+                        "0": "Unlimited accounts",
+                        "1": "Budgets by category",
+                        "2": "Debt and loan management",
+                        "3": "Savings projection",
+                        "4": "Priority support"
+                    }
+                },
+                "premium": {
+                    "name": "Premium",
+                    "description": "For investors and families.",
+                    "priceNote": "MXN/mo",
+                    "cta": "Choose Premium",
+                    "features": {
+                        "0": "Everything in Pro Plan +",
+                        "1": "Shared accounts (Family)",
+                        "2": "Investment tracking",
+                        "3": "Monthly financial advice (Chat)",
+                        "4": "Developer API"
+                    }
+                }
+            }
+        },
+        "About": {
+            "badge": "Since 2019",
+            "title": "Driving digital transformation with",
+            "titleHighligt": "Dynamic Data",
+            "description1": "At DyDa (Dynamic Data) Software, we dedicate ourselves to creating technological solutions that simplify the complex. Founded in 2019, our mission has been to empower small and medium-sized businesses with intuitive and powerful software tools.",
+            "description2": "was born from our experience working with hundreds of businesses and individuals who needed a more efficient way to manage their economy. We don't just write code; we build digital bridges that grow your wealth.",
+            "stats": {
+                "exp": "Years of Experience",
+                "users": "Active Users"
+            },
+            "values": {
+                "innovation": {
+                    "title": "Constant Innovation",
+                    "description": "We stay at the technological forefront to always offer you the best tools on the market."
+                },
+                "human": {
+                    "title": "Human Focus",
+                    "description": "Technology must serve people. We design thinking first about the user experience."
+                },
+                "quality": {
+                    "title": "DyDa Quality",
+                    "description": "World-class development standards ensuring your platform is always available."
+                },
+                "support": {
+                    "title": "Local Support",
+                    "description": "We understand the local market because we are part of it. Real support, in your language and timezone."
+                }
+            }
+        },
+        "CTA": {
+            "title": "Start building your wealth",
+            "subtitle": "Join thousands of users who have already taken control of their money today.",
+            "button": "Create my free account"
+        },
+        "Footer": {
+            "description": "The leading platform for personal finance management. Simplify your money today.",
+            "copyright": "© 2026 Kountly. All rights reserved.",
+            "columns": {
+                "product": {
+                    "title": "Product",
+                    "links": {
+                        "features": "Features",
+                        "pricing": "Pricing",
+                        "security": "Security",
+                        "roadmap": "Roadmap"
+                    }
+                },
+                "company": {
+                    "title": "Company",
+                    "links": {
+                        "about": "About Us",
+                        "blog": "Blog",
+                        "careers": "Careers",
+                        "contact": "Contact"
+                    }
+                },
+                "legal": {
+                    "title": "Legal",
+                    "links": {
+                        "privacy": "Privacy",
+                        "terms": "Terms",
+                        "cookies": "Cookies"
+                    }
+                }
+            }
+        }
+    },
+    "Credits": {
+        "title": "Credits & Loads",
+        "description": "Manage your debts and financial obligations",
+        "newCredit": "+ New Credit",
+        "totalDebt": "Total Debt",
+        "activeCredits": "Active Credits",
+        "totalMonthlyPayment": "Total Monthly Payment",
+        "noCredits": "No credits registered",
+        "createFirstCredit": "Register my first credit",
+        "active": "Active",
+        "paid": "Paid",
+        "defaulted": "Defaulted",
+        "paymentProgress": "Payment Progress",
+        "total": "Total",
+        "remaining": "Remaining",
+        "monthlyPayment": "Monthly Payment",
+        "nextDueDate": "Next Due Date",
+        "noDate": "No date",
+        "viewDetails": "View Details",
+        "creditDetails": "Credit Details",
+        "edit": "Edit",
+        "back": "Back",
+        "generalInfo": "General Information",
+        "totalAmount": "Total Amount",
+        "remainingAmount": "Remaining Amount",
+        "progressPaid": "{progress}% paid",
+        "interestRate": "Interest Rate",
+        "annualRate": "{rate}% annual",
+        "startDate": "Start Date",
+        "registerPayment": "Register Payment",
+        "paymentAmount": "Payment Amount",
+        "processing": "Processing...",
+        "totalPaid": "Total paid",
+        "paymentHistory": "Payment History",
+        "noPayments": "No payments registered",
+        "creditName": "Credit Name",
+        "namePlaceholder": "Ex: Bank Loan XYZ",
+        "creditType": "Credit Type",
+        "leaveEmptyTotal": "Leave empty to use total amount",
+        "interestRateLabel": "Interest Rate (% annual)",
+        "autoDateCalc": "Automatic Date Calculation",
+        "totalMonths": "Total Months",
+        "monthsPaid": "Months Paid",
+        "paymentDay": "Payment Day (1-31)",
+        "autoCalcHelp": "Complete these fields to automatically calculate start date, next due date and end date",
+        "startDateLabel": "Start Date {calculated}",
+        "nextDueDateLabel": "Next Due Date {calculated}",
+        "endDateLabel": "End Date {calculated}",
+        "calculated": "(Calculated)",
+        "calculatedMasculine": "(Calculated)",
+        "saving": "Saving...",
+        "updateCredit": "Update Credit",
+        "createCredit": "Create Credit",
+        "cancel": "Cancel",
+        "genericError": "An error occurred",
+        "types": {
+            "loan": "Loan",
+            "credit_card": "Credit Card",
+            "mortgage": "Mortgage",
+            "personal_loan": "Personal Loan"
+        }
+    },
+    "Services": {
+        "title": "Recurring Services",
+        "description": "Manage your subscriptions and recurring payments",
+        "newService": "New Service",
+        "monthlyExpense": "Estimated Monthly Expense",
+        "activeServices": "Active Services ({count})",
+        "inactiveServices": "Inactive Services ({count})",
+        "empty": "No services registered",
+        "nextPayment": "Next payment",
+        "dueToday": "Due today",
+        "dueInDays": "Due in {days} days",
+        "account": "Account",
+        "actions": {
+            "registerPayment": "Register Payment",
+            "edit": "Edit",
+            "deactivate": "Deactivate",
+            "activate": "Activate",
+            "delete": "Delete",
+            "deleteConfirm": "Are you sure you want to delete the service \"{name}\"?"
+        },
+        "form": {
+            "name": "Service Name",
+            "category": "Category",
+            "amount": "Amount",
+            "frequency": "Frequency",
+            "paymentDay": "Payment Day (1-31)",
+            "nextPaymentDate": "Next Payment Date",
+            "paymentAccount": "Payment Account (Optional)",
+            "notes": "Notes (Optional)",
+            "active": "Active Service",
+            "activeDesc": "Inactive services do not appear in upcoming payments",
+            "save": "Create Service",
+            "update": "Update Service",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "placeholderName": "Ex: Netflix, Power, Internet",
+            "placeholderAccount": "Select account",
+            "placeholderNotes": "Additional notes about this service",
+            "none": "None",
+            "genericError": "An error occurred"
+        },
+        "categories": {
+            "utilities": "Utilities",
+            "subscriptions": "Subscriptions",
+            "insurance": "Insurance",
+            "rent": "Rent",
+            "other": "Other"
+        },
+        "frequencies": {
+            "weekly": "Weekly",
+            "biweekly": "Biweekly",
+            "monthly": "Monthly",
+            "yearly": "Yearly"
+        }
+    },
+    "Accounts": {
+        "title": "Accounts",
+        "totalBalance": "Total Balance: ${balance}",
+        "newAccount": "+ New Account",
+        "noAccounts": "No accounts registered",
+        "createFirstAccount": "Create my first account",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDeleteTitle": "Are you sure?",
+        "confirmDeleteDescription": "This action cannot be undone. The account and all associated transactions will be deleted.",
+        "cancel": "Cancel",
+        "accountName": "Account Name",
+        "namePlaceholder": "Ex: Main Bank",
+        "accountType": "Account Type",
+        "initialBalance": "Initial Balance",
+        "currency": "Currency",
+        "color": "Color",
+        "saving": "Saving...",
+        "updateAccount": "Update Account",
+        "createAccount": "Create Account",
+        "genericError": "An error occurred",
+        "types": {
+            "checking": "Checking Account",
+            "savings": "Savings Account",
+            "credit_card": "Credit Card",
+            "cash": "Cash",
+            "investment": "Investment"
+        }
+    },
+    "Transactions": {
+        "title": "Transactions",
+        "registeredTransactions": "{count} transactions registered",
+        "newTransaction": "New Transaction",
+        "newTransactionDesc": "Register a new income or expense",
+        "history": "History",
+        "transactionCount": "{count} transactions",
+        "noTransactions": "No registered transactions",
+        "createFirstTransaction": "Create my first transaction",
+        "editTransaction": "Edit Transaction",
+        "editTransactionDesc": "Modify transaction details",
+        "date": "Date",
+        "description": "Description",
+        "category": "Category",
+        "account": "Account",
+        "amount": "Amount",
+        "actions": "Actions",
+        "noDescription": "No description",
+        "noCategory": "No category",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDeleteTitle": "Are you sure?",
+        "confirmDeleteDescription": "This action cannot be undone. The transaction will be deleted and the account balance will be updated.",
+        "cancel": "Cancel",
+        "hideFilters": "Hide Filters",
+        "showFilters": "Show Filters",
+        "type": "Type",
+        "all": "All",
+        "income": "Income",
+        "expense": "Expense",
+        "allAccounts": "All",
+        "clearFilters": "Clear Filters",
+        "selectAccount": "Select account",
+        "selectCategory": "Select category",
+        "descriptionOptional": "Description (Optional)",
+        "descriptionPlaceholder": "Ex: Grocery shopping",
+        "saving": "Saving...",
+        "updateTransaction": "Update Transaction",
+        "createTransaction": "Create Transaction",
+        "genericError": "An error occurred while saving the transaction"
+    },
+    "DashboardNav": {
+        "menu": "Menu",
+        "dashboard": "Dashboard",
+        "accounts": "Accounts",
+        "transactions": "Transactions",
+        "services": "Services",
+        "credits": "Loans",
+        "sharing": "Sharing",
+        "reports": "Reports",
+        "myAccount": "My Account",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Log out"
+    },
+    "Sharing": {
+        "title": "Share Finances",
+        "description": "Manage shared access to your finances",
+        "inviteUser": "+ Invite User",
+        "sharedByMe": "Shared By Me",
+        "sharedByMeDesc": "People who have access to my finances",
+        "sharedWithMe": "Shared With Me",
+        "sharedWithMeDesc": "Finances I have access to",
+        "sentInvitations": "Sent Invitations",
+        "sentInvitationsDesc": "Invitations pending acceptance",
+        "receivedInvitations": "Received Invitations",
+        "receivedInvitationsDesc": "Invitations to access other users' finances",
+        "noShares": "You haven't shared your finances with anyone",
+        "noSharedWithMe": "No one has shared their finances with you"
+    },
+    "Reports": {
+        "button": "Reports",
+        "title": "Generate Report",
+        "description": "Select date range and account to generate your report.",
+        "dateRange": "Date Range",
+        "selectDates": "Select dates",
+        "account": "Account",
+        "allAccounts": "All accounts",
+        "generating": "Generating...",
+        "generate": "Generate Report"
+    }
+}

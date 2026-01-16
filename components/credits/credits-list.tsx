@@ -3,7 +3,8 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations } from "next-intl"
 
 interface Credit {
   id: string
@@ -29,12 +30,14 @@ interface CreditsListProps {
 }
 
 export function CreditsList({ credits, userId, permissions }: CreditsListProps) {
+  const t = useTranslations("Credits")
+
   const getCreditTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      loan: "Préstamo",
-      credit_card: "Tarjeta de Crédito",
-      mortgage: "Hipoteca",
-      personal_loan: "Préstamo Personal",
+      loan: t("types.loan"),
+      credit_card: t("types.credit_card"),
+      mortgage: t("types.mortgage"),
+      personal_loan: t("types.personal_loan"),
     }
     return types[type] || type
   }
@@ -50,9 +53,9 @@ export function CreditsList({ credits, userId, permissions }: CreditsListProps) 
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      active: "Activo",
-      paid: "Pagado",
-      defaulted: "En Mora",
+      active: t("active"),
+      paid: t("paid"),
+      defaulted: t("defaulted"),
     }
     return labels[status] || status
   }
@@ -61,9 +64,9 @@ export function CreditsList({ credits, userId, permissions }: CreditsListProps) 
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-slate-600 mb-4">No tienes créditos registrados</p>
+          <p className="text-slate-600 mb-4">{t("noCredits")}</p>
           <Button asChild>
-            <Link href="/dashboard/credits/new">Registrar mi primer crédito</Link>
+            <Link href="/dashboard/credits/new">{t("createFirstCredit")}</Link>
           </Button>
         </CardContent>
       </Card>
@@ -92,7 +95,7 @@ export function CreditsList({ credits, userId, permissions }: CreditsListProps) 
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-600">Progreso del pago</span>
+                    <span className="text-slate-600">{t("paymentProgress")}</span>
                     <span className="font-medium">{progress.toFixed(0)}%</span>
                   </div>
                   <Progress value={progress} className="h-2" />
@@ -100,13 +103,13 @@ export function CreditsList({ credits, userId, permissions }: CreditsListProps) 
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs text-slate-600">Total</p>
+                    <p className="text-xs text-slate-600">{t("total")}</p>
                     <p className="text-sm font-semibold">
                       ${Number(credit.total_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600">Restante</p>
+                    <p className="text-xs text-slate-600">{t("remaining")}</p>
                     <p className="text-sm font-semibold text-red-600">
                       ${Number(credit.remaining_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
@@ -115,21 +118,21 @@ export function CreditsList({ credits, userId, permissions }: CreditsListProps) 
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs text-slate-600">Pago Mensual</p>
+                    <p className="text-xs text-slate-600">{t("monthlyPayment")}</p>
                     <p className="text-sm font-semibold">
                       ${(credit.monthly_payment || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600">Próximo Vencimiento</p>
+                    <p className="text-xs text-slate-600">{t("nextDueDate")}</p>
                     <p className="text-sm font-semibold">
-                      {credit.due_date ? new Date(credit.due_date).toLocaleDateString("en-US") : "Sin fecha"}
+                      {credit.due_date ? new Date(credit.due_date).toLocaleDateString("en-US") : t("noDate")}
                     </p>
                   </div>
                 </div>
 
                 <Button asChild className="w-full bg-transparent" variant="outline">
-                  <Link href={`/dashboard/credits/${credit.id}`}>Ver Detalles</Link>
+                  <Link href={`/dashboard/credits/${credit.id}`}>{t("viewDetails")}</Link>
                 </Button>
               </div>
             </CardContent>

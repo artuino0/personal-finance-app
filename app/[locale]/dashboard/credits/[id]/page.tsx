@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { CreditDetails } from "@/components/credits/credit-details"
+import { getAccountPermissions } from "@/lib/utils/account-context"
 
 export default async function CreditDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -35,11 +36,21 @@ export default async function CreditDetailsPage({ params }: { params: Promise<{ 
     .eq("user_id", user.id)
     .order("payment_date", { ascending: false })
 
+  const rawPermissions = await getAccountPermissions(user.id, "credits")
+  const permissions = {
+    canView: rawPermissions.view,
+    canEdit: rawPermissions.edit,
+    canDelete: rawPermissions.delete,
+  }
+
   return (
     <div className="min-h-screen bg-secondary/30">
-      <DashboardNav userName={profile?.full_name || user.email || "Usuario"} />
+      <DashboardNav
+        userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
+        userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+      />
       <main className="container mx-auto max-w-4xl p-6">
-        <CreditDetails credit={credit} payments={payments || []} userId={user.id} />
+        <CreditDetails credit={credit} payments={payments || []} userId={user.id} permissions={permissions} />
       </main>
     </div>
   )

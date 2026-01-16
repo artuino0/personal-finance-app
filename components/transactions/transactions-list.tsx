@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations, useFormatter } from "next-intl"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +45,8 @@ interface TransactionsListProps {
 export function TransactionsList({ transactions, userId, permissions }: TransactionsListProps) {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations("Transactions")
+  const format = useFormatter()
 
   const canEdit = permissions?.edit ?? true
   const canDelete = permissions?.delete ?? true
@@ -77,10 +80,10 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-slate-600 mb-4">No hay transacciones registradas</p>
+          <p className="text-slate-600 mb-4">{t("noTransactions")}</p>
           {permissions?.create !== false && (
             <Button asChild>
-              <Link href="/dashboard/transactions/new">Crear mi primera transacción</Link>
+              <Link href="/dashboard/transactions/new">{t("createFirstTransaction")}</Link>
             </Button>
           )}
         </CardContent>
@@ -92,8 +95,8 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
     <Card className="overflow-hidden bg-background">
       <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-foreground">Historial</h2>
-          <span className="text-sm text-muted-foreground">{transactions.length} transacciones</span>
+          <h2 className="text-lg font-semibold text-foreground">{t("history")}</h2>
+          <span className="text-sm text-muted-foreground">{t("transactionCount", { count: transactions.length })}</span>
         </div>
       </div>
       <div className="p-0">
@@ -101,12 +104,12 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-border/60">
               <TableHead className="w-[50px] pl-5"></TableHead>
-              <TableHead className="w-[100px]">Fecha</TableHead>
-              <TableHead className="w-[250px] min-w-[200px]">Descripción</TableHead>
-              <TableHead>Categoría</TableHead>
-              <TableHead>Cuenta</TableHead>
-              <TableHead className="text-right">Monto</TableHead>
-              {(canEdit || canDelete) && <TableHead className="text-right pr-5">Acciones</TableHead>}
+              <TableHead className="w-[100px]">{t("date")}</TableHead>
+              <TableHead className="w-[250px] min-w-[200px]">{t("description")}</TableHead>
+              <TableHead>{t("category")}</TableHead>
+              <TableHead>{t("account")}</TableHead>
+              <TableHead className="text-right">{t("amount")}</TableHead>
+              {(canEdit || canDelete) && <TableHead className="text-right pr-5">{t("actions")}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,9 +117,8 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
               <TableRow key={transaction.id} className="hover:bg-muted/50 border-b border-border/60">
                 <TableCell className="pl-5">
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      transaction.type === "income" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
-                    }`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full ${transaction.type === "income" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+                      }`}
                   >
                     {transaction.type === "income" ? (
                       <ArrowUpRight className="h-4 w-4" />
@@ -128,16 +130,15 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
                 <TableCell className="font-medium text-slate-700">
                   {(() => {
                     const [year, month, day] = transaction.date.split("-").map(Number)
-                    const dayStr = String(day).padStart(2, "0")
-                    const monthStr = String(month).padStart(2, "0")
-                    return `${dayStr}/${monthStr}/${year}`
+                    const date = new Date(year, month - 1, day)
+                    return format.dateTime(date, { year: 'numeric', month: 'short', day: 'numeric' })
                   })()}
                 </TableCell>
                 <TableCell
                   className="max-w-[250px] truncate font-medium"
-                  title={transaction.description || "Sin descripción"}
+                  title={transaction.description || t("noDescription")}
                 >
-                  {transaction.description || "Sin descripción"}
+                  {transaction.description || t("noDescription")}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -145,17 +146,16 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
                       className="h-2 w-2 rounded-full ring-1 ring-offset-1 ring-slate-200"
                       style={{ backgroundColor: transaction.categories?.color || "#64748b" }}
                     />
-                    <span className="text-slate-600">{transaction.categories?.name || "Sin categoría"}</span>
+                    <span className="text-slate-600">{transaction.categories?.name || t("noCategory")}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-slate-600">{transaction.accounts?.name}</TableCell>
                 <TableCell
-                  className={`text-right font-bold ${
-                    transaction.type === "income" ? "text-green-600" : "text-red-600"
-                  }`}
+                  className={`text-right font-bold ${transaction.type === "income" ? "text-green-600" : "text-red-600"
+                    }`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {format.number(Number(transaction.amount), { minimumFractionDigits: 2 })}
                 </TableCell>
                 {(canEdit || canDelete) && (
                   <TableCell className="text-right pr-5">
@@ -165,7 +165,7 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
                           variant="ghost"
                           size="icon"
                           asChild
-                          title="Editar"
+                          title={t("edit")}
                           className="h-8 w-8 text-slate-500 hover:text-primary"
                         >
                           <Link href={`/dashboard/transactions/${transaction.id}`}>
@@ -180,21 +180,20 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-slate-500 hover:text-red-600"
-                              title="Eliminar"
+                              title={t("delete")}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Se eliminará la transacción y se actualizará el
-                                balance de la cuenta.
+                                {t("confirmDeleteDescription")}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() =>
                                   handleDelete(
@@ -206,7 +205,7 @@ export function TransactionsList({ transactions, userId, permissions }: Transact
                                 }
                                 className="bg-red-600 hover:bg-red-700"
                               >
-                                Eliminar
+                                {t("delete")}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

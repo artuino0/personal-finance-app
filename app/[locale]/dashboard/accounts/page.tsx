@@ -1,19 +1,14 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
-import { TransactionsList } from "@/components/transactions/transactions-list"
-import { TransactionsFilter } from "@/components/transactions/transactions-filter"
+import { AccountsList } from "@/components/accounts/accounts-list"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
 
-export default async function TransactionsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ type?: string; account?: string; category?: string }>
-}) {
-  const params = await searchParams
+export default async function AccountsPage() {
   const supabase = await createClient()
 
   const {
@@ -27,34 +22,18 @@ export default async function TransactionsPage({
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   const selectedAccountId = (await getSelectedAccountId()) || user.id
-  const permissions = await getAccountPermissions(selectedAccountId, "transactions")
+  const permissions = await getAccountPermissions(selectedAccountId, "accounts")
   const isSharedAccount = selectedAccountId !== user.id
 
-  let query = supabase
-    .from("transactions")
-    .select("*, account_id, accounts(name, color), categories(name, color, icon)")
+  const { data: accounts } = await supabase
+    .from("accounts")
+    .select("*")
     .eq("user_id", selectedAccountId)
-    .order("date", { ascending: false })
     .order("created_at", { ascending: false })
 
-  if (params.type) {
-    query = query.eq("type", params.type)
-  }
-  if (params.account) {
-    query = query.eq("account_id", params.account)
-  }
-  if (params.category) {
-    query = query.eq("category_id", params.category)
-  }
+  const totalBalance = accounts?.reduce((sum, account) => sum + Number(account.balance), 0) || 0
 
-  const { data: transactions } = await query
-
-  const { data: accounts } = await supabase.from("accounts").select("id, name").eq("user_id", selectedAccountId)
-
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("id, name, type")
-    .eq("user_id", selectedAccountId)
+  const t = await getTranslations("Accounts");
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -64,8 +43,8 @@ export default async function TransactionsPage({
       />
       <main className="container mx-auto p-6">
         <PageHeader
-          title="Transacciones"
-          description={`${transactions?.length || 0} transacciones registradas`}
+          title={t("title")}
+          description={t("totalBalance", { balance: totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 }) })}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
@@ -74,14 +53,12 @@ export default async function TransactionsPage({
           permissions={permissions}
           actions={
             <Button asChild>
-              <Link href="/dashboard/transactions/new">+ Nueva Transacción</Link>
+              <Link href="/dashboard/accounts/new">{t("newAccount")}</Link>
             </Button>
           }
         />
 
-        <TransactionsFilter accounts={accounts || []} categories={categories || []} />
-
-        <TransactionsList transactions={transactions || []} userId={selectedAccountId} permissions={permissions} />
+        <AccountsList accounts={accounts || []} userId={selectedAccountId} permissions={permissions} />
       </main>
     </div>
   )

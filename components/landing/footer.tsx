@@ -1,37 +1,38 @@
-"use client"
-
 import Link from "next/link"
-
-const columns = [
-    {
-        title: "Producto",
-        links: [
-            { label: "Funcionalidades", href: "#features" },
-            { label: "Precios", href: "#pricing" },
-            { label: "Seguridad", href: "#" },
-            { label: "Mapa de ruta", href: "#" },
-        ],
-    },
-    {
-        title: "Compañía",
-        links: [
-            { label: "Nosotros", href: "#about" },
-            { label: "Blog", href: "#" },
-            { label: "Carreras", href: "#" },
-            { label: "Contacto", href: "#" },
-        ],
-    },
-    {
-        title: "Legal",
-        links: [
-            { label: "Privacidad", href: "#" },
-            { label: "Términos", href: "#" },
-            { label: "Cookies", href: "#" },
-        ],
-    },
-]
+import { useTranslations } from "next-intl"
 
 export function Footer() {
+    const t = useTranslations("Landing.Footer")
+
+    const columns = [
+        {
+            title: t("columns.product.title"),
+            links: [
+                { label: t("columns.product.links.features"), href: "#features" },
+                { label: t("columns.product.links.pricing"), href: "#pricing" },
+                { label: t("columns.product.links.security"), href: "#" },
+                { label: t("columns.product.links.roadmap"), href: "#" },
+            ],
+        },
+        {
+            title: t("columns.company.title"),
+            links: [
+                { label: t("columns.company.links.about"), href: "#about" },
+                { label: t("columns.company.links.blog"), href: "#" },
+                { label: t("columns.company.links.careers"), href: "#" },
+                { label: t("columns.company.links.contact"), href: "#" },
+            ],
+        },
+        {
+            title: t("columns.legal.title"),
+            links: [
+                { label: t("columns.legal.links.privacy"), href: "#" },
+                { label: t("columns.legal.links.terms"), href: "#" },
+                { label: t("columns.legal.links.cookies"), href: "#" },
+            ],
+        },
+    ]
+
     return (
         <footer className="border-t bg-background">
             <div className="container mx-auto px-4 py-12 md:px-8 md:py-16">
@@ -41,7 +42,7 @@ export function Footer() {
                             <span>Kountly</span>
                         </Link>
                         <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-                            La plataforma líder para la gestión de finanzas personales. Simplifica tu dinero hoy.
+                            {t("description")}
                         </p>
                     </div>
 
@@ -62,7 +63,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-sm text-muted-foreground md:flex-row">
-                    <p>© 2026 Kountly. Todos los derechos reservados.</p>
+                    <p>{t("copyright")}</p>
                     <div className="flex gap-6">
                         <a href="#" className="transition-colors hover:text-foreground">
                             Twitter

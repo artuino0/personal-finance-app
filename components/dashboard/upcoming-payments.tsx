@@ -3,8 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { CreditCard, Repeat } from "lucide-react"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Credit {
   id: string
@@ -27,6 +28,9 @@ interface UpcomingPaymentsProps {
 }
 
 export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
+  const t = useTranslations("Dashboard")
+  const format = useFormatter()
+
   // Combine and sort payments by date
   const allPayments = [
     ...credits.map((c) => ({
@@ -64,20 +68,20 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Próximos Pagos</CardTitle>
+        <CardTitle>{t("upcomingPayments")}</CardTitle>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/services">Servicios</Link>
+            <Link href="/dashboard/services">{t("services")}</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/credits">Créditos</Link>
+            <Link href="/dashboard/credits">{t("credits")}</Link>
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {allPayments.length === 0 ? (
-            <p className="text-sm text-slate-600 text-center py-4">No tienes pagos pendientes</p>
+            <p className="text-sm text-slate-600 text-center py-4">{t("noPendingPayments")}</p>
           ) : (
             allPayments.map((payment) => {
               const daysUntil = getDaysUntil(payment.date)
@@ -103,21 +107,21 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
                       <p className="text-sm font-medium text-foreground">{payment.name}</p>
                       <p className="text-xs text-slate-600">
                         {daysUntil === 0
-                          ? "Vence hoy"
+                          ? t("dueToday")
                           : daysUntil === 1
-                            ? "Vence mañana"
+                            ? t("dueTomorrow")
                             : daysUntil > 0
-                              ? `En ${daysUntil} días`
-                              : `Vencido hace ${Math.abs(daysUntil)} días`}
+                              ? t("inDays", { days: daysUntil })
+                              : t("overdueDays", { days: Math.abs(daysUntil) })}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-foreground">
-                      ${payment.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      ${format.number(payment.amount, { minimumFractionDigits: 2 })}
                     </p>
                     <Badge variant="secondary" className="text-xs">
-                      {payment.type === "credit" ? "Crédito" : "Servicio"}
+                      {payment.type === "credit" ? t("credit") : t("service")}
                     </Badge>
                   </div>
                 </Link>

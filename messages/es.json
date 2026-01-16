@@ -1,0 +1,435 @@
+{
+    "Index": {
+        "title": "Inicio"
+    },
+    "Auth": {
+        "login": "Iniciar Sesión",
+        "register": "Registrarse"
+    },
+    "Dashboard": {
+        "title": "Dashboard",
+        "welcome": "Bienvenido de nuevo, {name}",
+        "balanceOverview": "Resumen de Cuentas",
+        "noAccounts": "No tienes cuentas registradas",
+        "incomeVsExpenses": "Ingresos vs Gastos (Últimos 6 meses)",
+        "recentTransactions": "Transacciones Recientes",
+        "viewAll": "Ver todas",
+        "noTransactions": "No hay transacciones registradas",
+        "noDescription": "Sin descripción",
+        "upcomingPayments": "Próximos Pagos",
+        "services": "Servicios",
+        "credits": "Créditos",
+        "noPendingPayments": "No tienes pagos pendientes",
+        "dueToday": "Vence hoy",
+        "dueTomorrow": "Vence mañana",
+        "inDays": "En {days} días",
+        "overdueDays": "Vencido hace {days} días",
+        "credit": "Crédito",
+        "service": "Servicio",
+        "totalBalance": "Balance Total",
+        "monthlyIncome": "Ingresos del Mes",
+        "monthlyExpenses": "Gastos del Mes",
+        "savings": "Ahorro",
+        "thisMonth": "Este mes",
+        "accountsCount": "{count} cuentas",
+        "viewingFinancesOf": "Viendo finanzas de {name}",
+        "income": "Ingresos",
+        "expenses": "Gastos"
+    },
+    "Common": {
+        "loading": "Cargando...",
+        "error": "Ocurrió un error",
+        "save": "Guardar",
+        "cancel": "Cancelar"
+    },
+    "Navbar": {
+        "features": "Funcionalidades",
+        "pricing": "Precios",
+        "about": "Nosotros",
+        "login": "Iniciar sesión",
+        "signup": "Crear cuenta"
+    },
+    "Hero": {
+        "badge": "Tu libertad financiera comienza hoy",
+        "title": "Controla tu dinero,",
+        "subtitle": " asegura tu futuro.",
+        "description": "La plataforma integral para gestionar ingresos, gastos y presupuestos. Toma el control total de tus finanzas personales y toma mejores decisiones.",
+        "cta": "Crear mi cuenta gratis",
+        "points": {
+            "secure": "Seguro y Privado",
+            "reports": "Reportes Detallados",
+            "multicurrency": "Multi-moneda"
+        }
+    },
+    "Landing": {
+        "Features": {
+            "title": "Todo lo que necesitas para dominar tus finanzas",
+            "subtitle": "Kountly simplifica la administración de tu dinero. Deja de adivinar y empieza a construir tu patrimonio con datos reales.",
+            "items": {
+                "control": {
+                    "name": "Control de Gastos",
+                    "description": "Registra cada compra y categorízala automáticamente para saber exactamente a dónde va tu dinero."
+                },
+                "budgets": {
+                    "name": "Presupuestos Inteligentes",
+                    "description": "Define límites de gasto por categoría y recibe alertas cuando te estés acercando al tope."
+                },
+                "credits": {
+                    "name": "Gestión de Créditos",
+                    "description": "Lleva un registro de tus deudas y fechas de pago para evitar intereses moratorios."
+                },
+                "reports": {
+                    "name": "Reportes Detallados",
+                    "description": "Visualiza tu evolución financiera con gráficos claros de ingresos vs. gastos mensuales."
+                },
+                "mobile": {
+                    "name": "Acceso Móvil",
+                    "description": "Tu información financiera sincronizada en todos tus dispositivos, disponible 24/7."
+                },
+                "security": {
+                    "name": "Seguridad Bancaria",
+                    "description": "Tus datos están encriptados y seguros. Tu privacidad es nuestra prioridad número uno."
+                }
+            }
+        },
+        "Pricing": {
+            "badge": "Planes Transparentes",
+            "title": "Invierte en tu tranquilidad financiera",
+            "subtitle": "Comienza gratis y actualiza cuando necesites más herramientas. Sin compromisos forzosos.",
+            "recommended": "RECOMENDADO",
+            "plans": {
+                "basic": {
+                    "name": "Básico",
+                    "description": "Para empezar a organizar tus cuentas.",
+                    "priceNote": "/mes",
+                    "cta": "Comenzar Gratis",
+                    "features": {
+                        "0": "Hasta 2 cuentas bancarias",
+                        "1": "Registro de gastos manual",
+                        "2": "Reportes mensuales básicos",
+                        "3": "Exportación en CSV"
+                    }
+                },
+                "pro": {
+                    "name": "Pro",
+                    "description": "Para maximizar tu ahorro.",
+                    "priceNote": "MXN/mes",
+                    "cta": "Elegir Plan Pro",
+                    "features": {
+                        "0": "Cuentas ilimitadas",
+                        "1": "Presupuestos por categoría",
+                        "2": "Gestión de deudas y préstamos",
+                        "3": "Proyección de ahorro",
+                        "4": "Soporte prioritario"
+                    }
+                },
+                "premium": {
+                    "name": "Premium",
+                    "description": "Para inversores y familias.",
+                    "priceNote": "MXN/mes",
+                    "cta": "Elegir Premium",
+                    "features": {
+                        "0": "Todo lo del Plan Pro +",
+                        "1": "Cuentas compartidas (Familia)",
+                        "2": "Seguimiento de inversiones",
+                        "3": "Asesoría financiera mensual (Chat)",
+                        "4": "API de desarrollador"
+                    }
+                }
+            }
+        },
+        "About": {
+            "badge": "Desde 2019",
+            "title": "Impulsando la transformación digital con",
+            "titleHighligt": "Dynamic Data",
+            "description1": "En DyDa (Dynamic Data) Software, nos dedicamos a crear soluciones tecnológicas que simplifican lo complejo. Fundada en 2019, nuestra misión ha sido empoderar a las pequeñas y medianas empresas con herramientas de software intuitivas y potentes.",
+            "description2": "nace de nuestra experiencia trabajando con cientos de negocios y personas que necesitaban una forma más eficiente de gestionar su economía. No solo escribimos código; construimos puentes digitales que hacen crecer tu patrimonio.",
+            "stats": {
+                "exp": "Años de Experiencia",
+                "users": "Usuarios Activos"
+            },
+            "values": {
+                "innovation": {
+                    "title": "Innovación Constante",
+                    "description": "Nos mantenemos a la vanguardia tecnológica para ofrecerte siempre las mejores herramientas del mercado."
+                },
+                "human": {
+                    "title": "Enfoque Humano",
+                    "description": "La tecnología debe servir a las personas. Diseñamos pensando primero en la experiencia del usuario."
+                },
+                "quality": {
+                    "title": "Calidad DyDa",
+                    "description": "Estándares de desarrollo de clase mundial que garantizan que tu plataforma esté siempre disponible."
+                },
+                "support": {
+                    "title": "Soporte Local",
+                    "description": "Entendemos el mercado local porque somos parte de él. Soporte real, en tu idioma y horario."
+                }
+            }
+        },
+        "CTA": {
+            "title": "Empieza a construir tu patrimonio",
+            "subtitle": "Únete a miles de usuarios que ya tomaron el control de su dinero hoy mismo.",
+            "button": "Crear mi cuenta gratis"
+        },
+        "Footer": {
+            "description": "La plataforma líder para la gestión de finanzas personales. Simplifica tu dinero hoy.",
+            "copyright": "© 2026 Kountly. Todos los derechos reservados.",
+            "columns": {
+                "product": {
+                    "title": "Producto",
+                    "links": {
+                        "features": "Funcionalidades",
+                        "pricing": "Precios",
+                        "security": "Seguridad",
+                        "roadmap": "Mapa de ruta"
+                    }
+                },
+                "company": {
+                    "title": "Compañía",
+                    "links": {
+                        "about": "Nosotros",
+                        "blog": "Blog",
+                        "careers": "Carreras",
+                        "contact": "Contacto"
+                    }
+                },
+                "legal": {
+                    "title": "Legal",
+                    "links": {
+                        "privacy": "Privacidad",
+                        "terms": "Términos",
+                        "cookies": "Cookies"
+                    }
+                }
+            }
+        }
+    },
+    "Credits": {
+        "title": "Créditos y Préstamos",
+        "description": "Gestiona tus deudas y obligaciones financieras",
+        "newCredit": "+ Nuevo Crédito",
+        "totalDebt": "Deuda Total",
+        "activeCredits": "Créditos Activos",
+        "totalMonthlyPayment": "Pago Mensual Total",
+        "noCredits": "No tienes créditos registrados",
+        "createFirstCredit": "Registrar mi primer crédito",
+        "active": "Activo",
+        "paid": "Pagado",
+        "defaulted": "En Mora",
+        "paymentProgress": "Progreso del pago",
+        "total": "Total",
+        "remaining": "Restante",
+        "monthlyPayment": "Pago Mensual",
+        "nextDueDate": "Próximo Vencimiento",
+        "noDate": "Sin fecha",
+        "viewDetails": "Ver Detalles",
+        "creditDetails": "Detalles del crédito",
+        "edit": "Editar",
+        "back": "Volver",
+        "generalInfo": "Información General",
+        "totalAmount": "Monto Total",
+        "remainingAmount": "Monto Restante",
+        "progressPaid": "{progress}% pagado",
+        "interestRate": "Tasa de Interés",
+        "annualRate": "{rate}% anual",
+        "startDate": "Fecha de Inicio",
+        "registerPayment": "Registrar Pago",
+        "paymentAmount": "Monto del Pago",
+        "processing": "Procesando...",
+        "totalPaid": "Total pagado",
+        "paymentHistory": "Historial de Pagos",
+        "noPayments": "No hay pagos registrados",
+        "creditName": "Nombre del Crédito",
+        "namePlaceholder": "Ej: Préstamo Banco XYZ",
+        "creditType": "Tipo de Crédito",
+        "leaveEmptyTotal": "Dejar vacío para usar el monto total",
+        "interestRateLabel": "Tasa de Interés (% anual)",
+        "autoDateCalc": "Cálculo Automático de Fechas",
+        "totalMonths": "Total de Meses",
+        "monthsPaid": "Meses Pagados",
+        "paymentDay": "Día de Pago (1-31)",
+        "autoCalcHelp": "Completa estos campos para calcular automáticamente las fechas de inicio, próximo pago y fin del crédito",
+        "startDateLabel": "Fecha de Inicio {calculated}",
+        "nextDueDateLabel": "Próximo Vencimiento {calculated}",
+        "endDateLabel": "Fecha Final {calculated}",
+        "calculated": "(Calculada)",
+        "calculatedMasculine": "(Calculado)",
+        "saving": "Guardando...",
+        "updateCredit": "Actualizar Crédito",
+        "createCredit": "Crear Crédito",
+        "cancel": "Cancelar",
+        "genericError": "Ocurrió un error",
+        "types": {
+            "loan": "Préstamo",
+            "credit_card": "Tarjeta de Crédito",
+            "mortgage": "Hipoteca",
+            "personal_loan": "Préstamo Personal"
+        }
+    },
+    "Services": {
+        "title": "Servicios Recurrentes",
+        "description": "Gestiona tus suscripciones y pagos recurrentes",
+        "newService": "Nuevo Servicio",
+        "monthlyExpense": "Gasto Mensual Estimado",
+        "activeServices": "Servicios Activos ({count})",
+        "inactiveServices": "Servicios Inactivos ({count})",
+        "empty": "No hay servicios registrados",
+        "nextPayment": "Próximo pago",
+        "dueToday": "Vence hoy",
+        "dueInDays": "Vence en {days} días",
+        "account": "Cuenta",
+        "actions": {
+            "registerPayment": "Registrar Pago",
+            "edit": "Editar",
+            "deactivate": "Desactivar",
+            "activate": "Activar",
+            "delete": "Eliminar",
+            "deleteConfirm": "¿Estás seguro de eliminar el servicio \"{name}\"?"
+        },
+        "form": {
+            "name": "Nombre del Servicio",
+            "category": "Categoría",
+            "amount": "Monto",
+            "frequency": "Frecuencia",
+            "paymentDay": "Día de Pago (1-31)",
+            "nextPaymentDate": "Próxima Fecha de Pago",
+            "paymentAccount": "Cuenta de Pago (Opcional)",
+            "notes": "Notas (Opcional)",
+            "active": "Servicio Activo",
+            "activeDesc": "Los servicios inactivos no aparecen en próximos pagos",
+            "save": "Crear Servicio",
+            "update": "Actualizar Servicio",
+            "saving": "Guardando...",
+            "cancel": "Cancelar",
+            "placeholderName": "Ej: Netflix, Luz, Internet",
+            "placeholderAccount": "Seleccionar cuenta",
+            "placeholderNotes": "Notas adicionales sobre este servicio",
+            "none": "Ninguna",
+            "genericError": "Ocurrió un error"
+        },
+        "categories": {
+            "utilities": "Servicios",
+            "subscriptions": "Suscripciones",
+            "insurance": "Seguros",
+            "rent": "Renta",
+            "other": "Otro"
+        },
+        "frequencies": {
+            "weekly": "Semanal",
+            "biweekly": "Quincenal",
+            "monthly": "Mensual",
+            "yearly": "Anual"
+        }
+    },
+    "Accounts": {
+        "title": "Cuentas",
+        "totalBalance": "Balance total: ${balance}",
+        "newAccount": "+ Nueva Cuenta",
+        "noAccounts": "No hay cuentas registradas",
+        "createFirstAccount": "Crear mi primera cuenta",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "confirmDeleteTitle": "¿Estás seguro?",
+        "confirmDeleteDescription": "Esta acción no se puede deshacer. Se eliminará la cuenta y todas sus transacciones asociadas.",
+        "cancel": "Cancelar",
+        "accountName": "Nombre de la Cuenta",
+        "namePlaceholder": "Ej: Banco Principal",
+        "accountType": "Tipo de Cuenta",
+        "initialBalance": "Balance Inicial",
+        "currency": "Moneda",
+        "color": "Color",
+        "saving": "Guardando...",
+        "updateAccount": "Actualizar Cuenta",
+        "createAccount": "Crear Cuenta",
+        "genericError": "Ocurrió un error",
+        "types": {
+            "checking": "Cuenta Corriente",
+            "savings": "Cuenta de Ahorros",
+            "credit_card": "Tarjeta de Crédito",
+            "cash": "Efectivo",
+            "investment": "Inversión"
+        }
+    },
+    "Transactions": {
+        "title": "Transacciones",
+        "registeredTransactions": "{count} transacciones registradas",
+        "newTransaction": "Nueva Transacción",
+        "newTransactionDesc": "Registra un nuevo ingreso o gasto",
+        "history": "Historial",
+        "transactionCount": "{count} transacciones",
+        "noTransactions": "No hay transacciones registradas",
+        "createFirstTransaction": "Crear mi primera transacción",
+        "editTransaction": "Editar Transacción",
+        "editTransactionDesc": "Modifica los detalles de la transacción",
+        "date": "Fecha",
+        "description": "Descripción",
+        "category": "Categoría",
+        "account": "Cuenta",
+        "amount": "Monto",
+        "actions": "Acciones",
+        "noDescription": "Sin descripción",
+        "noCategory": "Sin categoría",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "confirmDeleteTitle": "¿Estás seguro?",
+        "confirmDeleteDescription": "Esta acción no se puede deshacer. Se eliminará la transacción y se actualizará el balance de la cuenta.",
+        "cancel": "Cancelar",
+        "hideFilters": "Ocultar Filtros",
+        "showFilters": "Mostrar Filtros",
+        "type": "Tipo",
+        "all": "Todos",
+        "income": "Ingreso",
+        "expense": "Gasto",
+        "allAccounts": "Todas",
+        "clearFilters": "Limpiar Filtros",
+        "selectAccount": "Seleccionar cuenta",
+        "selectCategory": "Seleccionar categoría",
+        "descriptionOptional": "Descripción (Opcional)",
+        "descriptionPlaceholder": "Ej: Compra de supermercado",
+        "saving": "Guardando...",
+        "updateTransaction": "Actualizar Transacción",
+        "createTransaction": "Crear Transacción",
+        "genericError": "Ocurrió un error al guardar la transacción"
+    },
+    "DashboardNav": {
+        "menu": "Menú",
+        "dashboard": "Dashboard",
+        "accounts": "Cuentas",
+        "transactions": "Transacciones",
+        "services": "Servicios",
+        "credits": "Créditos",
+        "sharing": "Compartir",
+        "reports": "Reportes",
+        "myAccount": "Mi Cuenta",
+        "profile": "Perfil",
+        "settings": "Configuración",
+        "logout": "Cerrar Sesión"
+    },
+    "Sharing": {
+        "title": "Compartir Finanzas",
+        "description": "Gestiona el acceso compartido a tus finanzas",
+        "inviteUser": "+ Invitar Usuario",
+        "sharedByMe": "He Compartido Con",
+        "sharedByMeDesc": "Personas que tienen acceso a mis finanzas",
+        "sharedWithMe": "Compartido Conmigo",
+        "sharedWithMeDesc": "Finanzas de otros usuarios a las que tengo acceso",
+        "sentInvitations": "Invitaciones Enviadas",
+        "sentInvitationsDesc": "Invitaciones pendientes de aceptación",
+        "receivedInvitations": "Invitaciones Recibidas",
+        "receivedInvitationsDesc": "Invitaciones para acceder a las finanzas de otros usuarios",
+        "noShares": "No has compartido tus finanzas con nadie",
+        "noSharedWithMe": "Nadie ha compartido sus finanzas contigo"
+    },
+    "Reports": {
+        "button": "Reportes",
+        "title": "Generar Reporte",
+        "description": "Selecciona el rango de fechas y la cuenta para generar tu reporte.",
+        "dateRange": "Rango de Fechas",
+        "selectDates": "Seleccionar fechas",
+        "account": "Cuenta",
+        "allAccounts": "Todas las cuentas",
+        "generating": "Generando...",
+        "generate": "Generar Reporte"
+    }
+}

@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useTranslations } from "next-intl"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -25,13 +26,7 @@ interface AccountFormProps {
   account?: Account
 }
 
-const ACCOUNT_TYPES = [
-  { value: "checking", label: "Cuenta Corriente" },
-  { value: "savings", label: "Cuenta de Ahorros" },
-  { value: "credit_card", label: "Tarjeta de Crédito" },
-  { value: "cash", label: "Efectivo" },
-  { value: "investment", label: "Inversión" },
-]
+
 
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"]
 
@@ -40,6 +35,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
   const supabase = createClient()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("Accounts")
 
   const [formData, setFormData] = useState({
     name: account?.name || "",
@@ -48,6 +44,15 @@ export function AccountForm({ userId, account }: AccountFormProps) {
     currency: account?.currency || "USD",
     color: account?.color || COLORS[0],
   })
+
+  // We need to define types inside helper or useTranslations return value
+  const ACCOUNT_TYPES = [
+    { value: "checking", label: t("types.checking") },
+    { value: "savings", label: t("types.savings") },
+    { value: "credit_card", label: t("types.credit_card") },
+    { value: "cash", label: t("types.cash") },
+    { value: "investment", label: t("types.investment") },
+  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -77,7 +82,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
       router.push("/dashboard/accounts")
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error")
+      setError(error instanceof Error ? error.message : t("genericError"))
     } finally {
       setIsLoading(false)
     }
@@ -88,10 +93,10 @@ export function AccountForm({ userId, account }: AccountFormProps) {
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre de la Cuenta</Label>
+            <Label htmlFor="name">{t("accountName")}</Label>
             <Input
               id="name"
-              placeholder="Ej: Banco Principal"
+              placeholder={t("namePlaceholder")}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -99,7 +104,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type">Tipo de Cuenta</Label>
+            <Label htmlFor="type">{t("accountType")}</Label>
             <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
               <SelectTrigger id="type">
                 <SelectValue />
@@ -115,7 +120,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="balance">Balance Inicial</Label>
+            <Label htmlFor="balance">{t("initialBalance")}</Label>
             <Input
               id="balance"
               type="number"
@@ -128,7 +133,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="currency">Moneda</Label>
+            <Label htmlFor="currency">{t("currency")}</Label>
             <Select value={formData.currency} onValueChange={(value) => setFormData({ ...formData, currency: value })}>
               <SelectTrigger id="currency">
                 <SelectValue />
@@ -144,7 +149,7 @@ export function AccountForm({ userId, account }: AccountFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Color</Label>
+            <Label>{t("color")}</Label>
             <div className="flex gap-2">
               {COLORS.map((color) => (
                 <button
@@ -162,10 +167,10 @@ export function AccountForm({ userId, account }: AccountFormProps) {
 
           <div className="flex gap-3">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Guardando..." : account ? "Actualizar Cuenta" : "Crear Cuenta"}
+              {isLoading ? t("saving") : account ? t("updateAccount") : t("createAccount")}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancelar
+              {t("cancel")}
             </Button>
           </div>
         </form>

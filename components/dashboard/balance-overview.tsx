@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Account {
   id: string
@@ -15,17 +16,19 @@ interface BalanceOverviewProps {
 }
 
 export function BalanceOverview({ accounts }: BalanceOverviewProps) {
+  const t = useTranslations("Dashboard")
+  const format = useFormatter()
   const totalBalance = accounts.reduce((sum, account) => sum + Number(account.balance), 0)
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Resumen de Cuentas</CardTitle>
+        <CardTitle>{t("balanceOverview")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {accounts.length === 0 ? (
-            <p className="text-sm text-slate-600">No tienes cuentas registradas</p>
+            <p className="text-sm text-slate-600">{t("noAccounts")}</p>
           ) : (
             accounts.map((account) => (
               <div key={account.id} className="flex items-center justify-between">
@@ -42,7 +45,7 @@ export function BalanceOverview({ accounts }: BalanceOverviewProps) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-foreground">
-                  ${Number(account.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  ${format.number(Number(account.balance), { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))

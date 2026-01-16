@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations, useFormatter } from "next-intl"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +41,8 @@ interface AccountsListProps {
 export function AccountsList({ accounts, userId, permissions }: AccountsListProps) {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations("Accounts")
+  const format = useFormatter()
 
   const canEdit = permissions?.edit ?? true
   const canDelete = permissions?.delete ?? true
@@ -56,12 +59,13 @@ export function AccountsList({ accounts, userId, permissions }: AccountsListProp
   }
 
   const getAccountTypeLabel = (type: string) => {
+    // This mapping uses the translation keys directly
     const types: Record<string, string> = {
-      checking: "Cuenta Corriente",
-      savings: "Cuenta de Ahorros",
-      credit_card: "Tarjeta de Crédito",
-      cash: "Efectivo",
-      investment: "Inversión",
+      checking: t("types.checking"),
+      savings: t("types.savings"),
+      credit_card: t("types.credit_card"),
+      cash: t("types.cash"),
+      investment: t("types.investment"),
     }
     return types[type] || type
   }
@@ -70,10 +74,10 @@ export function AccountsList({ accounts, userId, permissions }: AccountsListProp
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-slate-600 mb-4">No hay cuentas registradas</p>
+          <p className="text-slate-600 mb-4">{t("noAccounts")}</p>
           {permissions?.create !== false && (
             <Button asChild>
-              <Link href="/dashboard/accounts/new">Crear mi primera cuenta</Link>
+              <Link href="/dashboard/accounts/new">{t("createFirstAccount")}</Link>
             </Button>
           )}
         </CardContent>
@@ -97,31 +101,30 @@ export function AccountsList({ accounts, userId, permissions }: AccountsListProp
                 <div className="flex gap-2">
                   {canEdit && (
                     <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/dashboard/accounts/${account.id}`}>Editar</Link>
+                      <Link href={`/dashboard/accounts/${account.id}`}>{t("edit")}</Link>
                     </Button>
                   )}
                   {canDelete && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                          Eliminar
+                          {t("delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                          <AlertDialogTitle>{t("confirmDeleteTitle")}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Se eliminará la cuenta y todas sus transacciones
-                            asociadas.
+                            {t("confirmDeleteDescription")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(account.id)}
                             className="bg-red-600 hover:bg-red-700"
                           >
-                            Eliminar
+                            {t("delete")}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -133,7 +136,7 @@ export function AccountsList({ accounts, userId, permissions }: AccountsListProp
             <h3 className="text-lg font-semibold text-foreground mb-1">{account.name}</h3>
             <p className="text-sm text-slate-600 mb-3">{getAccountTypeLabel(account.type)}</p>
             <p className="text-2xl font-bold text-foreground">
-              ${Number(account.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              ${format.number(Number(account.balance), { minimumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-slate-600 mt-1">{account.currency}</p>
           </CardContent>

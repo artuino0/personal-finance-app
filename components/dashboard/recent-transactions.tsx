@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Transaction {
   id: string
@@ -19,18 +20,21 @@ interface RecentTransactionsProps {
 }
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  const t = useTranslations("Dashboard")
+  const format = useFormatter()
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Transacciones Recientes</CardTitle>
+        <CardTitle>{t("recentTransactions")}</CardTitle>
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard/transactions">Ver todas</Link>
+          <Link href="/dashboard/transactions">{t("viewAll")}</Link>
         </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {transactions.length === 0 ? (
-            <p className="text-sm text-slate-600">No hay transacciones registradas</p>
+            <p className="text-sm text-slate-600">{t("noTransactions")}</p>
           ) : (
             transactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between">
@@ -47,15 +51,14 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      {transaction.description || transaction.categories?.name || "Sin descripción"}
+                      {transaction.description || transaction.categories?.name || t("noDescription")}
                     </p>
                     <p className="text-xs text-slate-600">
                       {transaction.accounts?.name} •{" "}
                       {(() => {
                         const [year, month, day] = transaction.date.split("-").map(Number)
-                        const dayStr = String(day).padStart(2, "0")
-                        const monthStr = String(month).padStart(2, "0")
-                        return `${dayStr}/${monthStr}/${year}`
+                        const date = new Date(year, month - 1, day)
+                        return format.dateTime(date, { year: 'numeric', month: 'numeric', day: 'numeric' })
                       })()}
                     </p>
                   </div>
@@ -64,7 +67,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   className={`text-sm font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {format.number(Number(transaction.amount), { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))
