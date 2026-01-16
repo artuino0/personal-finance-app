@@ -4,7 +4,12 @@ import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { TransactionForm } from "@/components/transactions/transaction-form"
 import { getTranslations } from "next-intl/server"
 
-export default async function NewTransactionPage() {
+export default async function NewTransactionPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
   const supabase = await createClient()
 
   const {
@@ -12,14 +17,16 @@ export default async function NewTransactionPage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect(`/${locale}/auth/login`)
   }
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", user.id)
 
-  const { data: categories } = await supabase.from("categories").select("*").eq("user_id", user.id).order("name")
+  const { data: categories } = await supabase.rpc("get_localized_categories", {
+    user_locale: locale,
+  })
 
   const t = await getTranslations("Transactions")
 
