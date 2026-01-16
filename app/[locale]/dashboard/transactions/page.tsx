@@ -6,7 +6,7 @@ import { TransactionsFilter } from "@/components/transactions/transactions-filte
 import { Button } from "@/components/ui/button"
 import { Link } from "@/lib/i18n/navigation"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 import { PageHeader } from "@/components/dashboard/page-header"
 
 export default async function TransactionsPage({
@@ -16,6 +16,7 @@ export default async function TransactionsPage({
 }) {
   const params = await searchParams
   const supabase = await createClient()
+  const locale = await getLocale()
 
   const {
     data: { user },
@@ -33,7 +34,7 @@ export default async function TransactionsPage({
 
   let query = supabase
     .from("transactions")
-    .select("*, account_id, accounts(name, color), categories(name, color, icon)")
+    .select("*, account_id, accounts(name, color), global_categories(id, name_en, name_es, color, icon, type)")
     .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
     .order("created_at", { ascending: false })
@@ -50,14 +51,33 @@ export default async function TransactionsPage({
 
   const { data: transactions } = await query
 
+  const localizedTransactions = transactions?.map((t: any) => ({
+    ...t,
+    categories: t.global_categories
+      ? {
+          ...t.global_categories,
+          name: locale === "es" ? t.global_categories.name_es : t.global_categories.name_en,
+        }
+      : null,
+  }))
+
   const { data: accounts } = await supabase.from("accounts").select("id, name").eq("user_id", selectedAccountId)
 
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("id, name, type")
-    .eq("user_id", selectedAccountId)
+  const { data: globalCategories } = await supabase
+    .from("global_categories")
+    .select("id, name_en, name_es, type, color, icon")
+    .eq("is_active", true)
+    .order("name_es")
 
-  const t = await getTranslations("Transactions");
+  const categories = globalCategories?.map((cat) => ({
+    id: cat.id,
+    name: locale === "es" ? cat.name_es : cat.name_en,
+    type: cat.type,
+    color: cat.color,
+    icon: cat.icon,
+  }))
+
+  const t = await getTranslations("Transactions")
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -68,7 +88,7 @@ export default async function TransactionsPage({
       <main className="container mx-auto p-6">
         <PageHeader
           title={t("title")}
-          description={t("registeredTransactions", { count: transactions?.length || 0 })}
+          description={t("registeredTransactions", { count: localizedTransactions?.length || 0 })}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
@@ -84,7 +104,11 @@ export default async function TransactionsPage({
 
         <TransactionsFilter accounts={accounts || []} categories={categories || []} />
 
-        <TransactionsList transactions={transactions || []} userId={selectedAccountId} permissions={permissions} />
+        <TransactionsList
+          transactions={localizedTransactions || []}
+          userId={selectedAccountId}
+          permissions={permissions}
+        />
       </main>
     </div>
   )

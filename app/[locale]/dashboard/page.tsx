@@ -10,7 +10,7 @@ import { formatCurrency } from "@/lib/utils/currency"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import { AccountSelector } from "@/components/dashboard/account-selector"
 import { cookies } from "next/headers"
-import { getTranslations, getFormatter } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -25,6 +25,7 @@ export default async function DashboardPage() {
 
   const cookieStore = await cookies()
   const selectedAccountId = cookieStore.get("selected_account_id")?.value || user.id
+  const locale = await getLocale()
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
 
@@ -66,11 +67,21 @@ export default async function DashboardPage() {
 
   const { data: transactions } = await supabase
     .from("transactions")
-    .select("*, accounts(name), categories(name, color, icon)")
+    .select("*, accounts(name), global_categories(id, name_en, name_es, color, icon, type)")
     .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(5)
+
+  const localizedTransactions = transactions?.map((t: any) => ({
+    ...t,
+    categories: t.global_categories
+      ? {
+          ...t.global_categories,
+          name: locale === "es" ? t.global_categories.name_es : t.global_categories.name_en,
+        }
+      : null,
+  }))
 
   const { data: monthlyData } = await supabase
     .from("transactions")
@@ -178,7 +189,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <RecentTransactions transactions={transactions || []} />
+          <RecentTransactions transactions={localizedTransactions || []} />
           <UpcomingPayments credits={credits || []} services={services || []} />
         </div>
       </main>
