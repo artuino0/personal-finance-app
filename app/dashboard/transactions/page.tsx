@@ -35,6 +35,7 @@ export default async function TransactionsPage({
     .select("*, account_id, accounts(name, color), categories(name, color, icon)")
     .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
 
   if (params.type) {
     query = query.eq("type", params.type)

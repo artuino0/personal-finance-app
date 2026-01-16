@@ -68,6 +68,7 @@ export default async function DashboardPage() {
     .select("*, accounts(name), categories(name, color, icon)")
     .eq("user_id", selectedAccountId)
     .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(5)
 
   const { data: monthlyData } = await supabase
