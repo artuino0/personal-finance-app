@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     })
 
     if (error) {
-      console.error("[v0] Error al buscar usuario:", error)
+      console.error("[Kountly] Error al buscar usuario:", error)
       return NextResponse.json({ error: "Error al verificar el email" }, { status: 500 })
     }
 
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
-    console.error("[v0] Error en verify-email:", error)
+    console.error("[Kountly] Error en verify-email:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 }

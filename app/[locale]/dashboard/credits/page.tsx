@@ -4,7 +4,8 @@ import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { CreditsList } from "@/components/credits/credits-list"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
 
@@ -35,6 +36,8 @@ export default async function CreditsPage() {
   const activeCredits = credits?.filter((c) => c.status === "active").length || 0
   const monthlyPayment = credits?.reduce((sum, credit) => sum + (Number(credit.monthly_payment) || 0), 0) || 0
 
+  const t = await getTranslations("Credits");
+
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav
@@ -43,8 +46,8 @@ export default async function CreditsPage() {
       />
       <main className="container mx-auto p-6">
         <PageHeader
-          title="Créditos y Préstamos"
-          description="Gestiona tus deudas y obligaciones financieras"
+          title={t("title")}
+          description={t("description")}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
@@ -53,7 +56,7 @@ export default async function CreditsPage() {
           permissions={permissions}
           actions={
             <Button asChild>
-              <Link href="/dashboard/credits/new">+ Nuevo Crédito</Link>
+              <Link href="/dashboard/credits/new">{t("newCredit")}</Link>
             </Button>
           }
         />
@@ -61,7 +64,7 @@ export default async function CreditsPage() {
         <div className="grid gap-6 md:grid-cols-3 mb-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Deuda Total</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("totalDebt")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
@@ -72,7 +75,7 @@ export default async function CreditsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Créditos Activos</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("activeCredits")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{activeCredits}</div>
@@ -81,7 +84,7 @@ export default async function CreditsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Pago Mensual Total</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("totalMonthlyPayment")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">

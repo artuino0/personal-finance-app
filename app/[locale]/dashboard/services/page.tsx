@@ -8,7 +8,10 @@ import { ServicesList } from "@/components/services/services-list"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
 
+import { getTranslations } from "next-intl/server"
+
 export default async function ServicesPage() {
+  const t = await getTranslations("Services")
   const supabase = await createClient()
 
   const {
@@ -50,8 +53,8 @@ export default async function ServicesPage() {
       />
       <main className="container mx-auto p-6">
         <PageHeader
-          title="Servicios Recurrentes"
-          description="Gestiona tus suscripciones y pagos recurrentes"
+          title={t("title")}
+          description={t("description")}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
@@ -62,7 +65,7 @@ export default async function ServicesPage() {
             <Button className="gap-2">
               <Link href="/dashboard/services/new" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
-                Nuevo Servicio
+                {t("newService")}
               </Link>
             </Button>
           }
@@ -70,7 +73,7 @@ export default async function ServicesPage() {
 
         <div className="mb-6 rounded-lg border bg-background p-6">
           <div className="text-center">
-            <p className="text-sm text-foreground/60">Gasto Mensual Estimado</p>
+            <p className="text-sm text-foreground/60">{t("monthlyExpense")}</p>
             <p className="font-bold text-foreground/80 text-3xl">
               ${totalMonthly.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
@@ -79,13 +82,13 @@ export default async function ServicesPage() {
 
         <div className="space-y-6">
           <div>
-            <h2 className="mb-4 font-semibold text-lg">Servicios Activos ({activeServices.length})</h2>
+            <h2 className="mb-4 font-semibold text-lg">{t("activeServices", { count: activeServices.length })}</h2>
             <ServicesList services={activeServices} userId={selectedAccountId} />
           </div>
 
           {inactiveServices.length > 0 && (
             <div>
-              <h2 className="mb-4 font-semibold text-lg">Servicios Inactivos ({inactiveServices.length})</h2>
+              <h2 className="mb-4 font-semibold text-lg">{t("inactiveServices", { count: inactiveServices.length })}</h2>
               <ServicesList services={inactiveServices} userId={selectedAccountId} />
             </div>
           )}

@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useTranslations } from "next-intl"
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -52,6 +53,7 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("Transactions")
 
   // Find category by name if provided
   const categoryNameParam = searchParams.get("categoryName")
@@ -146,7 +148,7 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
       router.push("/dashboard/transactions")
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error")
+      setError(error instanceof Error ? error.message : t("genericError"))
     } finally {
       setIsLoading(false)
     }
@@ -158,13 +160,13 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="expense">Gasto</TabsTrigger>
-              <TabsTrigger value="income">Ingreso</TabsTrigger>
+              <TabsTrigger value="expense">{t("expense")}</TabsTrigger>
+              <TabsTrigger value="income">{t("income")}</TabsTrigger>
             </TabsList>
           </Tabs>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Monto</Label>
+            <Label htmlFor="amount">{t("amount")}</Label>
             <CurrencyInput
               id="amount"
               placeholder="0.00"
@@ -175,13 +177,13 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="account">Cuenta</Label>
+            <Label htmlFor="account">{t("account")}</Label>
             {isIOS ? (
               <NativeSelect
                 id="account"
                 value={formData.account_id}
                 onValueChange={(value) => setFormData({ ...formData, account_id: value })}
-                placeholder="Selecciona una cuenta"
+                placeholder={t("selectAccount")}
                 required
               >
                 {accounts.map((account) => (
@@ -197,7 +199,7 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
                 required
               >
                 <SelectTrigger id="account">
-                  <SelectValue placeholder="Selecciona una cuenta" />
+                  <SelectValue placeholder={t("selectAccount")} />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((account) => (
@@ -211,13 +213,13 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Categoría</Label>
+            <Label htmlFor="category">{t("category")}</Label>
             {isIOS ? (
               <NativeSelect
                 id="category"
                 value={formData.category_id}
                 onValueChange={(value) => setFormData({ ...formData, category_id: value })}
-                placeholder="Selecciona una categoría"
+                placeholder={t("selectCategory")}
               >
                 {filteredCategories.map((category) => (
                   <NativeSelectItem key={category.id} value={category.id}>
@@ -231,7 +233,7 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
                 onValueChange={(value) => setFormData({ ...formData, category_id: value })}
               >
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="Selecciona una categoría" />
+                  <SelectValue placeholder={t("selectCategory")} />
                 </SelectTrigger>
                 <SelectContent>
                   {filteredCategories.map((category) => (
@@ -245,7 +247,7 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="date">Fecha</Label>
+            <Label htmlFor="date">{t("date")}</Label>
             <Input
               id="date"
               type="date"
@@ -256,10 +258,10 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Label htmlFor="description">{t("descriptionOptional")}</Label>
             <Textarea
               id="description"
-              placeholder="Añade una nota sobre esta transacción"
+              placeholder={t("descriptionPlaceholder")}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
@@ -270,10 +272,10 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
 
           <div className="flex gap-3">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Guardando..." : transaction ? "Actualizar Transacción" : "Crear Transacción"}
+              {isLoading ? t("saving") : transaction ? t("updateTransaction") : t("createTransaction")}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancelar
+              {t("cancel")}
             </Button>
           </div>
         </form>

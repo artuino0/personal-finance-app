@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { Menu } from "lucide-react"
-import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
+import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
   DropdownMenu,
@@ -16,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
+import { LanguageSwitcher } from "@/components/language-switcher"
 
 interface DashboardNavProps {
   userName: string
@@ -28,6 +29,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
   const pathname = usePathname()
   const supabase = createClient()
   const [open, setOpen] = useState(false)
+  const t = useTranslations("DashboardNav")
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -36,12 +38,12 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
   }
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/accounts", label: "Cuentas" },
-    { href: "/dashboard/transactions", label: "Transacciones" },
-    { href: "/dashboard/services", label: "Servicios" },
-    { href: "/dashboard/credits", label: "Créditos" },
-    { href: "/dashboard/sharing", label: "Compartir" },
+    { href: "/dashboard", label: t("dashboard") },
+    { href: "/dashboard/accounts", label: t("accounts") },
+    { href: "/dashboard/transactions", label: t("transactions") },
+    { href: "/dashboard/services", label: t("services") },
+    { href: "/dashboard/credits", label: t("credits") },
+    { href: "/dashboard/sharing", label: t("sharing") },
   ]
 
   return (
@@ -52,7 +54,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Menú</span>
+                <span className="sr-only">{t("menu")}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[280px] sm:w-[320px]">
@@ -76,7 +78,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
                     onClick={() => setOpen(false)}
                     className="flex items-center rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-muted w-full"
                   >
-                    Reportes
+                    {t("reports")}
                   </button>
                 </ReportGeneratorDialog>
               </div>
@@ -99,43 +101,46 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
               </Link>
             ))}
             <ReportGeneratorDialog>
-              <span className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">Reportes</span>
+              <span className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">{t("reports")}</span>
             </ReportGeneratorDialog>
           </div>
         </div>
 
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
-            >
-              <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
-                {userAvatar ? (
-                  <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
-                ) : (
-                  userName.charAt(0).toUpperCase()
-                )}
-              </div>
-              <span className="hidden md:inline text-sm font-medium">{userName}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/profile">Perfil</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/settings">Configuración</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-              Cerrar Sesión
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
+              >
+                <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
+                  {userAvatar ? (
+                    <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
+                  ) : (
+                    userName.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <span className="hidden md:inline text-sm font-medium">{userName}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{t("myAccount")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/profile">{t("profile")}</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/settings">{t("settings")}</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                {t("logout")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </nav>
   )

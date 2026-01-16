@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations } from "next-intl"
 
 interface Transaction {
   id: string
@@ -19,18 +20,20 @@ interface RecentTransactionsProps {
 }
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  const t = useTranslations("Dashboard")
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Transacciones Recientes</CardTitle>
+        <CardTitle>{t("recentTransactions")}</CardTitle>
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard/transactions">Ver todas</Link>
+          <Link href="/dashboard/transactions">{t("viewAll")}</Link>
         </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {transactions.length === 0 ? (
-            <p className="text-sm text-slate-600">No hay transacciones registradas</p>
+            <p className="text-sm text-slate-600">{t("noTransactions")}</p>
           ) : (
             transactions.map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between">
@@ -47,15 +50,14 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      {transaction.description || transaction.categories?.name || "Sin descripción"}
+                      {transaction.description || transaction.categories?.name || t("noDescription")}
                     </p>
                     <p className="text-xs text-slate-600">
                       {transaction.accounts?.name} •{" "}
                       {(() => {
                         const [year, month, day] = transaction.date.split("-").map(Number)
-                        const dayStr = String(day).padStart(2, "0")
-                        const monthStr = String(month).padStart(2, "0")
-                        return `${dayStr}/${monthStr}/${year}`
+                        const date = new Date(year, month - 1, day)
+                        return new Intl.DateTimeFormat('es-ES').format(date)
                       })()}
                     </p>
                   </div>

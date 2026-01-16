@@ -40,25 +40,25 @@ export default async function SharingPage() {
         .eq("id", share.shared_with_id)
         .maybeSingle()
 
-      console.log("[v0] Share:", share.id, "shared_with_id:", share.shared_with_id)
-      console.log("[v0] Profile found:", sharedProfile)
+      console.log("[Kountly] Share:", share.id, "shared_with_id:", share.shared_with_id)
+      console.log("[Kountly] Profile found:", sharedProfile)
 
       // Determine display name with fallback logic
       let displayName = share.shared_with_email.split("@")[0] // fallback to email username
       if (sharedProfile?.full_name) {
         displayName = sharedProfile.full_name
-        console.log("[v0] Using profile name:", displayName)
+        console.log("[Kountly] Using profile name:", displayName)
       } else {
         // Try to get from auth metadata using admin client
         const { data: userData } = await supabase.auth.admin.getUserById(share.shared_with_id)
         if (userData?.user?.user_metadata?.full_name) {
           displayName = userData.user.user_metadata.full_name
-          console.log("[v0] Using auth metadata full_name:", displayName)
+          console.log("[Kountly] Using auth metadata full_name:", displayName)
         } else if (userData?.user?.user_metadata?.name) {
           displayName = userData.user.user_metadata.name
-          console.log("[v0] Using auth metadata name:", displayName)
+          console.log("[Kountly] Using auth metadata name:", displayName)
         } else {
-          console.log("[v0] Using fallback email username:", displayName)
+          console.log("[Kountly] Using fallback email username:", displayName)
         }
       }
 

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CurrencyInput } from "@/components/ui/currency-input"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { useTranslations } from "next-intl"
 
 interface Account {
   id: string
@@ -38,24 +39,10 @@ interface ServiceFormProps {
   service?: Service
 }
 
-const CATEGORIES = [
-  { value: "utilities", label: "Servicios (luz, agua, gas)" },
-  { value: "subscriptions", label: "Suscripciones (Netflix, Spotify)" },
-  { value: "insurance", label: "Seguros" },
-  { value: "rent", label: "Renta/Alquiler" },
-  { value: "other", label: "Otro" },
-]
-
-const FREQUENCIES = [
-  { value: "weekly", label: "Semanal" },
-  { value: "biweekly", label: "Quincenal" },
-  { value: "monthly", label: "Mensual" },
-  { value: "yearly", label: "Anual" },
-]
-
 export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations("Services")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -70,6 +57,22 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
     notes: service?.notes || "",
     is_active: service?.is_active ?? true,
   })
+
+  // Dynamic labels based on translations
+  const CATEGORIES = [
+    { value: "utilities", label: t("categories.utilities") },
+    { value: "subscriptions", label: t("categories.subscriptions") },
+    { value: "insurance", label: t("categories.insurance") },
+    { value: "rent", label: t("categories.rent") },
+    { value: "other", label: t("categories.other") },
+  ]
+
+  const FREQUENCIES = [
+    { value: "weekly", label: t("frequencies.weekly") },
+    { value: "biweekly", label: t("frequencies.biweekly") },
+    { value: "monthly", label: t("frequencies.monthly") },
+    { value: "yearly", label: t("frequencies.yearly") },
+  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,7 +104,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
       router.push("/dashboard/services")
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error")
+      setError(error instanceof Error ? error.message : t("form.genericError"))
     } finally {
       setIsLoading(false)
     }
@@ -112,10 +115,10 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre del Servicio</Label>
+            <Label htmlFor="name">{t("form.name")}</Label>
             <Input
               id="name"
-              placeholder="Ej: Netflix, Luz, Internet"
+              placeholder={t("form.placeholderName")}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -123,7 +126,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Categoría</Label>
+            <Label htmlFor="category">{t("form.category")}</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
               <SelectTrigger id="category">
                 <SelectValue />
@@ -140,7 +143,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="amount">Monto</Label>
+              <Label htmlFor="amount">{t("form.amount")}</Label>
               <CurrencyInput
                 id="amount"
                 placeholder="0.00"
@@ -151,7 +154,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="frequency">Frecuencia</Label>
+              <Label htmlFor="frequency">{t("form.frequency")}</Label>
               <Select
                 value={formData.frequency}
                 onValueChange={(value) => setFormData({ ...formData, frequency: value })}
@@ -172,7 +175,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="payment_day">Día de Pago (1-31)</Label>
+              <Label htmlFor="payment_day">{t("form.paymentDay")}</Label>
               <Input
                 id="payment_day"
                 type="number"
@@ -185,7 +188,7 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="next_payment_date">Próxima Fecha de Pago</Label>
+              <Label htmlFor="next_payment_date">{t("form.nextPaymentDate")}</Label>
               <Input
                 id="next_payment_date"
                 type="date"
@@ -197,16 +200,16 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="account_id">Cuenta de Pago (Opcional)</Label>
+            <Label htmlFor="account_id">{t("form.paymentAccount")}</Label>
             <Select
               value={formData.account_id}
               onValueChange={(value) => setFormData({ ...formData, account_id: value })}
             >
               <SelectTrigger id="account_id">
-                <SelectValue placeholder="Seleccionar cuenta" />
+                <SelectValue placeholder={t("form.placeholderAccount")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Ninguna</SelectItem>
+                <SelectItem value="none">{t("form.none")}</SelectItem>
                 {accounts.map((account) => (
                   <SelectItem key={account.id} value={account.id}>
                     {account.name}
@@ -217,10 +220,10 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas (Opcional)</Label>
+            <Label htmlFor="notes">{t("form.notes")}</Label>
             <Textarea
               id="notes"
-              placeholder="Notas adicionales sobre este servicio"
+              placeholder={t("form.placeholderNotes")}
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
@@ -230,9 +233,9 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
               <Label htmlFor="is_active" className="cursor-pointer">
-                Servicio Activo
+                {t("form.active")}
               </Label>
-              <p className="text-xs text-slate-600">Los servicios inactivos no aparecen en próximos pagos</p>
+              <p className="text-xs text-slate-600">{t("form.activeDesc")}</p>
             </div>
             <Switch
               id="is_active"
@@ -245,10 +248,10 @@ export function ServiceForm({ userId, accounts, service }: ServiceFormProps) {
 
           <div className="flex gap-3">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Guardando..." : service ? "Actualizar Servicio" : "Crear Servicio"}
+              {isLoading ? t("form.saving") : service ? t("form.update") : t("form.save")}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancelar
+              {t("form.cancel")}
             </Button>
           </div>
         </form>

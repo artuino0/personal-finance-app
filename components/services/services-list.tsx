@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Zap, Tv, Shield, Home, MoreHorizontal, Edit, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Service {
   id: string
@@ -52,6 +53,8 @@ const FREQUENCY_LABELS = {
 export function ServicesList({ services, userId }: ServicesListProps) {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations("Services")
+  const format = useFormatter()
 
   const handleToggleActive = async (serviceId: string, currentStatus: boolean) => {
     await supabase
@@ -64,7 +67,7 @@ export function ServicesList({ services, userId }: ServicesListProps) {
   }
 
   const handleDelete = async (serviceId: string, serviceName: string) => {
-    if (!confirm(`¿Estás seguro de eliminar el servicio "${serviceName}"?`)) return
+    if (!confirm(t("actions.deleteConfirm", { name: serviceName }))) return
 
     await supabase.from("recurring_services").delete().eq("id", serviceId).eq("user_id", userId)
 
@@ -75,7 +78,7 @@ export function ServicesList({ services, userId }: ServicesListProps) {
     return (
       <Card>
         <CardContent className="flex min-h-[200px] items-center justify-center">
-          <p className="text-slate-500">No hay servicios registrados</p>
+          <p className="text-slate-500">{t("empty")}</p>
         </CardContent>
       </Card>
     )
@@ -106,7 +109,7 @@ export function ServicesList({ services, userId }: ServicesListProps) {
                   <div>
                     <h3 className="font-semibold">{service.name}</h3>
                     <p className="text-xs text-slate-600">
-                      {CATEGORY_LABELS[service.category as keyof typeof CATEGORY_LABELS]}
+                      {t(`categories.${service.category}` as any)}
                     </p>
                   </div>
                 </div>
@@ -131,28 +134,28 @@ export function ServicesList({ services, userId }: ServicesListProps) {
                       }}
                     >
                       <Zap className="mr-2 h-4 w-4" />
-                      Registrar Pago
+                      {t("actions.registerPayment")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push(`/dashboard/services/${service.id}`)}>
                       <Edit className="mr-2 h-4 w-4" />
-                      Editar
+                      {t("actions.edit")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleToggleActive(service.id, service.is_active)}>
                       {service.is_active ? (
                         <>
                           <XCircle className="mr-2 h-4 w-4" />
-                          Desactivar
+                          {t("actions.deactivate")}
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="mr-2 h-4 w-4" />
-                          Activar
+                          {t("actions.activate")}
                         </>
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleDelete(service.id, service.name)} className="text-red-600">
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Eliminar
+                      {t("actions.delete")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -161,33 +164,32 @@ export function ServicesList({ services, userId }: ServicesListProps) {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-2xl">
-                    ${service.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${format.number(service.amount, { minimumFractionDigits: 2 })}
                   </span>
                   <Badge variant="secondary">
-                    {FREQUENCY_LABELS[service.frequency as keyof typeof FREQUENCY_LABELS]}
+                    {t(`frequencies.${service.frequency}` as any)}
                   </Badge>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Próximo pago:</span>
+                    <span className="text-slate-600">{t("nextPayment")}:</span>
                     <span className="font-medium">
-                      {new Date(service.next_payment_date + "T00:00:00").toLocaleDateString("es-MX", {
+                      {format.dateTime(new Date(service.next_payment_date + "T00:00:00"), {
                         day: "numeric",
                         month: "long",
-                        year: "numeric",
-                        timeZone: "UTC", // Treat the appended UTC time as UTC to keep the date stable, OR just parse the string parts.
+                        year: "numeric"
                       })}
                     </span>
                   </div>
                   {daysUntil >= 0 && daysUntil <= 7 && service.is_active && (
                     <Badge variant="destructive" className="w-full justify-center">
-                      {daysUntil === 0 ? "Vence hoy" : `Vence en ${daysUntil} días`}
+                      {daysUntil === 0 ? t("dueToday") : t("dueInDays", { days: daysUntil })}
                     </Badge>
                   )}
                   {service.accounts && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Cuenta:</span>
+                      <span className="text-slate-600">{t("account")}:</span>
                       <span className="font-medium">{service.accounts.name}</span>
                     </div>
                   )}

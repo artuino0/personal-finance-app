@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import { useTranslations } from "next-intl"
 
 interface MonthlyChartProps {
   userId: string
@@ -12,6 +13,8 @@ interface MonthlyChartProps {
 export function MonthlyChart({ userId }: MonthlyChartProps) {
   const [data, setData] = useState<{ month: string; ingresos: number; gastos: number }[]>([])
   const supabase = createClient()
+
+  const t = useTranslations("Dashboard")
 
   useEffect(() => {
     async function fetchData() {
@@ -44,12 +47,12 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
     }
 
     fetchData()
-  }, [userId])
+  }, [userId, supabase]) // Added supabase to dependency array
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Ingresos vs Gastos (Últimos 6 meses)</CardTitle>
+        <CardTitle>{t("incomeVsExpenses")}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

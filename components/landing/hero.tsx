@@ -1,40 +1,43 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-const sellingPoints = [
-    "Seguro y Privado",
-    "Reportes Detallados",
-    "Multi-moneda"
-]
+import { useTranslations } from "next-intl"
 
 export function Hero() {
+    const t = useTranslations("Hero")
+
+    const sellingPoints = [
+        t("points.secure"),
+        t("points.reports"),
+        t("points.multicurrency")
+    ]
+
     return (
         <section className="relative overflow-hidden pb-16 pt-16 md:pt-24 lg:pt-32">
             <div className="container mx-auto px-4 md:px-8">
                 <div className="mx-auto flex max-w-4xl flex-col items-center text-center space-y-8">
                     <div className="inline-flex items-center rounded-full border bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
                         <span className="mr-2 flex h-2 w-2 rounded-full bg-green-500"></span>
-                        Tu libertad financiera comienza hoy
+                        {t("badge")}
                     </div>
 
                     <h1 className="text-balance text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                        Controla tu dinero,
+                        {t("title")}
                         <br className="hidden md:block" />
-                        <span className="text-muted-foreground"> asegura tu futuro.</span>
+                        <span className="text-muted-foreground">{t("subtitle")}</span>
                     </h1>
 
                     <p className="max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground md:text-xl">
-                        La plataforma integral para gestionar ingresos, gastos y presupuestos. Toma el control total de tus finanzas personales y toma mejores decisiones.
+                        {t("description")}
                     </p>
 
                     <div className="w-full pt-4">
                         <div className="flex w-full flex-col justify-center items-center gap-4 sm:w-auto sm:flex-row">
                             <Button asChild size="lg" className="h-12 w-full rounded-full px-8 text-base shadow-sm sm:w-auto">
                                 <Link href="/auth/signup">
-                                    Crear mi cuenta gratis
+                                    {t("cta")}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
