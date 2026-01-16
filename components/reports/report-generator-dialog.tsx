@@ -8,12 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
 import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { es, enUS } from "date-fns/locale"
 import { CalendarIcon, Loader2, FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { pdf } from "@react-pdf/renderer"
 import { TransactionReportPDF } from "@/components/reports/transaction-report-pdf"
 import { DateRange } from "react-day-picker"
+import { useTranslations, useLocale } from "next-intl"
 
 interface ReportGeneratorDialogProps {
     children?: React.ReactNode
@@ -28,6 +29,10 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
     const [isLoading, setIsLoading] = useState(false)
     const [loadingAccounts, setLoadingAccounts] = useState(true)
     const [open, setOpen] = useState(false)
+    const t = useTranslations("Reports")
+    const locale = useLocale()
+
+    const dateFnsLocale = locale === 'es' ? es : enUS
 
     useEffect(() => {
         if (open) {
@@ -89,21 +94,21 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
                 {children || (
                     <Button variant="outline" className={triggerClassName}>
                         <FileText className="mr-2 h-4 w-4" />
-                        Reportes
+                        {t("button")}
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle>Generar Reporte</DialogTitle>
+                    <DialogTitle>{t("title")}</DialogTitle>
                     <DialogDescription>
-                        Selecciona el rango de fechas y la cuenta para generar tu reporte.
+                        {t("description")}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Rango de Fechas</label>
+                        <label className="text-sm font-medium">{t("dateRange")}</label>
                         <div className="grid gap-2">
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -119,14 +124,14 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
                                         {date?.from ? (
                                             date.to ? (
                                                 <>
-                                                    {format(date.from, "LLL dd, y", { locale: es })} -{" "}
-                                                    {format(date.to, "LLL dd, y", { locale: es })}
+                                                    {format(date.from, "LLL dd, y", { locale: dateFnsLocale })} -{" "}
+                                                    {format(date.to, "LLL dd, y", { locale: dateFnsLocale })}
                                                 </>
                                             ) : (
-                                                format(date.from, "LLL dd, y", { locale: es })
+                                                format(date.from, "LLL dd, y", { locale: dateFnsLocale })
                                             )
                                         ) : (
-                                            <span>Seleccionar fechas</span>
+                                            <span>{t("selectDates")}</span>
                                         )}
                                     </Button>
                                 </PopoverTrigger>
@@ -138,6 +143,7 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
                                         selected={date}
                                         onSelect={setDate}
                                         numberOfMonths={1}
+                                        locale={dateFnsLocale}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -145,13 +151,13 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Cuenta</label>
+                        <label className="text-sm font-medium">{t("account")}</label>
                         <Select value={selectedAccountId} onValueChange={setSelectedAccountId} disabled={loadingAccounts}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Todas las cuentas" />
+                                <SelectValue placeholder={t("allAccounts")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Todas las cuentas</SelectItem>
+                                <SelectItem value="all">{t("allAccounts")}</SelectItem>
                                 {accounts.map((acc) => (
                                     <SelectItem key={acc.id} value={acc.id}>
                                         {acc.name}
@@ -168,10 +174,10 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
                     >
                         {isLoading ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generando...
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("generating")}
                             </>
                         ) : (
-                            "Generar Reporte"
+                            t("generate")
                         )}
                     </Button>
                 </div>

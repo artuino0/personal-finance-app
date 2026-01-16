@@ -25,7 +25,16 @@
         "inDays": "En {days} días",
         "overdueDays": "Vencido hace {days} días",
         "credit": "Crédito",
-        "service": "Servicio"
+        "service": "Servicio",
+        "totalBalance": "Balance Total",
+        "monthlyIncome": "Ingresos del Mes",
+        "monthlyExpenses": "Gastos del Mes",
+        "savings": "Ahorro",
+        "thisMonth": "Este mes",
+        "accountsCount": "{count} cuentas",
+        "viewingFinancesOf": "Viendo finanzas de {name}",
+        "income": "Ingresos",
+        "expenses": "Gastos"
     },
     "Common": {
         "loading": "Cargando...",
@@ -50,6 +59,150 @@
             "secure": "Seguro y Privado",
             "reports": "Reportes Detallados",
             "multicurrency": "Multi-moneda"
+        }
+    },
+    "Landing": {
+        "Features": {
+            "title": "Todo lo que necesitas para dominar tus finanzas",
+            "subtitle": "Kountly simplifica la administración de tu dinero. Deja de adivinar y empieza a construir tu patrimonio con datos reales.",
+            "items": {
+                "control": {
+                    "name": "Control de Gastos",
+                    "description": "Registra cada compra y categorízala automáticamente para saber exactamente a dónde va tu dinero."
+                },
+                "budgets": {
+                    "name": "Presupuestos Inteligentes",
+                    "description": "Define límites de gasto por categoría y recibe alertas cuando te estés acercando al tope."
+                },
+                "credits": {
+                    "name": "Gestión de Créditos",
+                    "description": "Lleva un registro de tus deudas y fechas de pago para evitar intereses moratorios."
+                },
+                "reports": {
+                    "name": "Reportes Detallados",
+                    "description": "Visualiza tu evolución financiera con gráficos claros de ingresos vs. gastos mensuales."
+                },
+                "mobile": {
+                    "name": "Acceso Móvil",
+                    "description": "Tu información financiera sincronizada en todos tus dispositivos, disponible 24/7."
+                },
+                "security": {
+                    "name": "Seguridad Bancaria",
+                    "description": "Tus datos están encriptados y seguros. Tu privacidad es nuestra prioridad número uno."
+                }
+            }
+        },
+        "Pricing": {
+            "badge": "Planes Transparentes",
+            "title": "Invierte en tu tranquilidad financiera",
+            "subtitle": "Comienza gratis y actualiza cuando necesites más herramientas. Sin compromisos forzosos.",
+            "recommended": "RECOMENDADO",
+            "plans": {
+                "basic": {
+                    "name": "Básico",
+                    "description": "Para empezar a organizar tus cuentas.",
+                    "priceNote": "/mes",
+                    "cta": "Comenzar Gratis",
+                    "features": {
+                        "0": "Hasta 2 cuentas bancarias",
+                        "1": "Registro de gastos manual",
+                        "2": "Reportes mensuales básicos",
+                        "3": "Exportación en CSV"
+                    }
+                },
+                "pro": {
+                    "name": "Pro",
+                    "description": "Para maximizar tu ahorro.",
+                    "priceNote": "MXN/mes",
+                    "cta": "Elegir Plan Pro",
+                    "features": {
+                        "0": "Cuentas ilimitadas",
+                        "1": "Presupuestos por categoría",
+                        "2": "Gestión de deudas y préstamos",
+                        "3": "Proyección de ahorro",
+                        "4": "Soporte prioritario"
+                    }
+                },
+                "premium": {
+                    "name": "Premium",
+                    "description": "Para inversores y familias.",
+                    "priceNote": "MXN/mes",
+                    "cta": "Elegir Premium",
+                    "features": {
+                        "0": "Todo lo del Plan Pro +",
+                        "1": "Cuentas compartidas (Familia)",
+                        "2": "Seguimiento de inversiones",
+                        "3": "Asesoría financiera mensual (Chat)",
+                        "4": "API de desarrollador"
+                    }
+                }
+            }
+        },
+        "About": {
+            "badge": "Desde 2019",
+            "title": "Impulsando la transformación digital con",
+            "titleHighligt": "Dynamic Data",
+            "description1": "En DyDa (Dynamic Data) Software, nos dedicamos a crear soluciones tecnológicas que simplifican lo complejo. Fundada en 2019, nuestra misión ha sido empoderar a las pequeñas y medianas empresas con herramientas de software intuitivas y potentes.",
+            "description2": "nace de nuestra experiencia trabajando con cientos de negocios y personas que necesitaban una forma más eficiente de gestionar su economía. No solo escribimos código; construimos puentes digitales que hacen crecer tu patrimonio.",
+            "stats": {
+                "exp": "Años de Experiencia",
+                "users": "Usuarios Activos"
+            },
+            "values": {
+                "innovation": {
+                    "title": "Innovación Constante",
+                    "description": "Nos mantenemos a la vanguardia tecnológica para ofrecerte siempre las mejores herramientas del mercado."
+                },
+                "human": {
+                    "title": "Enfoque Humano",
+                    "description": "La tecnología debe servir a las personas. Diseñamos pensando primero en la experiencia del usuario."
+                },
+                "quality": {
+                    "title": "Calidad DyDa",
+                    "description": "Estándares de desarrollo de clase mundial que garantizan que tu plataforma esté siempre disponible."
+                },
+                "support": {
+                    "title": "Soporte Local",
+                    "description": "Entendemos el mercado local porque somos parte de él. Soporte real, en tu idioma y horario."
+                }
+            }
+        },
+        "CTA": {
+            "title": "Empieza a construir tu patrimonio",
+            "subtitle": "Únete a miles de usuarios que ya tomaron el control de su dinero hoy mismo.",
+            "button": "Crear mi cuenta gratis"
+        },
+        "Footer": {
+            "description": "La plataforma líder para la gestión de finanzas personales. Simplifica tu dinero hoy.",
+            "copyright": "© 2026 Kountly. Todos los derechos reservados.",
+            "columns": {
+                "product": {
+                    "title": "Producto",
+                    "links": {
+                        "features": "Funcionalidades",
+                        "pricing": "Precios",
+                        "security": "Seguridad",
+                        "roadmap": "Mapa de ruta"
+                    }
+                },
+                "company": {
+                    "title": "Compañía",
+                    "links": {
+                        "about": "Nosotros",
+                        "blog": "Blog",
+                        "careers": "Carreras",
+                        "contact": "Contacto"
+                    }
+                },
+                "legal": {
+                    "title": "Legal",
+                    "links": {
+                        "privacy": "Privacidad",
+                        "terms": "Términos",
+                        "cookies": "Cookies"
+                    }
+                }
+            }
         }
     },
     "Credits": {
@@ -201,11 +354,14 @@
     "Transactions": {
         "title": "Transacciones",
         "registeredTransactions": "{count} transacciones registradas",
-        "newTransaction": "+ Nueva Transacción",
+        "newTransaction": "Nueva Transacción",
+        "newTransactionDesc": "Registra un nuevo ingreso o gasto",
         "history": "Historial",
         "transactionCount": "{count} transacciones",
         "noTransactions": "No hay transacciones registradas",
         "createFirstTransaction": "Crear mi primera transacción",
+        "editTransaction": "Editar Transacción",
+        "editTransactionDesc": "Modifica los detalles de la transacción",
         "date": "Fecha",
         "description": "Descripción",
         "category": "Categoría",
@@ -227,14 +383,14 @@
         "expense": "Gasto",
         "allAccounts": "Todas",
         "clearFilters": "Limpiar Filtros",
-        "selectAccount": "Selecciona una cuenta",
-        "selectCategory": "Selecciona una categoría",
-        "descriptionOptional": "Descripción (opcional)",
-        "descriptionPlaceholder": "Añade una nota sobre esta transacción",
+        "selectAccount": "Seleccionar cuenta",
+        "selectCategory": "Seleccionar categoría",
+        "descriptionOptional": "Descripción (Opcional)",
+        "descriptionPlaceholder": "Ej: Compra de supermercado",
         "saving": "Guardando...",
         "updateTransaction": "Actualizar Transacción",
         "createTransaction": "Crear Transacción",
-        "genericError": "Ocurrió un error"
+        "genericError": "Ocurrió un error al guardar la transacción"
     },
     "DashboardNav": {
         "menu": "Menú",
@@ -249,5 +405,31 @@
         "profile": "Perfil",
         "settings": "Configuración",
         "logout": "Cerrar Sesión"
+    },
+    "Sharing": {
+        "title": "Compartir Finanzas",
+        "description": "Gestiona el acceso compartido a tus finanzas",
+        "inviteUser": "+ Invitar Usuario",
+        "sharedByMe": "He Compartido Con",
+        "sharedByMeDesc": "Personas que tienen acceso a mis finanzas",
+        "sharedWithMe": "Compartido Conmigo",
+        "sharedWithMeDesc": "Finanzas de otros usuarios a las que tengo acceso",
+        "sentInvitations": "Invitaciones Enviadas",
+        "sentInvitationsDesc": "Invitaciones pendientes de aceptación",
+        "receivedInvitations": "Invitaciones Recibidas",
+        "receivedInvitationsDesc": "Invitaciones para acceder a las finanzas de otros usuarios",
+        "noShares": "No has compartido tus finanzas con nadie",
+        "noSharedWithMe": "Nadie ha compartido sus finanzas contigo"
+    },
+    "Reports": {
+        "button": "Reportes",
+        "title": "Generar Reporte",
+        "description": "Selecciona el rango de fechas y la cuenta para generar tu reporte.",
+        "dateRange": "Rango de Fechas",
+        "selectDates": "Seleccionar fechas",
+        "account": "Cuenta",
+        "allAccounts": "Todas las cuentas",
+        "generating": "Generando...",
+        "generate": "Generar Reporte"
     }
 }

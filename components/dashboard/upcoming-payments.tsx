@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@/lib/i18n/navigation"
 import { CreditCard, Repeat } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Credit {
   id: string
@@ -29,6 +29,7 @@ interface UpcomingPaymentsProps {
 
 export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
   const t = useTranslations("Dashboard")
+  const format = useFormatter()
 
   // Combine and sort payments by date
   const allPayments = [
@@ -117,7 +118,7 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-foreground">
-                      ${payment.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      ${format.number(payment.amount, { minimumFractionDigits: 2 })}
                     </p>
                     <Badge variant="secondary" className="text-xs">
                       {payment.type === "credit" ? t("credit") : t("service")}

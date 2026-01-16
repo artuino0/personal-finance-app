@@ -1,22 +1,34 @@
 "use client"
 
-import { useLocale } from "next-intl"
-import { usePathname, useRouter } from "@/lib/i18n/navigation"
-import { Button } from "@/components/ui/button"
+import { useLocale, useTranslations } from "next-intl"
+import { useRouter, usePathname } from "@/lib/i18n/navigation"
+import { useEffect } from "react"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 import { Globe } from "lucide-react"
 
 export function LanguageSwitcher() {
     const locale = useLocale()
     const router = useRouter()
     const pathname = usePathname()
+    const t = useTranslations("LanguageSwitcher")
 
-    const handleLocaleChange = (newLocale: string) => {
+    useEffect(() => {
+        const storedLocale = localStorage.getItem("locale")
+        const targetLocale = storedLocale || (navigator.language.startsWith("en") ? "en" : "es")
+
+        if (targetLocale !== locale && (targetLocale === "en" || targetLocale === "es")) {
+            router.replace(pathname, { locale: targetLocale })
+        }
+    }, [locale, pathname, router])
+
+    const handleLanguageChange = (newLocale: string) => {
+        localStorage.setItem("locale", newLocale)
         router.replace(pathname, { locale: newLocale })
     }
 
@@ -29,10 +41,10 @@ export function LanguageSwitcher() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleLocaleChange("es")}>
+                <DropdownMenuItem onClick={() => handleLanguageChange("es")}>
                     Español {locale === "es" && "✓"}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleLocaleChange("en")}>
+                <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
                     English {locale === "en" && "✓"}
                 </DropdownMenuItem>
             </DropdownMenuContent>

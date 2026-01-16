@@ -10,6 +10,7 @@ import { formatCurrency } from "@/lib/utils/currency"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import { AccountSelector } from "@/components/dashboard/account-selector"
 import { cookies } from "next/headers"
+import { getTranslations, getFormatter } from "next-intl/server"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -98,6 +99,8 @@ export default async function DashboardPage() {
     .order("next_payment_date", { ascending: true })
     .limit(5)
 
+  const t = await getTranslations("Dashboard")
+
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav
@@ -109,11 +112,11 @@ export default async function DashboardPage() {
       <main className="container mx-auto p-6">
         <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
             <p className="text-slate-600">
               {isViewingOwnAccount
-                ? `Bienvenido de nuevo, ${profile?.full_name || "Usuario"}`
-                : `Viendo finanzas de ${displayName}`}
+                ? t("welcome", { name: profile?.full_name || "Usuario" })
+                : t("viewingFinancesOf", { name: displayName })}
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -130,41 +133,41 @@ export default async function DashboardPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Balance Total</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("totalBalance")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">${formatCurrency(totalBalance)}</div>
-              <p className="text-xs text-slate-600 mt-1">{accounts?.length || 0} cuentas</p>
+              <p className="text-xs text-slate-600 mt-1">{t("accountsCount", { count: accounts?.length || 0 })}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ingresos del Mes</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("monthlyIncome")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">+${formatCurrency(monthlyIncome)}</div>
-              <p className="text-xs text-slate-600 mt-1">Este mes</p>
+              <p className="text-xs text-slate-600 mt-1">{t("thisMonth")}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Gastos del Mes</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("monthlyExpenses")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">-${formatCurrency(monthlyExpense)}</div>
-              <p className="text-xs text-slate-600 mt-1">Este mes</p>
+              <p className="text-xs text-slate-600 mt-1">{t("thisMonth")}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ahorro</CardTitle>
+              <CardTitle className="text-sm font-medium">{t("savings")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">${formatCurrency(monthlyIncome - monthlyExpense)}</div>
-              <p className="text-xs text-slate-600 mt-1">Este mes</p>
+              <p className="text-xs text-slate-600 mt-1">{t("thisMonth")}</p>
             </CardContent>
           </Card>
         </div>

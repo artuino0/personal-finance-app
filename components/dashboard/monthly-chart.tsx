@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { useTranslations } from "next-intl"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface MonthlyChartProps {
   userId: string
@@ -15,6 +15,7 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
   const supabase = createClient()
 
   const t = useTranslations("Dashboard")
+  const format = useFormatter()
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +39,7 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
           transactions?.filter((t) => t.type === "expense").reduce((sum, t) => sum + Number(t.amount), 0) || 0
 
         months.push({
-          month: date.toLocaleDateString("en-US", { month: "short" }),
+          month: format.dateTime(date, { month: "short" }),
           ingresos: income,
           gastos: expense,
         })
@@ -47,7 +48,7 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
     }
 
     fetchData()
-  }, [userId, supabase]) // Added supabase to dependency array
+  }, [userId, supabase, format]) // Added format to dependency array
 
   return (
     <Card>
@@ -62,8 +63,8 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="ingresos" fill="#10b981" />
-            <Bar dataKey="gastos" fill="#ef4444" />
+            <Bar dataKey="ingresos" name={t("income")} fill="#10b981" />
+            <Bar dataKey="gastos" name={t("expenses")} fill="#ef4444" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

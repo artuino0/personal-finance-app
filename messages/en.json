@@ -25,7 +25,16 @@
         "inDays": "In {days} days",
         "overdueDays": "Overdue by {days} days",
         "credit": "Loan",
-        "service": "Service"
+        "service": "Service",
+        "totalBalance": "Total Balance",
+        "monthlyIncome": "Monthly Income",
+        "monthlyExpenses": "Monthly Expenses",
+        "savings": "Savings",
+        "thisMonth": "This month",
+        "accountsCount": "{count} accounts",
+        "viewingFinancesOf": "Viewing finances of {name}",
+        "income": "Income",
+        "expenses": "Expenses"
     },
     "Common": {
         "loading": "Loading...",
@@ -50,6 +59,150 @@
             "secure": "Secure & Private",
             "reports": "Detailed Reports",
             "multicurrency": "Multi-currency"
+        }
+    },
+    "Landing": {
+        "Features": {
+            "title": "Everything you need to master your finances",
+            "subtitle": "Kountly simplifies your money management. Stop guessing and start building your wealth with real data.",
+            "items": {
+                "control": {
+                    "name": "Expense Control",
+                    "description": "Log every purchase and categorize it automatically to know exactly where your money goes."
+                },
+                "budgets": {
+                    "name": "Smart Budgets",
+                    "description": "Define spending limits by category and receive alerts when you are nearing the cap."
+                },
+                "credits": {
+                    "name": "Credit Management",
+                    "description": "Keep track of your debts and payment dates to avoid late interest."
+                },
+                "reports": {
+                    "name": "Detailed Reports",
+                    "description": "Visualize your financial evolution with clear monthly income vs. expense charts."
+                },
+                "mobile": {
+                    "name": "Mobile Access",
+                    "description": "Your financial information synchronized across all your devices, available 24/7."
+                },
+                "security": {
+                    "name": "Bank-Grade Security",
+                    "description": "Your data is encrypted and secure. Your privacy is our number one priority."
+                }
+            }
+        },
+        "Pricing": {
+            "badge": "Transparent Plans",
+            "title": "Invest in your financial peace of mind",
+            "subtitle": "Start for free and upgrade when you need more tools. No forced commitments.",
+            "recommended": "RECOMMENDED",
+            "plans": {
+                "basic": {
+                    "name": "Basic",
+                    "description": "To start organizing your accounts.",
+                    "priceNote": "/mo",
+                    "cta": "Start for Free",
+                    "features": {
+                        "0": "Up to 2 bank accounts",
+                        "1": "Manual expense logging",
+                        "2": "Basic monthly reports",
+                        "3": "CSV Export"
+                    }
+                },
+                "pro": {
+                    "name": "Pro",
+                    "description": "To maximize your savings.",
+                    "priceNote": "MXN/mo",
+                    "cta": "Choose Pro Plan",
+                    "features": {
+                        "0": "Unlimited accounts",
+                        "1": "Budgets by category",
+                        "2": "Debt and loan management",
+                        "3": "Savings projection",
+                        "4": "Priority support"
+                    }
+                },
+                "premium": {
+                    "name": "Premium",
+                    "description": "For investors and families.",
+                    "priceNote": "MXN/mo",
+                    "cta": "Choose Premium",
+                    "features": {
+                        "0": "Everything in Pro Plan +",
+                        "1": "Shared accounts (Family)",
+                        "2": "Investment tracking",
+                        "3": "Monthly financial advice (Chat)",
+                        "4": "Developer API"
+                    }
+                }
+            }
+        },
+        "About": {
+            "badge": "Since 2019",
+            "title": "Driving digital transformation with",
+            "titleHighligt": "Dynamic Data",
+            "description1": "At DyDa (Dynamic Data) Software, we dedicate ourselves to creating technological solutions that simplify the complex. Founded in 2019, our mission has been to empower small and medium-sized businesses with intuitive and powerful software tools.",
+            "description2": "was born from our experience working with hundreds of businesses and individuals who needed a more efficient way to manage their economy. We don't just write code; we build digital bridges that grow your wealth.",
+            "stats": {
+                "exp": "Years of Experience",
+                "users": "Active Users"
+            },
+            "values": {
+                "innovation": {
+                    "title": "Constant Innovation",
+                    "description": "We stay at the technological forefront to always offer you the best tools on the market."
+                },
+                "human": {
+                    "title": "Human Focus",
+                    "description": "Technology must serve people. We design thinking first about the user experience."
+                },
+                "quality": {
+                    "title": "DyDa Quality",
+                    "description": "World-class development standards ensuring your platform is always available."
+                },
+                "support": {
+                    "title": "Local Support",
+                    "description": "We understand the local market because we are part of it. Real support, in your language and timezone."
+                }
+            }
+        },
+        "CTA": {
+            "title": "Start building your wealth",
+            "subtitle": "Join thousands of users who have already taken control of their money today.",
+            "button": "Create my free account"
+        },
+        "Footer": {
+            "description": "The leading platform for personal finance management. Simplify your money today.",
+            "copyright": "© 2026 Kountly. All rights reserved.",
+            "columns": {
+                "product": {
+                    "title": "Product",
+                    "links": {
+                        "features": "Features",
+                        "pricing": "Pricing",
+                        "security": "Security",
+                        "roadmap": "Roadmap"
+                    }
+                },
+                "company": {
+                    "title": "Company",
+                    "links": {
+                        "about": "About Us",
+                        "blog": "Blog",
+                        "careers": "Careers",
+                        "contact": "Contact"
+                    }
+                },
+                "legal": {
+                    "title": "Legal",
+                    "links": {
+                        "privacy": "Privacy",
+                        "terms": "Terms",
+                        "cookies": "Cookies"
+                    }
+                }
+            }
         }
     },
     "Credits": {
@@ -201,11 +354,14 @@
     "Transactions": {
         "title": "Transactions",
         "registeredTransactions": "{count} transactions registered",
-        "newTransaction": "+ New Transaction",
+        "newTransaction": "New Transaction",
+        "newTransactionDesc": "Register a new income or expense",
         "history": "History",
         "transactionCount": "{count} transactions",
         "noTransactions": "No registered transactions",
         "createFirstTransaction": "Create my first transaction",
+        "editTransaction": "Edit Transaction",
+        "editTransactionDesc": "Modify transaction details",
         "date": "Date",
         "description": "Description",
         "category": "Category",
@@ -227,14 +383,14 @@
         "expense": "Expense",
         "allAccounts": "All",
         "clearFilters": "Clear Filters",
-        "selectAccount": "Select an account",
-        "selectCategory": "Select a category",
-        "descriptionOptional": "Description (optional)",
-        "descriptionPlaceholder": "Add a note about this transaction",
+        "selectAccount": "Select account",
+        "selectCategory": "Select category",
+        "descriptionOptional": "Description (Optional)",
+        "descriptionPlaceholder": "Ex: Grocery shopping",
         "saving": "Saving...",
         "updateTransaction": "Update Transaction",
         "createTransaction": "Create Transaction",
-        "genericError": "An error occurred"
+        "genericError": "An error occurred while saving the transaction"
     },
     "DashboardNav": {
         "menu": "Menu",
@@ -249,5 +405,31 @@
         "profile": "Profile",
         "settings": "Settings",
         "logout": "Log out"
+    },
+    "Sharing": {
+        "title": "Share Finances",
+        "description": "Manage shared access to your finances",
+        "inviteUser": "+ Invite User",
+        "sharedByMe": "Shared By Me",
+        "sharedByMeDesc": "People who have access to my finances",
+        "sharedWithMe": "Shared With Me",
+        "sharedWithMeDesc": "Finances I have access to",
+        "sentInvitations": "Sent Invitations",
+        "sentInvitationsDesc": "Invitations pending acceptance",
+        "receivedInvitations": "Received Invitations",
+        "receivedInvitationsDesc": "Invitations to access other users' finances",
+        "noShares": "You haven't shared your finances with anyone",
+        "noSharedWithMe": "No one has shared their finances with you"
+    },
+    "Reports": {
+        "button": "Reports",
+        "title": "Generate Report",
+        "description": "Select date range and account to generate your report.",
+        "dateRange": "Date Range",
+        "selectDates": "Select dates",
+        "account": "Account",
+        "allAccounts": "All accounts",
+        "generating": "Generating...",
+        "generate": "Generate Report"
     }
 }

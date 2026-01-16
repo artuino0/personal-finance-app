@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/lib/i18n/navigation"
-import { useTranslations } from "next-intl"
+import { useTranslations, useFormatter } from "next-intl"
 
 interface Transaction {
   id: string
@@ -21,6 +21,7 @@ interface RecentTransactionsProps {
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   const t = useTranslations("Dashboard")
+  const format = useFormatter()
 
   return (
     <Card>
@@ -57,7 +58,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                       {(() => {
                         const [year, month, day] = transaction.date.split("-").map(Number)
                         const date = new Date(year, month - 1, day)
-                        return new Intl.DateTimeFormat('es-ES').format(date)
+                        return format.dateTime(date, { year: 'numeric', month: 'numeric', day: 'numeric' })
                       })()}
                     </p>
                   </div>
@@ -66,7 +67,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                   className={`text-sm font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {format.number(Number(transaction.amount), { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))

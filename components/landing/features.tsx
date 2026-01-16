@@ -1,50 +1,51 @@
-"use client"
-
+import { useTranslations } from "next-intl"
 import { Wallet, PieChart, TrendingUp, Smartphone, Shield, CreditCard } from "lucide-react"
 
-const features = [
-    {
-        name: "Control de Gastos",
-        description: "Registra cada compra y categorízala automáticamente para saber exactamente a dónde va tu dinero.",
-        icon: Wallet,
-    },
-    {
-        name: "Presupuestos Inteligentes",
-        description: "Define límites de gasto por categoría y recibe alertas cuando te estés acercando al tope.",
-        icon: PieChart,
-    },
-    {
-        name: "Gestión de Créditos",
-        description: "Lleva un registro de tus deudas y fechas de pago para evitar intereses moratorios.",
-        icon: CreditCard,
-    },
-    {
-        name: "Reportes Detallados",
-        description: "Visualiza tu evolución financiera con gráficos claros de ingresos vs. gastos mensuales.",
-        icon: TrendingUp,
-    },
-    {
-        name: "Acceso Móvil",
-        description: "Tu información financiera sincronizada en todos tus dispositivos, disponible 24/7.",
-        icon: Smartphone,
-    },
-    {
-        name: "Seguridad Bancaria",
-        description: "Tus datos están encriptados y seguros. Tu privacidad es nuestra prioridad número uno.",
-        icon: Shield,
-    },
-]
-
 export function Features() {
+    const t = useTranslations("Landing.Features")
+
+    const features = [
+        {
+            name: t("items.control.name"),
+            description: t("items.control.description"),
+            icon: Wallet,
+        },
+        {
+            name: t("items.budgets.name"),
+            description: t("items.budgets.description"),
+            icon: PieChart,
+        },
+        {
+            name: t("items.credits.name"),
+            description: t("items.credits.description"),
+            icon: CreditCard,
+        },
+        {
+            name: t("items.reports.name"),
+            description: t("items.reports.description"),
+            icon: TrendingUp,
+        },
+        {
+            name: t("items.mobile.name"),
+            description: t("items.mobile.description"),
+            icon: Smartphone,
+        },
+        {
+            name: t("items.security.name"),
+            description: t("items.security.description"),
+            icon: Shield,
+        },
+    ]
+
     return (
         <section id="features" className="bg-secondary/30 py-24">
             <div className="container mx-auto px-4 md:px-8">
                 <div className="mx-auto mb-16 max-w-3xl text-center">
                     <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Todo lo que necesitas para dominar tus finanzas
+                        {t("title")}
                     </h2>
                     <p className="text-lg text-muted-foreground">
-                        Kountly simplifica la administración de tu dinero. Deja de adivinar y empieza a construir tu patrimonio con datos reales.
+                        {t("subtitle")}
                     </p>
                 </div>
 

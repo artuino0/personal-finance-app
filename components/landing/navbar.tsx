@@ -1,11 +1,36 @@
 "use client"
 
-import { Link } from "@/lib/i18n/navigation"
+import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { Button } from "@/components/ui/button"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
+import { useEffect } from "react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Globe } from "lucide-react"
 
 export function Navbar() {
     const t = useTranslations("Navbar")
+    const router = useRouter()
+    const pathname = usePathname()
+    const currentLocale = useLocale()
+
+    useEffect(() => {
+        const storedLocale = localStorage.getItem("locale")
+        const targetLocale = storedLocale || (navigator.language.startsWith("en") ? "en" : "es")
+
+        if (targetLocale !== currentLocale && (targetLocale === "en" || targetLocale === "es")) {
+            router.replace(pathname, { locale: targetLocale })
+        }
+    }, [currentLocale, pathname, router])
+
+    const handleLanguageChange = (locale: string) => {
+        localStorage.setItem("locale", locale)
+        router.replace(pathname, { locale })
+    }
 
     const navLinks = [
         { href: "#features", label: t("features") },
@@ -31,6 +56,23 @@ export function Navbar() {
                 </nav>
 
                 <div className="flex items-center gap-4">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-9 w-9">
+                                <Globe className="h-4 w-4" />
+                                <span className="sr-only">Switch language</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleLanguageChange("es")}>
+                                Español
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
+                                English
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <Link
                         href="/auth/login"
                         className="text-sm font-medium underline-offset-4 hover:underline transition-colors hover:text-foreground text-muted-foreground border rounded-md px-4 py-2"
