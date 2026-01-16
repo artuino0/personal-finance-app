@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { Link, useRouter } from "@/lib/i18n/navigation"
+import { useLocale } from "next-intl"
 import { useState } from "react"
 import { Loader2, ArrowLeft } from "lucide-react"
 
@@ -18,6 +18,7 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const locale = useLocale()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,7 +53,7 @@ export default function SignupPage() {
 
     // Ensure accurate URL handling by removing any trailing slash from the base URL
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL || window.location.origin).replace(/\/$/, "")
-    const redirectTo = `${appUrl}/auth/callback`
+    const redirectTo = `${appUrl}/${locale}/auth/callback`
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
