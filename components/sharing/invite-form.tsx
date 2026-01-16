@@ -211,7 +211,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                 <div>
                   <p className="font-medium text-orange-900 dark:text-orange-100">Usuario no registrado</p>
                   <p className="text-sm text-orange-700 dark:text-orange-300">
-                    Este usuario deberá registrarse en FindexApp para aceptar la invitación
+                    Este usuario deberá registrarse en Kountly para aceptar la invitación
                   </p>
                 </div>
               </div>

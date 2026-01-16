@@ -57,7 +57,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             </SheetTrigger>
             <SheetContent side="left" className="w-[280px] sm:w-[320px]">
               <SheetHeader>
-                <SheetTitle className="text-left">FindexApp</SheetTitle>
+                <SheetTitle className="text-left">Kountly</SheetTitle>
               </SheetHeader>
               <div className="mt-8 flex flex-col gap-2">
                 {navItems.map((item) => (
@@ -65,9 +65,8 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${
-                      pathname === item.href ? "bg-muted text-foreground" : "text-slate-700"
-                    }`}
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${pathname === item.href ? "bg-muted text-foreground" : "text-slate-700"
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -85,7 +84,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
           </Sheet>
 
           <Link href="/dashboard" className="text-xl font-bold text-foreground">
-            FindexApp
+            Kountly
           </Link>
           {/* Desktop Navigation */}
           <div className="hidden md:flex gap-6">
@@ -93,9 +92,8 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors hover:text-foreground ${
-                  pathname === item.href ? "text-foreground" : "text-slate-700"
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === item.href ? "text-foreground" : "text-slate-700"
+                  }`}
               >
                 {item.label}
               </Link>

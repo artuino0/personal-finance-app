@@ -71,7 +71,7 @@ export default function LoginPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <span className="text-lg font-bold">F</span>
             </div>
-            <span>FindexApp</span>
+            <span>Kountly</span>
           </Link>
         </div>
 
@@ -162,7 +162,7 @@ export default function LoginPage() {
         <div className="grid gap-4 mt-auto relative z-10 max-w-lg">
           <blockquote className="space-y-4">
             <p className="text-2xl font-semibold leading-relaxed tracking-tight">
-              &ldquo;FindexApp ha transformado completamente cómo manejo mis finanzas. La capacidad de ver todos mis gastos y presupuestos en un solo lugar es invaluable.&rdquo;
+              &ldquo;Kountly ha transformado completamente cómo manejo mis finanzas. La capacidad de ver todos mis gastos y presupuestos en un solo lugar es invaluable.&rdquo;
             </p>
             <footer className="text-sm font-medium text-muted-foreground">
               — Sofía R., Freelancer

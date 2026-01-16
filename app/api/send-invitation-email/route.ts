@@ -126,11 +126,11 @@ export async function POST(request: NextRequest) {
 <body>
   <div class="container">
     <div class="header">
-      <h1>📊 Invitación a FindexApp</h1>
+      <h1>📊 Invitación a Kountly</h1>
     </div>
     <div class="content">
       <p>Hola,</p>
-      <p><strong>${inviterName}</strong> te ha invitado a colaborar en sus finanzas personales en <strong>FindexApp</strong>.</p>
+      <p><strong>${inviterName}</strong> te ha invitado a colaborar en sus finanzas personales en <strong>Kountly</strong>.</p>
       
       <div class="permissions-box">
         <h3>🔐 Permisos otorgados:</h3>
@@ -141,10 +141,10 @@ export async function POST(request: NextRequest) {
 
       ${userExists
         ? `
-      <p>Ya tienes una cuenta en FindexApp, simplemente acepta la invitación haciendo clic en el botón de abajo:</p>
+      <p>Ya tienes una cuenta en Kountly, simplemente acepta la invitación haciendo clic en el botón de abajo:</p>
       `
         : `
-      <p>Para aceptar esta invitación, primero debes crear una cuenta en FindexApp:</p>
+      <p>Para aceptar esta invitación, primero debes crear una cuenta en Kountly:</p>
       `
       }
       
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       </p>
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} FindexApp - Gestión de Finanzas Personales</p>
+      <p>© ${new Date().getFullYear()} Kountly - Gestión de Finanzas Personales</p>
       <p>
         Si no esperabas este correo, puedes ignorarlo de forma segura.
       </p>
@@ -171,9 +171,9 @@ export async function POST(request: NextRequest) {
 
     // Send email
     const { data, error } = await resend.emails.send({
-      from: "FindexApp <onboarding@agendemosapp.com>", // Change this to your verified domain
+      from: "Kountly <onboarding@getkountly.com>",
       to: [invitedEmail],
-      subject: `${inviterName} te ha invitado a colaborar en FindexApp`,
+      subject: `${inviterName} te ha invitado a colaborar en Kountly`,
       html: emailHtml,
     })
 

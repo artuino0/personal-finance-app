@@ -44,7 +44,7 @@ export function Features() {
                         Todo lo que necesitas para dominar tus finanzas
                     </h2>
                     <p className="text-lg text-muted-foreground">
-                        FindexApp simplifica la administración de tu dinero. Deja de adivinar y empieza a construir tu patrimonio con datos reales.
+                        Kountly simplifica la administración de tu dinero. Deja de adivinar y empieza a construir tu patrimonio con datos reales.
                     </p>
                 </div>
 

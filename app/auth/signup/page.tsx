@@ -79,7 +79,7 @@ export default function SignupPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <span className="text-lg font-bold">F</span>
             </div>
-            <span>FindexApp</span>
+            <span>Kountly</span>
           </Link>
         </div>
 
@@ -191,7 +191,7 @@ export default function SignupPage() {
         <div className="grid gap-4 mt-auto relative z-10 max-w-lg">
           <h2 className="text-3xl font-bold tracking-tight">Únete a la mejor comunidad financiera</h2>
           <p className="text-lg text-muted-foreground">
-            Descubre cómo miles de personas están alcanzando sus metas financieras más rápido con FindexApp.
+            Descubre cómo miles de personas están alcanzando sus metas financieras más rápido con Kountly.
           </p>
         </div>
 
