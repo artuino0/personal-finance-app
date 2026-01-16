@@ -19,29 +19,7 @@ export default async function NewTransactionPage() {
 
   const { data: accounts } = await supabase.from("accounts").select("*").eq("user_id", user.id)
 
-  let { data: categories } = await supabase.from("categories").select("*").eq("user_id", user.id).order("name")
-
-  // If user has no categories, fetch from global_categories
-  if (!categories || categories.length === 0) {
-    const { data: globalCategories } = await supabase
-      .from("global_categories")
-      .select("id, name, type, color, icon")
-      .eq("is_active", true)
-      .order("name")
-
-    // Map global categories to match the categories structure
-    categories = (globalCategories || []).map((gc) => ({
-      id: gc.id,
-      name: gc.name,
-      type: gc.type,
-      color: gc.color,
-      icon: gc.icon,
-      user_id: user.id,
-      is_custom: false,
-      global_category_id: gc.id,
-      created_at: new Date().toISOString(),
-    }))
-  }
+  const { data: categories } = await supabase.from("categories").select("*").eq("user_id", user.id).order("name")
 
   const t = await getTranslations("Transactions")
 
