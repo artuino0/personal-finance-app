@@ -15,7 +15,7 @@ export function Navbar() {
             <div className="container flex h-16 max-w-screen-2xl mx-auto items-center justify-between px-4 md:px-8">
                 <div className="flex items-center gap-2">
                     <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-                        <span>FindexApp</span>
+                        <span>Kountly</span>
                     </Link>
                 </div>
 

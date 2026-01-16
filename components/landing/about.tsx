@@ -18,7 +18,7 @@ export function About() {
                             En DyDa (Dynamic Data) Software, nos dedicamos a crear soluciones tecnológicas que simplifican lo complejo. Fundada en 2019, nuestra misión ha sido empoderar a las pequeñas y medianas empresas con herramientas de software intuitivas y potentes.
                         </p>
                         <p className="text-lg leading-relaxed text-muted-foreground">
-                            <strong>FindexApp</strong> nace de nuestra experiencia trabajando con cientos de negocios y personas que necesitaban una forma más eficiente de gestionar su economía. No solo escribimos código; construimos puentes digitales que hacen crecer tu patrimonio.
+                            <strong>Kountly</strong> nace de nuestra experiencia trabajando con cientos de negocios y personas que necesitaban una forma más eficiente de gestionar su economía. No solo escribimos código; construimos puentes digitales que hacen crecer tu patrimonio.
                         </p>
 
                         <div className="grid grid-cols-2 gap-4 pt-4">

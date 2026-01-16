@@ -38,7 +38,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
                     <div className="space-y-4">
                         <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-                            <span>FindexApp</span>
+                            <span>Kountly</span>
                         </Link>
                         <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
                             La plataforma líder para la gestión de finanzas personales. Simplifica tu dinero hoy.
@@ -62,7 +62,7 @@ export function Footer() {
                 </div>
 
                 <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-sm text-muted-foreground md:flex-row">
-                    <p>© 2026 FindexApp. Todos los derechos reservados.</p>
+                    <p>© 2026 Kountly. Todos los derechos reservados.</p>
                     <div className="flex gap-6">
                         <a href="#" className="transition-colors hover:text-foreground">
                             Twitter
