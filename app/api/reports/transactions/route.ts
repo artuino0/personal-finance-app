@@ -49,7 +49,7 @@ export async function GET(request: Request) {
         date,
         created_at,
         account_id,
-        category:categories(name)
+        category:global_categories(name)
       `)
             .in("account_id", accountIds)
             .gte("date", startDate)
