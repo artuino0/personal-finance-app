@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/lib/i18n/navigation"
 import { useTranslations, useFormatter } from "next-intl"
+import { formatCurrency } from "@/lib/utils/currency"
 
 interface Transaction {
   id: string
@@ -66,8 +67,8 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 <p
                   className={`text-sm font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                 >
-                  {transaction.type === "income" ? "+" : "-"}$
-                  {format.number(Number(transaction.amount), { minimumFractionDigits: 2 })}
+                  {transaction.type === "income" ? "+" : "-"}
+                  {formatCurrency(transaction.amount)}
                 </p>
               </div>
             ))
