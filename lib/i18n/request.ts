@@ -10,11 +10,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
         locale = routing.defaultLocale;
     }
 
-    // Use es-MX for number formatting when locale is es
-    const activeLocale = locale === 'es' ? 'es-MX' : locale;
-
     return {
-        locale: activeLocale,
+        locale,
         messages: (await import(`../../messages/${locale}.json`)).default
     };
 });
