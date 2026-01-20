@@ -47,7 +47,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={`font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={locale === 'es' ? 'es-MX' : locale}>
           <NextTopLoader showSpinner={false} color="#000000" />
           {children}
           <Analytics />
