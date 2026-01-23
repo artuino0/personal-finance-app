@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation"
 import { Zap, Tv, Shield, Home, MoreHorizontal, Edit, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useTranslations, useFormatter } from "next-intl"
-import { formatCurrencyWithSymbol } from "@/lib/utils/currency"
 
 interface Service {
   id: string
@@ -165,7 +164,7 @@ export function ServicesList({ services, userId }: ServicesListProps) {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-2xl">
-                    {formatCurrencyWithSymbol(service.amount)}
+                    ${format.number(service.amount, { minimumFractionDigits: 2 })}
                   </span>
                   <Badge variant="secondary">
                     {t(`frequencies.${service.frequency}` as any)}

@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Link } from "@/lib/i18n/navigation"
 import { CreditCard, Repeat } from "lucide-react"
 import { useTranslations, useFormatter } from "next-intl"
-import { formatCurrencyWithSymbol } from "@/lib/utils/currency"
 
 interface Credit {
   id: string
@@ -119,7 +118,7 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-foreground">
-                      {formatCurrencyWithSymbol(payment.amount)}
+                      ${format.number(payment.amount, { minimumFractionDigits: 2 })}
                     </p>
                     <Badge variant="secondary" className="text-xs">
                       {payment.type === "credit" ? t("credit") : t("service")}

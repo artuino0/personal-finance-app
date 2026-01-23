@@ -50,29 +50,18 @@ export function MonthlyChart({ userId }: MonthlyChartProps) {
     fetchData()
   }, [userId, supabase, format]) // Added format to dependency array
 
-  const formatYAxis = (value: number) => {
-    if (value >= 1000) {
-      return `${Math.round(value / 1000)}k`
-    }
-    return value.toString()
-  }
-
-  const formatTooltip = (value: number) => {
-    return format.number(value, { style: "currency", currency: "MXN" })
-  }
-
   return (
-    <Card className="">
+    <Card>
       <CardHeader>
         <CardTitle>{t("incomeVsExpenses")}</CardTitle>
       </CardHeader>
-      <CardContent className="pl-0 pr-6">
+      <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
-            <YAxis tickFormatter={formatYAxis} />
-            <Tooltip formatter={formatTooltip} />
+            <YAxis />
+            <Tooltip />
             <Legend />
             <Bar dataKey="ingresos" name={t("income")} fill="#10b981" />
             <Bar dataKey="gastos" name={t("expenses")} fill="#ef4444" />

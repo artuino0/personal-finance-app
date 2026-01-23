@@ -19,7 +19,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Edit, Trash2, ArrowUpRight, ArrowDownLeft } from "lucide-react"
-import { formatCurrency } from "@/lib/utils/currency"
 
 interface Transaction {
   id: string
@@ -41,24 +40,9 @@ interface TransactionsListProps {
     edit: boolean
     delete: boolean
   }
-  // Server-side pagination props
-  currentPage: number
-  pageSize: number
-  totalCount: number
-  onPageChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
 }
 
-export function TransactionsList({
-  transactions,
-  userId,
-  permissions,
-  currentPage,
-  pageSize,
-  totalCount,
-  onPageChange,
-  onPageSizeChange
-}: TransactionsListProps) {
+export function TransactionsList({ transactions, userId, permissions }: TransactionsListProps) {
   const router = useRouter()
   const supabase = createClient()
   const t = useTranslations("Transactions")
@@ -66,11 +50,6 @@ export function TransactionsList({
 
   const canEdit = permissions?.edit ?? true
   const canDelete = permissions?.delete ?? true
-
-  // Calculate pagination info
-  const totalPages = Math.ceil(totalCount / pageSize)
-  const startIndex = (currentPage - 1) * pageSize
-  const endIndex = Math.min(startIndex + pageSize, totalCount)
 
   const handleDelete = async (transactionId: string, amount: number, accountId: string, type: string) => {
     // Delete transaction
@@ -176,7 +155,7 @@ export function TransactionsList({
                     }`}
                 >
                   {transaction.type === "income" ? "+" : "-"}$
-                  {formatCurrency(transaction.amount)}
+                  {format.number(Number(transaction.amount), { minimumFractionDigits: 2 })}
                 </TableCell>
                 {(canEdit || canDelete) && (
                   <TableCell className="text-right pr-5">
@@ -239,48 +218,6 @@ export function TransactionsList({
             ))}
           </TableBody>
         </Table>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between border-t border-border/60 px-5 py-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Mostrar</span>
-          <select
-            value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-8 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <span className="text-sm text-muted-foreground">
-            {startIndex + 1}-{endIndex} de {totalCount}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Anterior
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Página {currentPage} de {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Siguiente
-          </Button>
-        </div>
       </div>
     </Card>
   )

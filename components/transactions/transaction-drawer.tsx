@@ -3,10 +3,8 @@
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { TransactionForm } from "./transaction-form"
-import { useMediaQuery } from "@/lib/hooks/use-media-query"
 
 interface Account {
   id: string
@@ -32,14 +30,13 @@ export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDra
   const [userId, setUserId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const t = useTranslations("Transactions")
-  const isMobile = useMediaQuery("(max-width: 768px)")
 
   useEffect(() => {
     const loadData = async () => {
       const supabase = createClient()
-
+      
       const { data: { user } } = await supabase.auth.getUser()
-
+      
       if (!user) {
         setIsLoading(false)
         return
@@ -54,7 +51,7 @@ export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDra
 
       if (accountsData.data) setAccounts(accountsData.data)
       if (categoriesData.data) setCategories(categoriesData.data)
-
+      
       setIsLoading(false)
     }
 
@@ -63,42 +60,33 @@ export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDra
     }
   }, [open, locale])
 
-  const content = isLoading ? (
-    <div className="flex items-center justify-center py-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-  ) : userId ? (
-    <div className={isMobile ? "pb-8 pt-6 px-6" : ""}>
-      <TransactionForm
-        userId={userId}
-        accounts={accounts}
-        categories={categories}
-        onSuccess={() => onOpenChange(false)}
-        isDrawer={isMobile}
-      />
-    </div>
-  ) : (
-    <p className="text-center text-muted-foreground py-8">{t("loginRequired")}</p>
-  )
-
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="bottom"
-          className="overflow-y-auto"
-        >
-          {content}
-        </SheetContent>
-      </Sheet>
-    )
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
-        {content}
-      </DialogContent>
-    </Dialog>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent 
+        side="bottom" 
+        className="h-[90vh] overflow-y-auto"
+      >
+        <SheetHeader className="mb-4">
+          <SheetTitle className="text-2xl">{t("newTransaction")}</SheetTitle>
+        </SheetHeader>
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : userId ? (
+          <div className="pb-6">
+            <TransactionForm 
+              userId={userId} 
+              accounts={accounts} 
+              categories={categories}
+              onSuccess={() => onOpenChange(false)}
+            />
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground py-8">{t("loginRequired")}</p>
+        )}
+      </SheetContent>
+    </Sheet>
   )
 }

@@ -46,10 +46,9 @@ interface TransactionFormProps {
   categories: Category[]
   transaction?: Transaction
   onSuccess?: () => void
-  isDrawer?: boolean
 }
 
-export function TransactionForm({ userId, accounts, categories, transaction, onSuccess, isDrawer = false }: TransactionFormProps) {
+export function TransactionForm({ userId, accounts, categories, transaction, onSuccess }: TransactionFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const isIOS = useIsIOS()
@@ -161,140 +160,132 @@ export function TransactionForm({ userId, accounts, categories, transaction, onS
     }
   }
 
-  const content = (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Tabs value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="expense">{t("expense")}</TabsTrigger>
-          <TabsTrigger value="income">{t("income")}</TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      <div className="space-y-2">
-        <Label htmlFor="amount">{t("amount")}</Label>
-        <CurrencyInput
-          id="amount"
-          placeholder="0.00"
-          value={formData.amount}
-          onValueChange={(value) => setFormData({ ...formData, amount: value })}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="account">{t("account")}</Label>
-        {isIOS ? (
-          <NativeSelect
-            id="account"
-            value={formData.account_id}
-            onValueChange={(value) => setFormData({ ...formData, account_id: value })}
-            placeholder={t("selectAccount")}
-            required
-          >
-            {accounts.map((account) => (
-              <NativeSelectItem key={account.id} value={account.id}>
-                {account.name}
-              </NativeSelectItem>
-            ))}
-          </NativeSelect>
-        ) : (
-          <Select
-            value={formData.account_id}
-            onValueChange={(value) => setFormData({ ...formData, account_id: value })}
-            required
-          >
-            <SelectTrigger id="account">
-              <SelectValue placeholder={t("selectAccount")} />
-            </SelectTrigger>
-            <SelectContent>
-              {accounts.map((account) => (
-                <SelectItem key={account.id} value={account.id}>
-                  {account.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="category">{t("category")}</Label>
-        {isIOS ? (
-          <NativeSelect
-            id="category"
-            value={formData.category_id}
-            onValueChange={(value) => setFormData({ ...formData, category_id: value })}
-            placeholder={t("selectCategory")}
-          >
-            {filteredCategories.map((category) => (
-              <NativeSelectItem key={category.id} value={category.id}>
-                {category.name}
-              </NativeSelectItem>
-            ))}
-          </NativeSelect>
-        ) : (
-          <Select
-            value={formData.category_id}
-            onValueChange={(value) => setFormData({ ...formData, category_id: value })}
-          >
-            <SelectTrigger id="category">
-              <SelectValue placeholder={t("selectCategory")} />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredCategories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="date">{t("date")}</Label>
-        <Input
-          id="date"
-          type="date"
-          value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="description">{t("descriptionOptional")}</Label>
-        <Textarea
-          id="description"
-          placeholder={t("descriptionPlaceholder")}
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          rows={3}
-        />
-      </div>
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      <div className="flex gap-3">
-        <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? t("saving") : transaction ? t("updateTransaction") : t("createTransaction")}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          {t("cancel")}
-        </Button>
-      </div>
-    </form>
-  )
-
-  if (isDrawer) {
-    return <div className="px-1">{content}</div>
-  }
-
   return (
-    <Card className="p-6 rounded-none border-0">
-      <CardContent className="p-0">
-        {content}
+    <Card>
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Tabs value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="expense">{t("expense")}</TabsTrigger>
+              <TabsTrigger value="income">{t("income")}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="space-y-2">
+            <Label htmlFor="amount">{t("amount")}</Label>
+            <CurrencyInput
+              id="amount"
+              placeholder="0.00"
+              value={formData.amount}
+              onValueChange={(value) => setFormData({ ...formData, amount: value })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="account">{t("account")}</Label>
+            {isIOS ? (
+              <NativeSelect
+                id="account"
+                value={formData.account_id}
+                onValueChange={(value) => setFormData({ ...formData, account_id: value })}
+                placeholder={t("selectAccount")}
+                required
+              >
+                {accounts.map((account) => (
+                  <NativeSelectItem key={account.id} value={account.id}>
+                    {account.name}
+                  </NativeSelectItem>
+                ))}
+              </NativeSelect>
+            ) : (
+              <Select
+                value={formData.account_id}
+                onValueChange={(value) => setFormData({ ...formData, account_id: value })}
+                required
+              >
+                <SelectTrigger id="account">
+                  <SelectValue placeholder={t("selectAccount")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">{t("category")}</Label>
+            {isIOS ? (
+              <NativeSelect
+                id="category"
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+                placeholder={t("selectCategory")}
+              >
+                {filteredCategories.map((category) => (
+                  <NativeSelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </NativeSelectItem>
+                ))}
+              </NativeSelect>
+            ) : (
+              <Select
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+              >
+                <SelectTrigger id="category">
+                  <SelectValue placeholder={t("selectCategory")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="date">{t("date")}</Label>
+            <Input
+              id="date"
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">{t("descriptionOptional")}</Label>
+            <Textarea
+              id="description"
+              placeholder={t("descriptionPlaceholder")}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <div className="flex gap-3">
+            <Button type="submit" disabled={isLoading} className="flex-1">
+              {isLoading ? t("saving") : transaction ? t("updateTransaction") : t("createTransaction")}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => router.back()}>
+              {t("cancel")}
+            </Button>
+          </div>
+        </form>
       </CardContent>
-    </Card>
+    </Card >
   )
 }

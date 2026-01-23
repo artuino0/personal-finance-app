@@ -1,7 +1,6 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatCurrency, formatCurrencyWithSymbol } from "@/lib/utils/currency"
 import { useTranslations, useFormatter } from "next-intl"
 
 interface Account {
@@ -46,7 +45,7 @@ export function BalanceOverview({ accounts }: BalanceOverviewProps) {
                   </div>
                 </div>
                 <p className="text-sm font-semibold text-foreground">
-                  {formatCurrencyWithSymbol(account.balance)}
+                  ${format.number(Number(account.balance), { minimumFractionDigits: 2 })}
                 </p>
               </div>
             ))
