@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { Menu } from "lucide-react"
+import { Menu, Sparkles } from "lucide-react"
 import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
@@ -108,6 +108,14 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 transition-all duration-300 hover:scale-105"
+            title="AI Financial Assistant"
+          >
+            <Sparkles className="h-5 w-5 text-white" />
+          </Button>
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

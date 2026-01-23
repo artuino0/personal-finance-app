@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { formatCurrencyWithSymbol } from "@/lib/utils/currency"
 
 interface Account {
   id: string
@@ -136,7 +137,7 @@ export function AccountsList({ accounts, userId, permissions }: AccountsListProp
             <h3 className="text-lg font-semibold text-foreground mb-1">{account.name}</h3>
             <p className="text-sm text-slate-600 mb-3">{getAccountTypeLabel(account.type)}</p>
             <p className="text-2xl font-bold text-foreground">
-              ${format.number(Number(account.balance), { minimumFractionDigits: 2 })}
+              {formatCurrencyWithSymbol(Number(account.balance))}
             </p>
             <p className="text-xs text-slate-600 mt-1">{account.currency}</p>
           </CardContent>
