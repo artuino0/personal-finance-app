@@ -7,6 +7,7 @@ import { Link } from "@/lib/i18n/navigation"
 import { getTranslations } from "next-intl/server"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { formatCurrency } from "@/lib/utils/currency"
 
 export default async function AccountsPage() {
   const supabase = await createClient()
@@ -44,7 +45,7 @@ export default async function AccountsPage() {
       <main className="container mx-auto p-6">
         <PageHeader
           title={t("title")}
-          description={t("totalBalance", { balance: totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 }) })}
+          description={t("totalBalance", { balance: formatCurrency(totalBalance) })}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
