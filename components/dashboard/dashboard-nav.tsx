@@ -113,6 +113,7 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
             size="icon"
             className="relative h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 transition-all duration-300 hover:scale-105"
             title="AI Financial Assistant"
+            onClick={() => router.push("/dashboard/aisistant")}
           >
             <Sparkles className="h-5 w-5 text-white" />
           </Button>
