@@ -68,7 +68,7 @@ export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDra
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
     </div>
   ) : userId ? (
-    <div className={isMobile ? "pb-6" : ""}>
+    <div className={isMobile ? "pb-8 pt-6 px-6" : ""}>
       <TransactionForm
         userId={userId}
         accounts={accounts}
