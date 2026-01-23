@@ -45,9 +45,10 @@ interface TransactionFormProps {
   accounts: Account[]
   categories: Category[]
   transaction?: Transaction
+  onSuccess?: () => void
 }
 
-export function TransactionForm({ userId, accounts, categories, transaction }: TransactionFormProps) {
+export function TransactionForm({ userId, accounts, categories, transaction, onSuccess }: TransactionFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const isIOS = useIsIOS()
@@ -146,7 +147,11 @@ export function TransactionForm({ userId, accounts, categories, transaction }: T
         }
       }
 
-      router.push("/dashboard/transactions")
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push("/dashboard/transactions")
+      }
       router.refresh()
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : t("genericError"))
