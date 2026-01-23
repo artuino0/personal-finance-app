@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     if (!user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    console.log("Reports API Auth Success:", user.id)
 
     try {
         // 1. Fetch accounts (filtered if accountId is provided)

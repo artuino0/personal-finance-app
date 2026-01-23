@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import dns from "node:dns"
+
+dns.setDefaultResultOrder("ipv4first")
 import Anthropic from "@anthropic-ai/sdk"
 import {
     type AnalysisRequest,
