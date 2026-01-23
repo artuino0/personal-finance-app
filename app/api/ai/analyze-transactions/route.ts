@@ -23,12 +23,17 @@ export async function POST(request: Request) {
 
         // 2. Authenticate user
         const supabase = await createClient()
+
+        // Debug: Check if auth works
         const {
             data: { user },
+            error: authError
         } = await supabase.auth.getUser()
 
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        if (authError || !user) {
+            console.error("Auth Error in API:", authError)
+            console.log("User in API:", user)
+            return NextResponse.json({ error: "Unauthorized", details: authError?.message }, { status: 401 })
         }
 
         // 3. Fetch user profile to get subscription tier
@@ -168,7 +173,7 @@ export async function POST(request: Request) {
 
         // 9. Call Claude Haiku API
         const message = await anthropic.messages.create({
-            model: "claude-haiku-4-20250514", // Latest Claude Haiku model
+            model: "claude-3-haiku-20240307", // Corrected model name
             max_tokens: tier === "free" ? 1024 : 2048,
             temperature: 0.3, // Lower temperature for more consistent, factual responses
             system: SYSTEM_PROMPT,
@@ -211,7 +216,7 @@ export async function POST(request: Request) {
                 transactionCount: formattedTransactions.length,
                 period: { start: startDate, end: endDate },
                 tier,
-                model: "claude-haiku-4",
+                model: "claude-3-haiku-20240307",
                 tokensUsed: {
                     input: message.usage.input_tokens,
                     output: message.usage.output_tokens,
