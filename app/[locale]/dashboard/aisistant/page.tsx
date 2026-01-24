@@ -49,6 +49,7 @@ export default async function AiSistantPage() {
             <DashboardNav
                 userName={userName}
                 userAvatar={userAvatar}
+                tier={(profile?.subscription_tier as "free" | "pro") || "free"}
             />
             <main className="container mx-auto p-6">
                 {/* 

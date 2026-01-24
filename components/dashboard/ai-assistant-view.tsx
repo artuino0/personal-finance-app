@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, Sparkles, TrendingUp, AlertTriangle, Lightbulb, CheckCircle2 } from "lucide-react"
+import { Loader2, Sparkles, TrendingUp, AlertTriangle, Lightbulb, CheckCircle2, Clock } from "lucide-react"
 import type { AnalysisResponse } from "@/lib/ai-prompts"
 import { formatCurrencyWithSymbol } from "@/lib/utils/currency"
+import { AiHistoryModal } from "./ai-history-modal"
 
 interface AiAssistantViewProps {
     tier: "free" | "pro"
@@ -23,11 +24,14 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
     const [analysis, setAnalysis] = useState<AnalysisResponse | null>(initialAnalysis || null)
     const [error, setError] = useState<string | null>(null)
     const [timeRemaining, setTimeRemaining] = useState<string | null>(null)
+    const [isTimerReady, setIsTimerReady] = useState(false)
+    const [showHistoryModal, setShowHistoryModal] = useState(false)
 
     // Update countdown timer
     useEffect(() => {
         if (!lastReportDate || !serverTime) {
             setTimeRemaining(null)
+            setIsTimerReady(true)
             return
         }
 
@@ -73,6 +77,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
         }
 
         updateTimer() // Initial check
+        setIsTimerReady(true) // Mark timer as ready after first calculation
         const interval = setInterval(updateTimer, 60000) // Update every minute
 
         return () => clearInterval(interval)
@@ -134,10 +139,10 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                     onClick={handleAnalyze}
                     size="lg"
                     className="mt-4"
-                    disabled={!!timeRemaining}
+                    disabled={!isTimerReady || !!timeRemaining}
                 >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    {timeRemaining || "Genera tu primer análisis mensual"}
+                    {!isTimerReady ? "Cargando..." : (timeRemaining || "Genera tu primer análisis mensual")}
                 </Button>
                 {error && (
                     <div className="p-4 mt-4 text-sm text-red-500 bg-red-50 rounded-md">
@@ -156,25 +161,43 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
+            <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
                     <h2 className="text-xl font-bold">Análisis Financiero</h2>
                     <p className="text-sm text-muted-foreground">
                         {analysis?.period ? `Periodo: ${analysis.period.start} - ${analysis.period.end}` : "Resumen del mes actual"}
                     </p>
                 </div>
                 {!isLoading && (
-                    <Button
-                        onClick={handleAnalyze}
-                        variant="outline"
-                        size="sm"
-                        disabled={!!timeRemaining}
-                    >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {timeRemaining || "Actualizar"}
-                    </Button>
+                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                        <Button
+                            onClick={() => setShowHistoryModal(true)}
+                            variant="outline"
+                            size="sm"
+                            className="px-2 sm:px-3"
+                        >
+                            <Clock className="w-4 h-4 sm:mr-2" />
+                            <span className="hidden sm:inline">Historial</span>
+                        </Button>
+                        <Button
+                            onClick={handleAnalyze}
+                            variant="outline"
+                            size="sm"
+                            disabled={!isTimerReady || !!timeRemaining}
+                            className="px-2 sm:px-3"
+                        >
+                            <Sparkles className="w-4 h-4 sm:mr-2" />
+                            <span className="hidden sm:inline">{!isTimerReady ? "Cargando..." : (timeRemaining || "Actualizar")}</span>
+                            <span className="sm:hidden">{!isTimerReady ? "..." : (timeRemaining ? "⏱" : "↻")}</span>
+                        </Button>
+                    </div>
                 )}
             </div>
+
+            <AiHistoryModal
+                open={showHistoryModal}
+                onOpenChange={setShowHistoryModal}
+            />
 
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
