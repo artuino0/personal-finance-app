@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { Menu, Sparkles } from "lucide-react"
+import { Menu, Sparkles, Gem } from "lucide-react"
 import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
@@ -22,9 +22,10 @@ interface DashboardNavProps {
   userName: string
   userAvatar?: string
   userEmail?: string
+  tier?: "free" | "pro"
 }
 
-export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
+export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardNavProps) {
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -124,11 +125,20 @@ export function DashboardNav({ userName, userAvatar }: DashboardNavProps) {
                 variant="ghost"
                 className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
               >
-                <div className="overflow-hidden flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
-                  {userAvatar ? (
-                    <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
-                  ) : (
-                    userName.charAt(0).toUpperCase()
+                <div className="relative">
+                  <div className={`overflow-hidden flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm ${tier === "pro" ? "ring-2 ring-gradient-to-br ring-yellow-400" : ""
+                    }`}>
+                    {userAvatar ? (
+                      <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
+                    ) : (
+                      userName.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  {/* Pro Tier Badge - Golden Diamond */}
+                  {tier === "pro" && (
+                    <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg">
+                      <Gem className="h-2 w-2 text-white" />
+                    </div>
                   )}
                 </div>
                 <span className="hidden md:inline text-sm font-medium">{userName}</span>

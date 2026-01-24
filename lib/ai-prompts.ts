@@ -8,92 +8,92 @@
 // ==================== TYPE DEFINITIONS ====================
 
 export interface Transaction {
-    id: string
-    type: 'income' | 'expense' | 'transfer'
-    amount: number
-    description: string | null
-    date: string
-    category: string | null
-    account_name: string
+  id: string
+  type: 'income' | 'expense' | 'transfer'
+  amount: number
+  description: string | null
+  date: string
+  category: string | null
+  account_name: string
 }
 
 export interface AnalysisRequest {
-    transactions: Transaction[]
-    period: {
-        start: string
-        end: string
-    }
-    tier: 'free' | 'pro'
-    userId: string
+  transactions: Transaction[]
+  period: {
+    start: string
+    end: string
+  }
+  tier: 'free' | 'pro'
+  userId: string
 }
 
 // Free Tier Response Structure
 export interface FreeAnalysisResponse {
-    tier: 'free'
-    period: {
-        start: string
-        end: string
-    }
-    summary: {
-        totalIncome: number
-        totalExpenses: number
-        netBalance: number
-        transactionCount: number
-    }
-    insights: string[] // Max 3 insights
-    recommendations: string[] // Max 2 recommendations
-    financialScore: number // 0-100
+  tier: 'free'
+  period: {
+    start: string
+    end: string
+  }
+  summary: {
+    totalIncome: number
+    totalExpenses: number
+    netBalance: number
+    transactionCount: number
+  }
+  insights: string[] // Max 3 insights
+  recommendations: string[] // Max 2 recommendations
+  financialScore: number // 0-100
 }
 
 // Pro Tier Response Structure
 export interface ProAnalysisResponse {
-    tier: 'pro'
-    period: {
-        start: string
-        end: string
+  tier: 'pro'
+  period: {
+    start: string
+    end: string
+  }
+  summary: {
+    totalIncome: number
+    totalExpenses: number
+    netBalance: number
+    transactionCount: number
+    savingsRate: number // Percentage
+  }
+  detailedAnalysis: {
+    spendingByCategory: Array<{
+      category: string
+      amount: number
+      percentage: number
+      trend: 'increasing' | 'decreasing' | 'stable'
+    }>
+    topExpenses: Array<{
+      description: string
+      amount: number
+      date: string
+      category: string
+    }>
+  }
+  insights: string[] // Detailed insights
+  recommendations: string[] // Actionable recommendations
+  alerts: string[] // Important warnings or notifications
+  financialScore: number // 0-100
+  scoreBreakdown: {
+    savingsScore: number
+    spendingScore: number
+    consistencyScore: number
+  }
+  predictions: {
+    nextMonthExpenses: number
+    sixMonthSavings: number
+    confidence: 'low' | 'medium' | 'high'
+  }
+  comparisons: {
+    vsLastMonth?: {
+      incomeChange: number
+      expenseChange: number
+      savingsChange: number
     }
-    summary: {
-        totalIncome: number
-        totalExpenses: number
-        netBalance: number
-        transactionCount: number
-        savingsRate: number // Percentage
-    }
-    detailedAnalysis: {
-        spendingByCategory: Array<{
-            category: string
-            amount: number
-            percentage: number
-            trend: 'increasing' | 'decreasing' | 'stable'
-        }>
-        topExpenses: Array<{
-            description: string
-            amount: number
-            date: string
-            category: string
-        }>
-    }
-    insights: string[] // Detailed insights
-    recommendations: string[] // Actionable recommendations
-    alerts: string[] // Important warnings or notifications
-    financialScore: number // 0-100
-    scoreBreakdown: {
-        savingsScore: number
-        spendingScore: number
-        consistencyScore: number
-    }
-    predictions: {
-        nextMonthExpenses: number
-        sixMonthSavings: number
-        confidence: 'low' | 'medium' | 'high'
-    }
-    comparisons: {
-        vsLastMonth?: {
-            incomeChange: number
-            expenseChange: number
-            savingsChange: number
-        }
-    }
+  }
 }
 
 export type AnalysisResponse = FreeAnalysisResponse | ProAnalysisResponse
@@ -272,44 +272,64 @@ Respond ONLY with valid JSON. No additional text.`
 // ==================== HELPER FUNCTIONS ====================
 
 export function buildPrompt(
-    tier: 'free' | 'pro',
-    transactions: Transaction[],
-    period: { start: string; end: string },
-    previousPeriodData?: any
+  tier: 'free' | 'pro',
+  transactions: Transaction[],
+  period: { start: string, end: string },
+  previousPeriodData?: any,
+  previousContext?: {
+    summary: any
+    insights: string[]
+    recommendations: string[]
+  }
 ): string {
-    const template = tier === 'free' ? FREE_TIER_PROMPT : PRO_TIER_PROMPT
+  const template = tier === "free" ? FREE_TIER_PROMPT : PRO_TIER_PROMPT
 
-    const transactionsJson = JSON.stringify(transactions, null, 2)
-    const previousDataJson = previousPeriodData ? JSON.stringify(previousPeriodData, null, 2) : 'null'
+  const transactionsJson = JSON.stringify(transactions, null, 2)
+  const previousDataJson = previousPeriodData ? JSON.stringify(previousPeriodData, null, 2) : "null"
 
-    return template
-        .replace('{{TRANSACTIONS}}', transactionsJson)
-        .replace('{{START_DATE}}', period.start)
-        .replace('{{END_DATE}}', period.end)
-        .replace('{{PREVIOUS_PERIOD_DATA}}', previousDataJson)
+  // Format previous context if available
+  let contextText = "No previous context available."
+  if (previousContext) {
+    contextText = `
+PREVIOUS ANALYSIS CONTEXT (From last report):
+- Summary: ${JSON.stringify(previousContext.summary)}
+- Main Insights: ${previousContext.insights.join("; ")}
+- Recommendations: ${previousContext.recommendations.join("; ")}
+
+Use this context to check if the user followed previous advice or if trends have persisted.
+`
+  }
+
+  return template
+    .replace("{{TRANSACTIONS}}", transactionsJson)
+    .replace("{{START_DATE}}", period.start)
+    .replace("{{END_DATE}}", period.end)
+    .replace("{{PREVIOUS_PERIOD_DATA}}", previousDataJson)
+    .replace("{{PREVIOUS_CONTEXT}}", contextText) // Ensure we add this placeholder to templates too if needed, or append it
+    + `\n\nHISTORICAL CONTEXT:\n${contextText}` // Appending to end is safer if we don't want to edit all templates right now
 }
 
 export function validateResponse(response: any, tier: 'free' | 'pro'): boolean {
-    if (!response || typeof response !== 'object') return false
-    if (response.tier !== tier) return false
+  if (!response || typeof response !== 'object') return false
+  if (response.tier !== tier) return false
 
-    // Basic validation
-    if (!response.period || !response.summary || !response.insights || !response.recommendations) {
-        return false
+  // Basic validation
+  if (!response.period || !response.summary || !response.insights || !response.recommendations) {
+    return false
+  }
+
+  if (tier === 'free') {
+    // Free tier specific validation
+    if (response.insights.length > 3) return false
+    if (response.recommendations.length > 2) return false
+    if (typeof response.financialScore !== 'number') return false
+  } else {
+    // Pro tier specific validation
+    if (!response.detailedAnalysis || !response.alerts || !response.predictions) {
+      return false
     }
+    if (!response.scoreBreakdown) return false
+  }
 
-    if (tier === 'free') {
-        // Free tier specific validation
-        if (response.insights.length > 3) return false
-        if (response.recommendations.length > 2) return false
-        if (typeof response.financialScore !== 'number') return false
-    } else {
-        // Pro tier specific validation
-        if (!response.detailedAnalysis || !response.alerts || !response.predictions) {
-            return false
-        }
-        if (!response.scoreBreakdown) return false
-    }
-
-    return true
+  return true
 }

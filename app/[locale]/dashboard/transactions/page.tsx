@@ -110,6 +110,7 @@ export default async function TransactionsPage({
       <DashboardNav
         userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+        tier={(profile?.subscription_tier as "free" | "pro") || "free"}
       />
       <main className="container mx-auto p-6">
         <PageHeader

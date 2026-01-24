@@ -34,8 +34,6 @@ export async function POST(request: Request) {
         } = await supabase.auth.getUser()
 
         if (authError || !user) {
-            console.error("Auth Error in API:", authError)
-            console.log("User in API:", user)
             return NextResponse.json({ error: "Unauthorized", details: authError?.message }, { status: 401 })
         }
 
@@ -166,19 +164,65 @@ export async function POST(request: Request) {
             }
         }
 
+        // NEW: Check Rate Limit (Rolling Window)
+        const now = new Date()
+        const checkDate = new Date(now)
+
+        if (tier === "free") {
+            // Free: 1 month rolling window
+            checkDate.setMonth(checkDate.getMonth() - 1)
+        } else {
+            // Pro: 1 week rolling window
+            checkDate.setDate(checkDate.getDate() - 7)
+        }
+
+        const { count: historyCount } = await supabase
+            .from("ai_analysis_history")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .gte("created_at", checkDate.toISOString());
+
+        if (historyCount && historyCount > 0) {
+            const waitMsg = tier === "free" ? "un mes" : "una semana"
+            return NextResponse.json(
+                { error: `Has alcanzado tu límite de reportes. Puedes generar uno nuevo cada ${waitMsg}.` },
+                { status: 429 }
+            )
+        }
+
+        // NEW: Fetch Historical Context
+        const { data: lastAnalysis } = await supabase
+            .from("ai_analysis_history")
+            .select("response")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        let previousContext = undefined;
+        if (lastAnalysis?.response) {
+            const lastResponse = lastAnalysis.response as any;
+            previousContext = {
+                summary: lastResponse.summary,
+                insights: lastResponse.insights || [],
+                recommendations: lastResponse.recommendations || []
+            }
+        }
+
         // 8. Build prompt
         const userPrompt = buildPrompt(
             tier,
             formattedTransactions,
             { start: startDate, end: endDate },
-            previousPeriodData
+            previousPeriodData,
+            previousContext
         )
 
         // 9. Call Claude Haiku API
         const message = await anthropic.messages.create({
-            model: "claude-3-haiku-20240307", // Corrected model name
+            model: "claude-3-haiku-20240307",
             max_tokens: tier === "free" ? 1024 : 2048,
-            temperature: 0.3, // Lower temperature for more consistent, factual responses
+            temperature: 0.3,
             system: SYSTEM_PROMPT,
             messages: [
                 {
@@ -209,6 +253,25 @@ export async function POST(request: Request) {
                 { error: "AI response does not match expected format" },
                 { status: 500 }
             )
+        }
+
+        // NEW: Save History
+        const { error: saveError } = await supabase.from("ai_analysis_history").insert({
+            user_id: user.id,
+            prompt: userPrompt,
+            response: analysisResult,
+            tier: tier,
+            period_start: startDate,
+            period_end: endDate,
+            tokens_used: {
+                input: message.usage.input_tokens,
+                output: message.usage.output_tokens,
+            }
+        });
+
+        if (saveError) {
+            console.error("Failed to save analysis history:", saveError);
+            // We don't fail the request, just log it
         }
 
         // 11. Return analysis result
