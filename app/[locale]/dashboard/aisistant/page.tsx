@@ -31,6 +31,19 @@ export default async function AiSistantPage() {
     // Translations (using "Dashboard" namespace as fallback/standard)
     const t = await getTranslations("Dashboard")
 
+    // Fetch latest analysis history (SERVER SIDE for security/time sync)
+    const { data: lastReport } = await supabase
+        .from("ai_analysis_history")
+        .select("response, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+    // Calculate initial cooldown on server if needed, or just pass the date
+    // We pass serverTime so client calculates diff against SERVER 'now', not client 'now'
+    const serverTime = new Date().toISOString()
+
     return (
         <div className="min-h-screen bg-secondary/30">
             <DashboardNav
@@ -54,7 +67,12 @@ export default async function AiSistantPage() {
                 />
 
                 <div className="mt-8">
-                    <AiAssistantView />
+                    <AiAssistantView
+                        tier={(profile?.subscription_tier as "free" | "pro") || "free"}
+                        initialAnalysis={lastReport?.response as any}
+                        lastReportDate={lastReport?.created_at}
+                        serverTime={serverTime}
+                    />
                 </div>
             </main>
         </div>
