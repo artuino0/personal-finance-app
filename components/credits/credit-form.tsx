@@ -3,10 +3,8 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "@/lib/i18n/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -54,6 +52,9 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
     interest_rate: creditToEdit?.interest_rate?.toString() || "",
   })
 
+  // Track which field was last modified to determine what to calculate
+  const [lastModified, setLastModified] = useState<'total' | 'monthly' | 'months' | null>(null)
+
   // Credit types constant moved inside component for translation
   const CREDIT_TYPES = [
     { value: "loan", label: t("types.loan") },
@@ -68,22 +69,50 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
     const monthly = parseFloat(formData.monthly_payment) || 0
     const months = parseInt(formData.total_months) || 0
 
-    // If total and months are set but monthly is empty, calculate monthly
-    if (total > 0 && months > 0 && !formData.monthly_payment) {
-      const calculatedMonthly = (total / months).toFixed(2)
-      setFormData((prev) => ({ ...prev, monthly_payment: calculatedMonthly }))
+    // Count how many fields have values
+    const filledFields = [
+      formData.total_amount ? 'total' : null,
+      formData.monthly_payment ? 'monthly' : null,
+      formData.total_months ? 'months' : null
+    ].filter(Boolean)
+
+    // Only auto-calculate when exactly 2 fields are filled
+    if (filledFields.length === 2) {
+      // Calculate based on which field is empty
+      if (!formData.monthly_payment && total > 0 && months > 0) {
+        const calculatedMonthly = (total / months).toFixed(2)
+        setFormData((prev) => ({ ...prev, monthly_payment: calculatedMonthly }))
+      } else if (!formData.total_months && total > 0 && monthly > 0) {
+        const calculatedMonths = Math.ceil(total / monthly).toString()
+        setFormData((prev) => ({ ...prev, total_months: calculatedMonths }))
+      } else if (!formData.total_amount && months > 0 && monthly > 0) {
+        const calculatedTotal = (months * monthly).toFixed(2)
+        setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+      }
     }
-    // If total and monthly are set but months is empty, calculate months
-    else if (total > 0 && monthly > 0 && !formData.total_months) {
-      const calculatedMonths = Math.ceil(total / monthly).toString()
-      setFormData((prev) => ({ ...prev, total_months: calculatedMonths }))
+    // When all 3 fields are filled, recalculate the one that wasn't last modified
+    else if (filledFields.length === 3 && lastModified) {
+      if (lastModified === 'total' && monthly > 0 && months > 0) {
+        // User modified total, recalculate it based on monthly * months
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      } else if (lastModified === 'monthly' && total > 0 && months > 0) {
+        // User modified monthly, recalculate total
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      } else if (lastModified === 'months' && total > 0 && monthly > 0) {
+        // User modified months, recalculate total
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      }
     }
-    // If months and monthly are set but total is empty, calculate total
-    else if (months > 0 && monthly > 0 && !formData.total_amount) {
-      const calculatedTotal = (months * monthly).toFixed(2)
-      setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
-    }
-  }, [formData.total_amount, formData.monthly_payment, formData.total_months])
+  }, [formData.total_amount, formData.monthly_payment, formData.total_months, lastModified])
 
   // Calculate dates and progress
   const calculateDatesAndProgress = () => {
@@ -156,7 +185,7 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
 
       router.refresh()
       if (onSuccess) onSuccess()
-      else router.push("/dashboard/credits")
+      else router.push("/dashboard/credits" as any)
     } catch (err) {
       setError(t("genericError"))
       console.error(err)
@@ -204,7 +233,7 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
             <h3 className="font-semibold text-sm">{t("autoCalculation")}</h3>
           </div>
           <p className="text-xs text-muted-foreground mb-4">{t("autoCalculationHelp")}</p>
-          
+
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="total_amount">{t("totalAmount")}</Label>
@@ -213,7 +242,10 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
                 type="number"
                 step="0.01"
                 value={formData.total_amount}
-                onChange={(e) => setFormData({ ...formData, total_amount: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, total_amount: e.target.value })
+                  setLastModified('total')
+                }}
                 placeholder="0.00"
               />
             </div>
@@ -225,7 +257,10 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
                 type="number"
                 step="0.01"
                 value={formData.monthly_payment}
-                onChange={(e) => setFormData({ ...formData, monthly_payment: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, monthly_payment: e.target.value })
+                  setLastModified('monthly')
+                }}
                 placeholder="0.00"
               />
             </div>
@@ -236,7 +271,10 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
                 id="total_months"
                 type="number"
                 value={formData.total_months}
-                onChange={(e) => setFormData({ ...formData, total_months: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, total_months: e.target.value })
+                  setLastModified('months')
+                }}
                 placeholder="12"
               />
             </div>
@@ -254,7 +292,7 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
               placeholder="0"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="payment_day">{t("paymentDay")}</Label>
             <Input

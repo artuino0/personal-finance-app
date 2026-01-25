@@ -270,7 +270,11 @@
         "autoCalculationHelp": "Fill any 2 fields and the third will be calculated automatically",
         "calculatedPreview": "Preview",
         "progress": "Progress",
-        "estimatedEndDate": "Estimated End Date"
+        "estimatedEndDate": "Estimated End Date",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "confirmDelete": "Are you sure you want to delete this credit? This action cannot be undone.",
+        "deleteError": "Error deleting credit. Please try again."
     },
     "Services": {
         "title": "Recurring Services",
@@ -479,5 +483,4 @@
         "proFeature3": "Priority support and early access to new features",
         "upgradeNow": "Upgrade Now"
     }
-}
 }

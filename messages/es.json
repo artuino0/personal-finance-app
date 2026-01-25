@@ -270,7 +270,11 @@
         "autoCalculationHelp": "Completa 2 campos cualesquiera y el tercero se calculará automáticamente",
         "calculatedPreview": "Vista Previa",
         "progress": "Progreso",
-        "estimatedEndDate": "Fecha Estimada de Finalización"
+        "estimatedEndDate": "Fecha Estimada de Finalización",
+        "delete": "Eliminar",
+        "deleting": "Eliminando...",
+        "confirmDelete": "¿Estás seguro de eliminar este crédito? Esta acción no se puede deshacer.",
+        "deleteError": "Error al eliminar el crédito. Por favor intenta de nuevo."
     },
     "Services": {
         "title": "Servicios Recurrentes",

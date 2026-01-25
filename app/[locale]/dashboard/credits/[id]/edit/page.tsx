@@ -39,7 +39,7 @@ export default async function EditCreditPage({ params }: { params: Promise<{ id:
 
         <h1 className="mb-6 font-bold text-3xl">Editar Crédito</h1>
 
-        <CreditForm userId={user.id} credit={credit} />
+        <CreditForm userId={user.id} creditToEdit={credit} />
       </main>
     </div>
   )
