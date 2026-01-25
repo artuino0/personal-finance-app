@@ -26,9 +26,10 @@ interface Service {
 interface UpcomingPaymentsProps {
   credits: Credit[]
   services: Service[]
+  onPaymentClick?: (payment: { name: string; amount: number; type: string }) => void
 }
 
-export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
+export function UpcomingPayments({ credits, services, onPaymentClick }: UpcomingPaymentsProps) {
   const t = useTranslations("Dashboard")
   const format = useFormatter()
 
@@ -66,6 +67,17 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
     return diffDays
   }
 
+  const handlePaymentClick = (e: React.MouseEvent, payment: typeof allPayments[0]) => {
+    if (onPaymentClick) {
+      e.preventDefault()
+      onPaymentClick({
+        name: payment.name,
+        amount: payment.amount,
+        type: payment.type === "credit" ? "Crédito" : "Servicio"
+      })
+    }
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -89,10 +101,10 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
               const isUrgent = daysUntil >= 0 && daysUntil <= 7
 
               return (
-                <Link
+                <button
                   key={`${payment.type}-${payment.id}`}
-                  href={`/dashboard/transactions/new?description=${encodeURIComponent(payment.name)}&amount=${payment.amount}&categoryName=${encodeURIComponent(payment.type === "credit" ? "Servicios" : "Servicios")}`}
-                  className={`flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-secondary/30 ${isUrgent ? "border-orange-200 bg-orange-50 hover:bg-orange-100" : ""}`}
+                  onClick={(e) => handlePaymentClick(e, payment)}
+                  className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-secondary/30 cursor-pointer text-left ${isUrgent ? "border-orange-200 bg-orange-50 hover:bg-orange-100" : ""}`}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -125,7 +137,7 @@ export function UpcomingPayments({ credits, services }: UpcomingPaymentsProps) {
                       {payment.type === "credit" ? t("credit") : t("service")}
                     </Badge>
                   </div>
-                </Link>
+                </button>
               )
             })
           )}

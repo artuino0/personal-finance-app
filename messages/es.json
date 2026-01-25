@@ -265,7 +265,12 @@
             "credit_card": "Tarjeta de Crédito",
             "mortgage": "Hipoteca",
             "personal_loan": "Préstamo Personal"
-        }
+        },
+        "autoCalculation": "Cálculo Inteligente",
+        "autoCalculationHelp": "Completa 2 campos cualesquiera y el tercero se calculará automáticamente",
+        "calculatedPreview": "Vista Previa",
+        "progress": "Progreso",
+        "estimatedEndDate": "Fecha Estimada de Finalización"
     },
     "Services": {
         "title": "Servicios Recurrentes",

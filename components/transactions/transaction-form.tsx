@@ -47,9 +47,14 @@ interface TransactionFormProps {
   transaction?: Transaction
   onSuccess?: () => void
   isDrawer?: boolean
+  prefilledData?: {
+    description?: string
+    amount?: string
+    categoryName?: string
+  } | null
 }
 
-export function TransactionForm({ userId, accounts, categories, transaction, onSuccess, isDrawer = false }: TransactionFormProps) {
+export function TransactionForm({ userId, accounts, categories, transaction, onSuccess, isDrawer = false, prefilledData }: TransactionFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const isIOS = useIsIOS()
@@ -84,8 +89,8 @@ export function TransactionForm({ userId, accounts, categories, transaction, onS
 
   const [formData, setFormData] = useState({
     type: transaction?.type || "expense",
-    amount: transaction?.amount?.toString() || searchParams.get("amount") || "",
-    description: transaction?.description || searchParams.get("description") || "",
+    amount: transaction?.amount?.toString() || prefilledData?.amount || searchParams.get("amount") || "",
+    description: transaction?.description || prefilledData?.description || searchParams.get("description") || "",
     date: transaction?.date || searchParams.get("date") || getLocalDateString(),
     account_id: transaction?.account_id || searchParams.get("accountId") || "",
     category_id: initialCategoryId,
