@@ -4,9 +4,9 @@
 The AI Financial Analysis endpoint uses Claude Haiku to analyze user transactions and provide intelligent financial insights.
 
 ## Endpoint
-```
+\`\`\`
 POST /api/ai/analyze-transactions
-```
+\`\`\`
 
 ## Authentication
 Requires authenticated user session (Supabase Auth).
@@ -14,21 +14,21 @@ Requires authenticated user session (Supabase Auth).
 ## Request Body
 
 ### Option 1: Monthly Analysis (Current Month)
-```json
+\`\`\`json
 {
   "period": "monthly"
 }
-```
+\`\`\`
 
 ### Option 2: Custom Date Range
-```json
+\`\`\`json
 {
   "period": {
     "start": "2026-01-01",
     "end": "2026-01-31"
   }
 }
-```
+\`\`\`
 
 > [!IMPORTANT]
 > **Subscription Tier**: The tier (free/pro) is automatically determined from the user's profile in the database. Users cannot override this in the request for security reasons.
@@ -36,7 +36,7 @@ Requires authenticated user session (Supabase Auth).
 ## Response Format
 
 ### Free Tier Response
-```json
+\`\`\`json
 {
   "success": true,
   "analysis": {
@@ -73,10 +73,10 @@ Requires authenticated user session (Supabase Auth).
     }
   }
 }
-```
+\`\`\`
 
 ### Pro Tier Response
-```json
+\`\`\`json
 {
   "success": true,
   "analysis": {
@@ -161,31 +161,31 @@ Requires authenticated user session (Supabase Auth).
     }
   }
 }
-```
+\`\`\`
 
 ## Error Responses
 
 ### No Transactions Found
-```json
+\`\`\`json
 {
   "error": "No transactions found for the specified period",
   "period": { "start": "2026-01-01", "end": "2026-01-31" }
 }
-```
+\`\`\`
 
 ### Unauthorized
-```json
+\`\`\`json
 {
   "error": "Unauthorized"
 }
-```
+\`\`\`
 
 ### Invalid Tier
-```json
+\`\`\`json
 {
   "error": "Invalid tier. Must be 'free' or 'pro'"
 }
-```
+\`\`\`
 
 ## Cost Estimation
 
@@ -205,7 +205,7 @@ Requires authenticated user session (Supabase Auth).
 
 ## Usage Example (Frontend)
 
-```typescript
+\`\`\`typescript
 async function getFinancialAnalysis(period: 'monthly' | { start: string; end: string } = 'monthly') {
   const response = await fetch('/api/ai/analyze-transactions', {
     method: 'POST',
@@ -234,7 +234,7 @@ console.log('Insights:', analysis.insights)
 if (analysis.tier === 'pro') {
   console.log('Predictions:', analysis.predictions)
 }
-```
+\`\`\`
 
 ## Setup Instructions
 
@@ -244,15 +244,15 @@ if (analysis.tier === 'pro') {
    - Generate an API key
 
 2. **Add to Environment Variables**:
-   ```bash
+   \`\`\`bash
    # .env.local
    ANTHROPIC_API_KEY=sk-ant-your-key-here
-   ```
+   \`\`\`
 
 3. **Restart Development Server**:
-   ```bash
+   \`\`\`bash
    pnpm dev
-   ```
+   \`\`\`
 
 ## Security Notes
 
