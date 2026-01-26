@@ -472,16 +472,20 @@
         "fileTooLarge": "File size must be less than 2MB",
         "passwordMismatch": "Passwords do not match",
         "passwordTooShort": "Password must be at least 6 characters",
-        "noName": "No name set",
+        "noName": "No name",
         "memberSince": "Member since {date}",
         "freePlan": "Free Plan",
         "proPlan": "Pro Plan",
-        "upgradeToPro": "Upgrade to Pro",
-        "upgradeDesc": "Unlock all premium features and take your finance management to the next level",
-        "proFeature1": "Unlimited accounts and transactions",
-        "proFeature2": "Advanced AI financial insights",
-        "proFeature3": "Priority support and early access to new features",
-        "upgradeNow": "Upgrade Now"
+        "premiumPlan": "Premium Plan",
+        "upgradeToPro": "Upgrade to Premium",
+        "upgradeDesc": "Unlock unlimited features and take your finances to the next level",
+        "proFeature1": "Unlimited accounts and shared users",
+        "proFeature2": "Unlimited recurring services",
+        "proFeature3": "Unlimited AI analyses",
+        "upgradeNow": "Upgrade Now",
+        "manageBillingDesc": "Manage your subscription and billing details",
+        "openBillingPortal": "Open Billing Portal",
+        "upgradeToPremium": "Upgrade to Premium"
     },
     "AiAssistant": {
         "withPro": "with Pro",
@@ -517,10 +521,30 @@
         "recommendations": "Recommendations",
         "observation": "Observation {number}",
         "recommendation": "Recommendation {number}",
-        "noInsights": "No insights available at the moment.",
-        "noRecommendations": "No recommendations available at the moment.",
-        "importantAlerts": "Important Alerts",
-        "pageTitle": "AI Assistant",
-        "pageDescription": "Your personal financial expert powered by artificial intelligence"
+        "loadPrevious": "Load Previous",
+        "loadMore": "Load More",
+        "noMoreMessages": "No more messages",
+        "clearHistory": "Clear History"
+    },
+    "Upgrade": {
+        "title": "Upgrade Your Plan",
+        "description": "Choose the perfect plan for your financial management needs",
+        "month": "month",
+        "recommended": "Recommended",
+        "currentPlan": "Current Plan",
+        "upgrade": "Upgrade to this plan",
+        "manageBilling": "Manage Billing",
+        "manageBillingDesc": "Update payment method and view invoices",
+        "openBillingPortal": "Open Billing Portal"
+    },
+    "Checkout": {
+        "title": "Subscribe to {plan}",
+        "description": "Complete your payment to activate your subscription"
+    },
+    "PaymentSuccess": {
+        "title": "Payment Successful!",
+        "description": "Your subscription has been processed. It may take a few moments to update your account status.",
+        "webhookNote": "Note: In local development, you need to forward webhooks for the status to update automatically.",
+        "continue": "Continue"
     }
 }

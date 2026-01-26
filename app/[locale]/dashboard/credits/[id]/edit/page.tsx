@@ -4,7 +4,7 @@ import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { CreditForm } from "@/components/credits/credit-form"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 
 export default async function EditCreditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

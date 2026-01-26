@@ -474,14 +474,18 @@
         "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
         "noName": "Sin nombre",
         "memberSince": "Miembro desde {date}",
-        "freePlan": "Plan Gratuito",
+        "freePlan": "Plan Gratis",
         "proPlan": "Plan Pro",
-        "upgradeToPro": "Actualizar a Pro",
-        "upgradeDesc": "Desbloquea todas las funciones premium y lleva tu gestión financiera al siguiente nivel",
-        "proFeature1": "Cuentas y transacciones ilimitadas",
-        "proFeature2": "Análisis financiero avanzado con IA",
-        "proFeature3": "Soporte prioritario y acceso anticipado a nuevas funciones",
-        "upgradeNow": "Actualizar Ahora"
+        "premiumPlan": "Plan Premium",
+        "upgradeToPro": "Actualizar a Premium",
+        "upgradeDesc": "Desbloquea funciones ilimitadas y lleva tus finanzas al siguiente nivel",
+        "proFeature1": "Cuentas y usuarios compartidos ilimitados",
+        "proFeature2": "Servicios recurrentes ilimitados",
+        "proFeature3": "Análisis de IA ilimitados",
+        "upgradeNow": "Actualizar Ahora",
+        "manageBillingDesc": "Gestiona tu suscripción y detalles de facturación",
+        "openBillingPortal": "Abrir Portal de Facturación",
+        "upgradeToPremium": "Actualizar a Premium"
     },
     "AiAssistant": {
         "withPro": "con Pro",
@@ -517,10 +521,30 @@
         "recommendations": "Recomendaciones",
         "observation": "Observación {number}",
         "recommendation": "Recomendación {number}",
-        "noInsights": "No hay insights disponibles por ahora.",
-        "noRecommendations": "No hay recomendaciones disponibles por ahora.",
-        "importantAlerts": "Alertas Importantes",
-        "pageTitle": "Asistente AI",
-        "pageDescription": "Tu experto financiero personal impulsado por inteligencia artificial"
+        "loadPrevious": "Cargar Anteriores",
+        "loadMore": "Cargar Más",
+        "noMoreMessages": "No hay más mensajes",
+        "clearHistory": "Limpiar Historial"
+    },
+    "Upgrade": {
+        "title": "Actualiza Tu Plan",
+        "description": "Elige el plan perfecto para tus necesidades de gestión financiera",
+        "month": "mes",
+        "recommended": "Recomendado",
+        "currentPlan": "Plan Actual",
+        "upgrade": "Actualizar a este plan",
+        "manageBilling": "Gestionar Facturación",
+        "manageBillingDesc": "Actualiza método de pago y consulta facturas",
+        "openBillingPortal": "Abrir Portal de Facturación"
+    },
+    "Checkout": {
+        "title": "Suscríbete a {plan}",
+        "description": "Completa tu pago para activar tu suscripción"
+    },
+    "PaymentSuccess": {
+        "title": "¡Pago Exitoso!",
+        "description": "Tu suscripción ha sido procesada. Puede tomar unos momentos actualizar el estado de tu cuenta.",
+        "webhookNote": "Nota: En desarrollo local, necesitas reenviar los webhooks para que el estado se actualice automáticamente.",
+        "continue": "Continuar"
     }
 }

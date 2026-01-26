@@ -38,7 +38,7 @@ export function Pricing() {
                 t("plans.pro.features.4"),
             ],
             ctaLabel: t("plans.pro.cta"),
-            ctaLink: "/auth/signup?plan=pro",
+            ctaLink: "/dashboard/upgrade",
             wrapperClass:
                 "relative flex flex-col overflow-hidden rounded-xl border-2 border-primary bg-card text-card-foreground shadow-lg",
             footerClass: "p-6 bg-primary/5",
@@ -59,7 +59,7 @@ export function Pricing() {
                 t("plans.premium.features.4"),
             ],
             ctaLabel: t("plans.premium.cta"),
-            ctaLink: "/auth/signup?plan=premium",
+            ctaLink: "/dashboard/upgrade",
             wrapperClass: "flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm",
             footerClass: "p-6 bg-muted/20",
         },
