@@ -6,6 +6,7 @@ import {
   Menu,
   Sparkles,
   Gem,
+  Crown,
   LayoutDashboard,
   Wallet,
   ArrowLeftRight,
@@ -33,7 +34,7 @@ interface DashboardNavProps {
   userName: string
   userAvatar?: string
   userEmail?: string
-  tier?: "free" | "pro"
+  tier?: "free" | "pro" | "premium"
 }
 
 export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardNavProps) {
@@ -129,7 +130,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
                       <Button
                         onClick={() => {
                           setOpen(false)
-                          router.push("/dashboard/profile")
+                          router.push("/dashboard/upgrade")
                         }}
                         className="w-full bg-white text-purple-600 hover:bg-white/90 font-semibold shadow-md transition-all hover:scale-105"
                         size="sm"
@@ -183,7 +184,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
                 className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
               >
                 <div className="relative">
-                  <div className={`overflow-hidden flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm ${tier === "pro" ? "ring-2 ring-gradient-to-br ring-yellow-400" : ""
+                  <div className={`overflow-hidden flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm ${tier === "premium" ? "ring-2 ring-purple-500" : tier === "pro" ? "ring-2 ring-yellow-400" : ""
                     }`}>
                     {userAvatar ? (
                       <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
@@ -191,6 +192,12 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
                       userName.charAt(0).toUpperCase()
                     )}
                   </div>
+                  {/* Premium Tier Badge - Purple Crown */}
+                  {tier === "premium" && (
+                    <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 border-2 border-purple-300 flex items-center justify-center shadow-lg">
+                      <Crown className="h-2 w-2 text-white" />
+                    </div>
+                  )}
                   {/* Pro Tier Badge - Golden Diamond */}
                   {tier === "pro" && (
                     <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg">

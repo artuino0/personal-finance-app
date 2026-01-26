@@ -1,35 +1,26 @@
--- Update subscription_tier to include premium
--- Add Stripe customer tracking fields
+-- Add Stripe-related columns to profiles table
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT UNIQUE,
+ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT UNIQUE,
+ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'inactive' CHECK (subscription_status IN ('active', 'inactive', 'canceled', 'past_due'));
 
--- Drop existing constraint and recreate with premium tier
-alter table public.profiles 
-drop constraint if exists profiles_subscription_tier_check;
+-- Update existing subscription_tier column to support premium
+ALTER TABLE profiles
+DROP CONSTRAINT IF EXISTS profiles_subscription_tier_check;
 
-alter table public.profiles 
-add constraint profiles_subscription_tier_check 
-check (subscription_tier in ('free', 'pro', 'premium'));
+ALTER TABLE profiles
+ADD CONSTRAINT profiles_subscription_tier_check 
+CHECK (subscription_tier IN ('free', 'pro', 'premium'));
 
--- Add Stripe customer and subscription tracking
-alter table public.profiles 
-add column if not exists stripe_customer_id text unique;
+-- Create index for faster lookups
+CREATE INDEX IF NOT EXISTS idx_profiles_stripe_customer ON profiles(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_subscription_status ON profiles(subscription_status);
 
-alter table public.profiles 
-add column if not exists stripe_subscription_id text unique;
+-- Add subscription_ends_at column to track when subscription expires
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS subscription_ends_at TIMESTAMPTZ;
 
-alter table public.profiles 
-add column if not exists subscription_status text default 'inactive'
-check (subscription_status in ('active', 'inactive', 'canceled', 'past_due', 'trialing'));
-
--- Create indexes for better performance
-create index if not exists profiles_stripe_customer_id_idx on public.profiles(stripe_customer_id);
-create index if not exists profiles_stripe_subscription_id_idx on public.profiles(stripe_subscription_id);
-create index if not exists profiles_subscription_status_idx on public.profiles(subscription_status);
-
--- Update existing profiles to have proper status
-update public.profiles 
-set subscription_status = 'inactive'
-where subscription_status is null and subscription_tier = 'free';
-
-update public.profiles 
-set subscription_status = 'active'
-where subscription_status is null and subscription_tier in ('pro', 'premium');
+COMMENT ON COLUMN profiles.stripe_customer_id IS 'Stripe customer ID for payment management';
+COMMENT ON COLUMN profiles.stripe_subscription_id IS 'Active Stripe subscription ID';
+COMMENT ON COLUMN profiles.subscription_status IS 'Current subscription status from Stripe';
+COMMENT ON COLUMN profiles.subscription_ends_at IS 'Timestamp when subscription ends or renews';

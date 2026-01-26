@@ -7,15 +7,14 @@ export interface Product {
   features: string[]
 }
 
-// This is the source of truth for all subscription products.
-// All UI to display products should pull from this array.
-// IDs passed to the checkout session should be the same as IDs from this array.
+// Source of truth for all subscription products
+// IDs must match the productId passed to checkout
 export const PRODUCTS: Product[] = [
   {
     id: 'pro-monthly',
     name: 'Pro Plan',
-    description: 'For individuals looking to maximize their savings',
-    priceInCents: 9900, // $99 MXN
+    description: 'Perfect for individuals managing multiple accounts',
+    priceInCents: 9900, // $99.00
     tier: 'pro',
     features: [
       'Unlimited accounts',
@@ -28,15 +27,24 @@ export const PRODUCTS: Product[] = [
   {
     id: 'premium-monthly',
     name: 'Premium Plan',
-    description: 'For investors and families',
-    priceInCents: 19900, // $199 MXN
+    description: 'Best for families and teams',
+    priceInCents: 19900, // $199.00
     tier: 'premium',
     features: [
-      'Everything in Pro +',
+      'Unlimited accounts',
       '5 shared users',
+      'Unlimited recurring services',
+      'Unlimited active credits',
       'Unlimited AI analyses',
       'Priority support',
-      'Advanced financial insights',
     ],
   },
 ]
+
+export function getProductById(id: string): Product | undefined {
+  return PRODUCTS.find((p) => p.id === id)
+}
+
+export function getProductByTier(tier: 'pro' | 'premium'): Product | undefined {
+  return PRODUCTS.find((p) => p.tier === tier)
+}

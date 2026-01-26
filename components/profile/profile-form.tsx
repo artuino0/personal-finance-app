@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslations } from "next-intl"
-import { Camera, Gem, Shield } from "lucide-react"
+import { Camera, Gem, Shield, Crown } from "lucide-react"
+import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 
 interface Profile {
@@ -218,7 +219,7 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
     }
   }
 
-  const tier = (initialProfile?.subscription_tier as "free" | "pro") || "free"
+  const tier = (initialProfile?.subscription_tier as "free" | "pro" | "premium") || "free"
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -231,10 +232,21 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
               <CardDescription>{t("accountInfoDesc")}</CardDescription>
             </div>
             <Badge
-              variant={tier === "pro" ? "default" : "secondary"}
-              className={tier === "pro" ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white" : ""}
+              variant={tier !== "free" ? "default" : "secondary"}
+              className={
+                tier === "premium"
+                  ? "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white"
+                  : tier === "pro"
+                  ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white"
+                  : ""
+              }
             >
-              {tier === "pro" ? (
+              {tier === "premium" ? (
+                <>
+                  <Crown className="h-3 w-3 mr-1" />
+                  {t("premiumPlan")}
+                </>
+              ) : tier === "pro" ? (
                 <>
                   <Gem className="h-3 w-3 mr-1" />
                   {t("proPlan")}
@@ -371,7 +383,7 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                <Gem className="h-4 w-4 text-white" />
+                <Crown className="h-4 w-4 text-white" />
               </div>
               {t("upgradeToPro")}
             </CardTitle>
@@ -404,10 +416,46 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
                 <span className="text-foreground/80">{t("proFeature3")}</span>
               </li>
             </ul>
-            <Button className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all">
-              <Gem className="h-4 w-4 mr-2" />
-              {t("upgradeNow")}
-            </Button>
+            <Link href="/dashboard/upgrade">
+              <Button className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all">
+                <Crown className="h-4 w-4 mr-2" />
+                {t("upgradeNow")}
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Manage Subscription Card */}
+      {(tier === "pro" || tier === "premium") && (
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {tier === "premium" ? (
+                <Crown className="h-5 w-5 text-primary" />
+              ) : (
+                <Gem className="h-5 w-5 text-primary" />
+              )}
+              {tier === "premium" ? t("premiumPlan") : t("proPlan")}
+            </CardTitle>
+            <CardDescription>
+              {t("manageBillingDesc")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <form action="/api/billing-portal" method="POST">
+              <Button type="submit" variant="outline" className="w-full">
+                {t("openBillingPortal")}
+              </Button>
+            </form>
+            {tier === "pro" && (
+              <Link href="/dashboard/upgrade">
+                <Button className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white">
+                  <Crown className="h-4 w-4 mr-2" />
+                  {t("upgradeToPremium")}
+                </Button>
+              </Link>
+            )}
           </CardContent>
         </Card>
       )}

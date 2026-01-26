@@ -1,44 +1,54 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import {
-  EmbeddedCheckout,
-  EmbeddedCheckoutProvider,
-} from '@stripe/react-stripe-js'
+import { useCallback, useEffect, useState } from 'react'
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { startCheckoutSession } from '@/app/actions/stripe'
+import { startCheckoutSession, getCheckoutSession } from '@/app/actions/stripe'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export default function Checkout({ productId }: { productId: string }) {
-  const [error, setError] = useState<string | null>(null)
+export function Checkout({ productId }: { productId: string }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const sessionId = searchParams.get('session_id')
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const fetchClientSecret = useCallback(async () => {
-    try {
-      const clientSecret = await startCheckoutSession(productId)
-      return clientSecret
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      throw err
+  // Check if returning from successful checkout
+  useEffect(() => {
+    if (sessionId) {
+      setIsProcessing(true)
+      getCheckoutSession(sessionId).then((session) => {
+        if (session?.status === 'complete') {
+          // Redirect to profile with success message
+          router.push('/dashboard/profile?payment=success')
+        } else {
+          setIsProcessing(false)
+        }
+      })
     }
-  }, [productId])
+  }, [sessionId, router])
 
-  if (error) {
+  const startCheckoutSessionForProduct = useCallback(
+    () => startCheckoutSession(productId),
+    [productId]
+  )
+
+  if (isProcessing) {
     return (
-      <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
-        <p className="font-medium">Error loading checkout</p>
-        <p className="text-sm">{error}</p>
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">{'Processing your subscription...'}</p>
       </div>
     )
   }
 
   return (
-    <div id="checkout" className="w-full">
+    <div id="checkout" className="w-full max-w-2xl mx-auto">
       <EmbeddedCheckoutProvider
         stripe={stripePromise}
-        options={{ fetchClientSecret }}
+        options={{ clientSecret: startCheckoutSessionForProduct }}
       >
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
