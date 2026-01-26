@@ -24,9 +24,14 @@ interface TransactionDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   locale: string
+  prefilledData?: {
+    description?: string
+    amount?: string
+    categoryName?: string
+  } | null
 }
 
-export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDrawerProps) {
+export function TransactionDrawer({ open, onOpenChange, locale, prefilledData }: TransactionDrawerProps) {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [userId, setUserId] = useState<string | null>(null)
@@ -75,6 +80,7 @@ export function TransactionDrawer({ open, onOpenChange, locale }: TransactionDra
         categories={categories}
         onSuccess={() => onOpenChange(false)}
         isDrawer={isMobile}
+        prefilledData={prefilledData}
       />
     </div>
   ) : (

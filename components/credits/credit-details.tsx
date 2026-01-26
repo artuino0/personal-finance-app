@@ -3,15 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, Link } from "@/lib/i18n/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { Link } from "@/lib/i18n/navigation"
 import { useTranslations } from "next-intl"
-import { Pencil } from "lucide-react"
+import { Trash2 } from "lucide-react"
 
 interface Credit {
   id: string
@@ -47,6 +46,7 @@ interface CreditDetailsProps {
 export function CreditDetails({ credit, payments, userId, permissions }: CreditDetailsProps) {
   const [amount, setAmount] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const router = useRouter()
   const t = useTranslations("Credits")
 
@@ -78,6 +78,27 @@ export function CreditDetails({ credit, payments, userId, permissions }: CreditD
     }
   }
 
+  const handleDelete = async () => {
+    if (!confirm(t("confirmDelete"))) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/credits/${credit.id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) throw new Error("Failed to delete credit")
+
+      router.push("/dashboard/credits" as any)
+      router.refresh()
+    } catch (error) {
+      console.error("Error deleting credit:", error)
+      alert(t("deleteError"))
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   const getCreditTypeLabel = (type: string) => {
     const types: Record<string, string> = {
       loan: t("types.loan"),
@@ -99,6 +120,16 @@ export function CreditDetails({ credit, payments, userId, permissions }: CreditD
           {permissions.canEdit && (
             <Button asChild variant="outline">
               <Link href={`/dashboard/credits/${credit.id}/edit`}>{t("edit")}</Link>
+            </Button>
+          )}
+          {permissions.canDelete && (
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {isDeleting ? t("deleting") : t("delete")}
             </Button>
           )}
           <Button asChild variant="ghost">

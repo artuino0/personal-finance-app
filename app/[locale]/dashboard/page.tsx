@@ -5,7 +5,7 @@ import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { BalanceOverview } from "@/components/dashboard/balance-overview"
 import { RecentTransactions } from "@/components/dashboard/recent-transactions"
 import { MonthlyChart } from "@/components/dashboard/monthly-chart"
-import { UpcomingPayments } from "@/components/dashboard/upcoming-payments"
+import { DashboardClientWrapper } from "@/components/dashboard/dashboard-client-wrapper"
 import { formatCurrency } from "@/lib/utils/currency"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import { AccountSelector } from "@/components/dashboard/account-selector"
@@ -191,7 +191,11 @@ export default async function DashboardPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <RecentTransactions transactions={localizedTransactions || []} />
-          <UpcomingPayments credits={credits || []} services={services || []} />
+          <DashboardClientWrapper 
+            credits={credits || []} 
+            services={services || []}
+            locale={locale}
+          />
         </div>
       </main>
     </div>

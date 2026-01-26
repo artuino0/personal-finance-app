@@ -2,7 +2,18 @@
 
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { Menu, Sparkles, Gem } from "lucide-react"
+import {
+  Menu,
+  Sparkles,
+  Gem,
+  LayoutDashboard,
+  Wallet,
+  ArrowLeftRight,
+  Repeat,
+  CreditCard,
+  Users,
+  FileText
+} from "lucide-react"
 import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
 import {
@@ -39,12 +50,12 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
   }
 
   const navItems = [
-    { href: "/dashboard", label: t("dashboard") },
-    { href: "/dashboard/accounts", label: t("accounts") },
-    { href: "/dashboard/transactions", label: t("transactions") },
-    { href: "/dashboard/services", label: t("services") },
-    { href: "/dashboard/credits", label: t("credits") },
-    { href: "/dashboard/sharing", label: t("sharing") },
+    { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
+    { href: "/dashboard/accounts", label: t("accounts"), icon: Wallet },
+    { href: "/dashboard/transactions", label: t("transactions"), icon: ArrowLeftRight },
+    { href: "/dashboard/services", label: t("services"), icon: Repeat },
+    { href: "/dashboard/credits", label: t("credits"), icon: CreditCard },
+    { href: "/dashboard/sharing", label: t("sharing"), icon: Users },
   ]
 
   return (
@@ -58,31 +69,73 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
                 <span className="sr-only">{t("menu")}</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] sm:w-[320px]">
+            <SheetContent side="left" className="w-[280px] sm:w-[320px] flex flex-col">
               <SheetHeader>
-                <SheetTitle className="text-left">Kountly</SheetTitle>
+                <SheetTitle className="text-left font-bold text-xl">Kountly</SheetTitle>
               </SheetHeader>
-              <div className="mt-8 flex flex-col gap-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-muted ${pathname === item.href ? "bg-muted text-foreground" : "text-slate-700"
-                      }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div className="flex flex-col gap-1 flex-1 overflow-y-auto py-6">
+                {navItems.map((item) => {
+                  const Icon = item.icon
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all ${isActive
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-slate-700 hover:bg-muted hover:text-foreground"
+                        }`}
+                    >
+                      <Icon className={`h-5 w-5 ${isActive ? "text-primary-foreground" : "text-slate-500"}`} />
+                      <span>{item.label}</span>
+                    </Link>
+                  )
+                })}
                 <ReportGeneratorDialog>
                   <button
                     onClick={() => setOpen(false)}
-                    className="flex items-center rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-muted w-full"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-all hover:bg-muted hover:text-foreground w-full"
                   >
-                    {t("reports")}
+                    <FileText className="h-5 w-5 text-slate-500" />
+                    <span>{t("reports")}</span>
                   </button>
                 </ReportGeneratorDialog>
               </div>
+
+              {/* Pro Upgrade Banner - Only for Free Tier */}
+              {tier === "free" && (
+                <div className="mt-auto border-t pt-4 pb-2 px-3">
+                  <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 p-4 shadow-lg">
+                    {/* Decorative background pattern */}
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+
+                    <div className="relative">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                          <Gem className="h-3.5 w-3.5 text-white" />
+                        </div>
+                        <span className="text-xs font-bold text-white/90 uppercase tracking-wide">Upgrade to Pro</span>
+                      </div>
+
+                      <p className="text-sm font-medium text-white mb-3 leading-relaxed">
+                        Desbloquea funciones premium y lleva tus finanzas al siguiente nivel
+                      </p>
+
+                      <Button
+                        onClick={() => {
+                          setOpen(false)
+                          router.push("/dashboard/profile")
+                        }}
+                        className="w-full bg-white text-purple-600 hover:bg-white/90 font-semibold shadow-md transition-all hover:scale-105"
+                        size="sm"
+                      >
+                        Ver Planes Pro
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </SheetContent>
           </Sheet>
 

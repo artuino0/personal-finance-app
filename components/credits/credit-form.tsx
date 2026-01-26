@@ -3,16 +3,13 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "@/lib/i18n/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CurrencyInput } from "@/components/ui/currency-input"
+import { Calculator } from "lucide-react"
 
 interface Credit {
   id: string
@@ -42,24 +39,21 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
   const t = useTranslations("Credits")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
-  const [includeDateCalculation, setIncludeDateCalculation] = useState(false)
 
   // Initial state for form fields
   const [formData, setFormData] = useState({
     name: creditToEdit?.name || "",
     type: creditToEdit?.type || "loan",
     total_amount: creditToEdit?.total_amount?.toString() || "",
-    remaining_amount: creditToEdit?.remaining_amount?.toString() || "",
-    interest_rate: creditToEdit?.interest_rate?.toString() || "",
-    start_date: creditToEdit?.start_date ? new Date(creditToEdit.start_date).toISOString().split("T")[0] : "",
-    due_date: creditToEdit?.due_date ? new Date(creditToEdit.due_date).toISOString().split("T")[0] : "",
-    end_date: creditToEdit?.end_date ? new Date(creditToEdit.end_date).toISOString().split("T")[0] : "",
     monthly_payment: creditToEdit?.monthly_payment?.toString() || "",
-    // Auto calculation fields
-    total_months: "",
-    months_paid: "",
-    payment_day: "",
+    total_months: creditToEdit?.total_installments?.toString() || "",
+    months_paid: creditToEdit?.paid_installments?.toString() || "0",
+    payment_day: creditToEdit?.payment_day?.toString() || "",
+    interest_rate: creditToEdit?.interest_rate?.toString() || "",
   })
+
+  // Track which field was last modified to determine what to calculate
+  const [lastModified, setLastModified] = useState<'total' | 'monthly' | 'months' | null>(null)
 
   // Credit types constant moved inside component for translation
   const CREDIT_TYPES = [
@@ -69,13 +63,65 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
     { value: "personal_loan", label: t("types.personal_loan") },
   ]
 
-  const calculateDates = () => {
-    if (!formData.total_months || !formData.months_paid || !formData.payment_day) return
+  // Auto-calculate total, monthly payment, or total months based on the other two values
+  useEffect(() => {
+    const total = parseFloat(formData.total_amount) || 0
+    const monthly = parseFloat(formData.monthly_payment) || 0
+    const months = parseInt(formData.total_months) || 0
 
-    const totalMonths = Number.parseInt(formData.total_months)
-    const monthsPaid = Number.parseInt(formData.months_paid)
-    const paymentDay = Number.parseInt(formData.payment_day)
+    // Count how many fields have values
+    const filledFields = [
+      formData.total_amount ? 'total' : null,
+      formData.monthly_payment ? 'monthly' : null,
+      formData.total_months ? 'months' : null
+    ].filter(Boolean)
+
+    // Only auto-calculate when exactly 2 fields are filled
+    if (filledFields.length === 2) {
+      // Calculate based on which field is empty
+      if (!formData.monthly_payment && total > 0 && months > 0) {
+        const calculatedMonthly = (total / months).toFixed(2)
+        setFormData((prev) => ({ ...prev, monthly_payment: calculatedMonthly }))
+      } else if (!formData.total_months && total > 0 && monthly > 0) {
+        const calculatedMonths = Math.ceil(total / monthly).toString()
+        setFormData((prev) => ({ ...prev, total_months: calculatedMonths }))
+      } else if (!formData.total_amount && months > 0 && monthly > 0) {
+        const calculatedTotal = (months * monthly).toFixed(2)
+        setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+      }
+    }
+    // When all 3 fields are filled, recalculate the one that wasn't last modified
+    else if (filledFields.length === 3 && lastModified) {
+      if (lastModified === 'total' && monthly > 0 && months > 0) {
+        // User modified total, recalculate it based on monthly * months
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      } else if (lastModified === 'monthly' && total > 0 && months > 0) {
+        // User modified monthly, recalculate total
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      } else if (lastModified === 'months' && total > 0 && monthly > 0) {
+        // User modified months, recalculate total
+        const calculatedTotal = (months * monthly).toFixed(2)
+        if (calculatedTotal !== formData.total_amount) {
+          setFormData((prev) => ({ ...prev, total_amount: calculatedTotal }))
+        }
+      }
+    }
+  }, [formData.total_amount, formData.monthly_payment, formData.total_months, lastModified])
+
+  // Calculate dates and progress
+  const calculateDatesAndProgress = () => {
+    const totalMonths = parseInt(formData.total_months) || 0
+    const monthsPaid = parseInt(formData.months_paid) || 0
+    const paymentDay = parseInt(formData.payment_day) || 1
     const today = new Date()
+
+    if (totalMonths === 0) return { start_date: "", due_date: "", end_date: "", remaining_amount: formData.total_amount, progress: 0 }
 
     // Calculate start date: today - monthsPaid months
     const startDate = new Date(today.getFullYear(), today.getMonth() - monthsPaid, paymentDay)
@@ -89,20 +135,22 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
     // Calculate end date: startDate + totalMonths months
     const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + totalMonths, paymentDay)
 
-    setFormData((prev) => ({
-      ...prev,
+    // Calculate remaining amount
+    const total = parseFloat(formData.total_amount) || 0
+    const monthly = parseFloat(formData.monthly_payment) || 0
+    const remainingAmount = Math.max(0, total - (monthly * monthsPaid))
+    const progress = total > 0 ? ((monthsPaid / totalMonths) * 100).toFixed(0) : "0"
+
+    return {
       start_date: startDate.toISOString().split("T")[0],
       due_date: nextDueDate.toISOString().split("T")[0],
       end_date: endDate.toISOString().split("T")[0],
-    }))
+      remaining_amount: remainingAmount.toFixed(2),
+      progress: parseInt(progress)
+    }
   }
 
-  // Effect to recalculate dates when auto-calc fields change
-  useEffect(() => {
-    if (includeDateCalculation) {
-      calculateDates()
-    }
-  }, [formData.total_months, formData.months_paid, formData.payment_day, includeDateCalculation]) //Corrected dependency array
+  const calculatedValues = calculateDatesAndProgress()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,9 +165,19 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          type: formData.type,
+          total_amount: parseFloat(formData.total_amount) || 0,
+          remaining_amount: parseFloat(calculatedValues.remaining_amount) || 0,
+          monthly_payment: parseFloat(formData.monthly_payment) || 0,
+          total_installments: parseInt(formData.total_months) || 0,
+          paid_installments: parseInt(formData.months_paid) || 0,
+          payment_day: parseInt(formData.payment_day) || null,
+          interest_rate: parseFloat(formData.interest_rate) || null,
+          start_date: calculatedValues.start_date,
+          due_date: calculatedValues.due_date,
+          end_date: calculatedValues.end_date,
           user_id: userId,
-          remaining_amount: formData.remaining_amount || formData.total_amount,
         }),
       })
 
@@ -127,7 +185,7 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
 
       router.refresh()
       if (onSuccess) onSuccess()
-      else router.push("/dashboard/credits")
+      else router.push("/dashboard/credits" as any)
     } catch (err) {
       setError(t("genericError"))
       console.error(err)
@@ -138,7 +196,7 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6 bg-card rounded-lg shadow-sm">
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         <div className="space-y-2">
           <Label htmlFor="name">{t("creditName")}</Label>
           <Input
@@ -169,158 +227,130 @@ export function CreditForm({ userId, creditToEdit, onSuccess }: CreditFormProps)
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="total_amount">{t("totalAmount")}</Label>
-            <Input
-              id="total_amount"
-              type="number"
-              step="0.01"
-              value={formData.total_amount}
-              onChange={(e) => setFormData({ ...formData, total_amount: e.target.value })}
-              required
-              placeholder="0.00"
-            />
+        <div className="border-2 border-dashed border-primary/30 rounded-lg p-4 bg-primary/5">
+          <div className="flex items-center gap-2 mb-4">
+            <Calculator className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold text-sm">{t("autoCalculation")}</h3>
           </div>
+          <p className="text-xs text-muted-foreground mb-4">{t("autoCalculationHelp")}</p>
 
-          <div className="space-y-2">
-            <Label htmlFor="remaining_amount">{t("remainingAmount")}</Label>
-            <Input
-              id="remaining_amount"
-              type="number"
-              step="0.01"
-              value={formData.remaining_amount}
-              onChange={(e) => setFormData({ ...formData, remaining_amount: e.target.value })}
-              placeholder={t("leaveEmptyTotal")}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="monthly_payment">{t("monthlyPayment")}</Label>
-            <Input
-              id="monthly_payment"
-              type="number"
-              step="0.01"
-              value={formData.monthly_payment}
-              onChange={(e) => setFormData({ ...formData, monthly_payment: e.target.value })}
-              placeholder="0.00"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="interest_rate">{t("interestRateLabel")}</Label>
-            <Input
-              id="interest_rate"
-              type="number"
-              step="0.01"
-              value={formData.interest_rate}
-              onChange={(e) => setFormData({ ...formData, interest_rate: e.target.value })}
-              placeholder="0.0"
-            />
-          </div>
-        </div>
-
-        <div className="border rounded-lg p-4 bg-muted/20 space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="auto-date"
-              checked={includeDateCalculation}
-              onCheckedChange={(checked: boolean | "indeterminate") => setIncludeDateCalculation(!!checked)}
-            />
-            <Label htmlFor="auto-date" className="font-medium">{t("autoDateCalc")}</Label>
-          </div>
-
-          {includeDateCalculation && (
-            <div className="grid gap-4 mt-2 slide-in-from-top-2 animate-in fade-in duration-300">
-              <div className="text-sm text-muted-foreground mb-2">
-                {t("autoCalcHelp")}
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="total_months">{t("totalMonths")}</Label>
-                  <Input
-                    id="total_months"
-                    type="number"
-                    value={formData.total_months}
-                    onChange={(e) => setFormData({ ...formData, total_months: e.target.value })}
-                    placeholder="12"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="months_paid">{t("monthsPaid")}</Label>
-                  <Input
-                    id="months_paid"
-                    type="number"
-                    value={formData.months_paid}
-                    onChange={(e) => setFormData({ ...formData, months_paid: e.target.value })}
-                    placeholder="0"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="payment_day">{t("paymentDay")}</Label>
-                  <Input
-                    id="payment_day"
-                    type="number"
-                    min="1"
-                    max="31"
-                    value={formData.payment_day}
-                    onChange={(e) => setFormData({ ...formData, payment_day: e.target.value })}
-                    placeholder="1"
-                  />
-                </div>
-              </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="total_amount">{t("totalAmount")}</Label>
+              <Input
+                id="total_amount"
+                type="number"
+                step="0.01"
+                value={formData.total_amount}
+                onChange={(e) => {
+                  setFormData({ ...formData, total_amount: e.target.value })
+                  setLastModified('total')
+                }}
+                placeholder="0.00"
+              />
             </div>
-          )}
-        </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="start_date">
-              {t("startDateLabel", {
-                calculated: includeDateCalculation ? t("calculatedMasculine") : ""
-              })}
-            </Label>
-            <Input
-              id="start_date"
-              type="date"
-              value={formData.start_date}
-              onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-              required
-              disabled={includeDateCalculation}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="monthly_payment">{t("monthlyPayment")}</Label>
+              <Input
+                id="monthly_payment"
+                type="number"
+                step="0.01"
+                value={formData.monthly_payment}
+                onChange={(e) => {
+                  setFormData({ ...formData, monthly_payment: e.target.value })
+                  setLastModified('monthly')
+                }}
+                placeholder="0.00"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="due_date">
-              {t("nextDueDateLabel", {
-                calculated: includeDateCalculation ? t("calculatedMasculine") : ""
-              })}
-            </Label>
-            <Input
-              id="due_date"
-              type="date"
-              value={formData.due_date}
-              onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              disabled={includeDateCalculation}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="end_date">
-              {t("endDateLabel", {
-                calculated: includeDateCalculation ? t("calculatedMasculine") : ""
-              })}
-            </Label>
-            <Input
-              id="end_date"
-              type="date"
-              value={formData.end_date}
-              onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-              disabled={includeDateCalculation}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="total_months">{t("totalMonths")}</Label>
+              <Input
+                id="total_months"
+                type="number"
+                value={formData.total_months}
+                onChange={(e) => {
+                  setFormData({ ...formData, total_months: e.target.value })
+                  setLastModified('months')
+                }}
+                placeholder="12"
+              />
+            </div>
           </div>
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="months_paid">{t("monthsPaid")}</Label>
+            <Input
+              id="months_paid"
+              type="number"
+              value={formData.months_paid}
+              onChange={(e) => setFormData({ ...formData, months_paid: e.target.value })}
+              placeholder="0"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="payment_day">{t("paymentDay")}</Label>
+            <Input
+              id="payment_day"
+              type="number"
+              min="1"
+              max="31"
+              value={formData.payment_day}
+              onChange={(e) => setFormData({ ...formData, payment_day: e.target.value })}
+              placeholder="1"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="interest_rate">{t("interestRateLabel")}</Label>
+          <Input
+            id="interest_rate"
+            type="number"
+            step="0.01"
+            value={formData.interest_rate}
+            onChange={(e) => setFormData({ ...formData, interest_rate: e.target.value })}
+            placeholder="0.0"
+          />
+        </div>
+
+        {/* Preview of calculated values */}
+        {(formData.total_amount || formData.monthly_payment || formData.total_months) && (
+          <div className="rounded-lg bg-muted p-4 space-y-2">
+            <h4 className="font-semibold text-sm mb-3">{t("calculatedPreview")}</h4>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <span className="text-muted-foreground">{t("progress")}:</span>
+                <span className="ml-2 font-medium">{calculatedValues.progress}%</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("remainingAmount")}:</span>
+                <span className="ml-2 font-medium">${calculatedValues.remaining_amount}</span>
+              </div>
+              {calculatedValues.start_date && (
+                <>
+                  <div>
+                    <span className="text-muted-foreground">{t("startDate")}:</span>
+                    <span className="ml-2 font-medium">{new Date(calculatedValues.start_date).toLocaleDateString()}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">{t("nextDueDate")}:</span>
+                    <span className="ml-2 font-medium">{new Date(calculatedValues.due_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-muted-foreground">{t("estimatedEndDate")}:</span>
+                    <span className="ml-2 font-medium">{new Date(calculatedValues.end_date).toLocaleDateString()}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {error && <div className="text-red-500 text-sm">{error}</div>}
