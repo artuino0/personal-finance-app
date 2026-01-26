@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useTranslations } from "next-intl"
 import { Camera, Gem, Shield, Crown } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useToast } from "@/hooks/use-toast"
 
 interface Profile {
@@ -237,8 +237,8 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
                 tier === "premium"
                   ? "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white"
                   : tier === "pro"
-                  ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white"
-                  : ""
+                    ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white"
+                    : ""
               }
             >
               {tier === "premium" ? (
@@ -425,7 +425,7 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
           </CardContent>
         </Card>
       )}
-      
+
       {/* Manage Subscription Card */}
       {(tier === "pro" || tier === "premium") && (
         <Card className="border-primary/20">

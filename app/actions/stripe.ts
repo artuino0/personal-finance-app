@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { stripe } from '@/lib/stripe'
 import { getProductById } from '@/lib/products'
 import { createClient } from '@/lib/supabase/server'
+import { getLocale } from 'next-intl/server'
 
 export async function startCheckoutSession(productId: string) {
   const product = getProductById(productId)
@@ -47,19 +48,25 @@ export async function startCheckoutSession(productId: string) {
       .eq('id', user.id)
   }
 
+  // Determine currency and price based on locale
+  const locale = await getLocale()
+  const isEnglish = locale === 'en'
+  const currency = isEnglish ? 'usd' : 'mxn'
+  const unitAmount = isEnglish ? product.prices.usd : product.prices.mxn
+
   // Create Checkout Session for subscription
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
-    ui_mode: 'embedded',
+    // ui_mode: 'embedded', // Removed for hosted checkout
     line_items: [
       {
         price_data: {
-          currency: 'usd',
+          currency: currency,
           product_data: {
             name: product.name,
             description: product.description,
           },
-          unit_amount: product.priceInCents,
+          unit_amount: unitAmount,
           recurring: {
             interval: 'month',
           },
@@ -68,8 +75,8 @@ export async function startCheckoutSession(productId: string) {
       },
     ],
     mode: 'subscription',
-    redirect_on_completion: 'if_required',
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/profile?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/processing-payment?session_id={CHECKOUT_SESSION_ID}&locale=${locale}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/upgrade`,
     metadata: {
       user_id: user.id,
       product_id: productId,
@@ -77,7 +84,8 @@ export async function startCheckoutSession(productId: string) {
     },
   })
 
-  return session.client_secret
+  // Return generated URL for redirect
+  return session.url
 }
 
 export async function getCheckoutSession(sessionId: string) {
@@ -92,6 +100,7 @@ export async function getCheckoutSession(sessionId: string) {
 
 export async function createBillingPortalSession() {
   const supabase = await createClient()
+  const locale = await getLocale()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -112,7 +121,7 @@ export async function createBillingPortalSession() {
 
   const session = await stripe.billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/profile`,
+    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/profile`,
   })
 
   redirect(session.url)

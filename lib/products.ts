@@ -2,7 +2,11 @@ export interface Product {
   id: string
   name: string
   description: string
-  priceInCents: number
+  priceInCents: number // Default/Legacy
+  prices: {
+    mxn: number
+    usd: number
+  }
   tier: 'free' | 'pro' | 'premium'
   features: string[]
 }
@@ -14,7 +18,11 @@ export const PRODUCTS: Product[] = [
     id: 'pro-monthly',
     name: 'Pro Plan',
     description: 'Perfect for individuals managing multiple accounts',
-    priceInCents: 9900, // $99.00
+    priceInCents: 9900, // Legacy
+    prices: {
+      mxn: 9900, // $99.00 MXN
+      usd: 500,  // $5.00 USD
+    },
     tier: 'pro',
     features: [
       'Unlimited accounts',
@@ -28,7 +36,11 @@ export const PRODUCTS: Product[] = [
     id: 'premium-monthly',
     name: 'Premium Plan',
     description: 'Best for families and teams',
-    priceInCents: 19900, // $199.00
+    priceInCents: 19900, // Legacy
+    prices: {
+      mxn: 19900, // $199.00 MXN
+      usd: 1000,  // $10.00 USD
+    },
     tier: 'premium',
     features: [
       'Unlimited accounts',

@@ -30,10 +30,11 @@ export function Checkout({ productId }: { productId: string }) {
     }
   }, [sessionId, router])
 
-  const startCheckoutSessionForProduct = useCallback(
-    () => startCheckoutSession(productId),
-    [productId]
-  )
+  const startCheckoutSessionForProduct = useCallback(async () => {
+    const secret = await startCheckoutSession(productId)
+    if (!secret) throw new Error('Failed to create checkout session')
+    return secret
+  }, [productId])
 
   if (isProcessing) {
     return (
@@ -48,7 +49,7 @@ export function Checkout({ productId }: { productId: string }) {
     <div id="checkout" className="w-full max-w-2xl mx-auto">
       <EmbeddedCheckoutProvider
         stripe={stripePromise}
-        options={{ clientSecret: startCheckoutSessionForProduct }}
+        options={{ fetchClientSecret: startCheckoutSessionForProduct }}
       >
         <EmbeddedCheckout />
       </EmbeddedCheckoutProvider>
