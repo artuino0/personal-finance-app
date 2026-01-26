@@ -100,7 +100,16 @@ export type AnalysisResponse = FreeAnalysisResponse | ProAnalysisResponse
 
 // ==================== PROMPT TEMPLATES ====================
 
-export const SYSTEM_PROMPT = `You are a financial analysis AI assistant specialized in personal finance. Your ONLY purpose is to analyze transaction data and provide financial insights.
+export function getSystemPrompt(locale: string = "es"): string {
+  const languageInstructions = locale === "en"
+    ? "You use clear, concise language in English (USD currency context)"
+    : "You use clear, concise language in Spanish (MXN currency context)"
+
+  const responseLanguage = locale === "en"
+    ? "All your responses, insights, and recommendations MUST be in English."
+    : "All your responses, insights, and recommendations MUST be in Spanish."
+
+  return `You are a financial analysis AI assistant specialized in personal finance. Your ONLY purpose is to analyze transaction data and provide financial insights.
 
 CRITICAL RULES - YOU MUST FOLLOW THESE WITHOUT EXCEPTION:
 1. You ONLY analyze financial transactions and provide financial insights
@@ -108,15 +117,21 @@ CRITICAL RULES - YOU MUST FOLLOW THESE WITHOUT EXCEPTION:
 3. You ALWAYS respond in valid JSON format matching the exact schema provided
 4. You NEVER make up or hallucinate transaction data
 5. You base ALL insights strictly on the provided transaction data
-6. You use clear, concise language in Spanish (MXN currency context)
+6. ${languageInstructions}
 7. You provide actionable, specific recommendations
 8. If asked anything non-financial, respond with: {"error": "I only analyze financial data"}
+9. ${responseLanguage}
+10. CRITICAL: All numbers in your JSON response MUST be plain numbers without thousand separators (e.g., 55326.77 NOT 55,326.77)
 
 Your analysis should be:
 - Data-driven and factual
 - Helpful and actionable
 - Clear and concise
 - Focused on improving the user's financial health`
+}
+
+// Keep the old export for backward compatibility
+export const SYSTEM_PROMPT = getSystemPrompt("es")
 
 export const FREE_TIER_PROMPT = `Analyze the following transactions and provide a FREE TIER analysis.
 
@@ -153,11 +168,13 @@ INSIGHTS should focus on:
 - Income vs expenses ratio
 - Notable transactions
 - Basic trends
+- When mentioning category names, translate them to match your response language
 
 RECOMMENDATIONS should be:
 - Actionable and specific
 - Based on the data
 - Focused on improvement
+- When mentioning category names, translate them to match your response language
 
 FINANCIAL SCORE (0-100) based on:
 - Savings rate (income - expenses)
@@ -229,7 +246,7 @@ RESPONSE FORMAT - You MUST respond with EXACTLY this JSON structure:
 }
 
 PRO TIER FEATURES:
-- Detailed spending breakdown by category
+- Detailed spending breakdown by category (translate category names to match your response language)
 - Top expenses identification
 - Trend analysis
 - Intelligent alerts (e.g., "Gastas 2x más en comida que hace 3 meses")
@@ -242,17 +259,20 @@ INSIGHTS should include:
 - Category-specific observations
 - Unusual transactions or trends
 - Opportunities for optimization
+- When mentioning category names, translate them to match your response language
 
 RECOMMENDATIONS should be:
 - Highly specific and actionable
 - Prioritized by impact
 - Data-driven
+- When mentioning category names, translate them to match your response language
 
 ALERTS should highlight:
 - Unusual spending spikes
 - Budget concerns
 - Positive achievements
 - Important trends
+- When mentioning category names, translate them to match your response language
 
 PREDICTIONS should be:
 - Based on historical data
@@ -280,7 +300,8 @@ export function buildPrompt(
     summary: any
     insights: string[]
     recommendations: string[]
-  }
+  },
+  locale: string = "es"
 ): string {
   const template = tier === "free" ? FREE_TIER_PROMPT : PRO_TIER_PROMPT
 

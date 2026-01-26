@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, Sparkles, TrendingUp, AlertTriangle, Lightbulb, CheckCircle2, Clock } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Loader2, Sparkles, AlertTriangle, Lightbulb, CheckCircle2, Clock, ArrowUp, Zap } from "lucide-react"
 import type { AnalysisResponse } from "@/lib/ai-prompts"
 import { formatCurrencyWithSymbol } from "@/lib/utils/currency"
 import { AiHistoryModal } from "./ai-history-modal"
+import { Link } from "@/lib/i18n/navigation"
+import { useTranslations, useLocale } from "next-intl"
 
 interface AiAssistantViewProps {
     tier: "free" | "pro"
@@ -20,17 +23,22 @@ interface AiAssistantViewProps {
 }
 
 export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverTime }: AiAssistantViewProps) {
+    const t = useTranslations("AiAssistant")
+    const locale = useLocale()
     const [isLoading, setIsLoading] = useState(false)
     const [analysis, setAnalysis] = useState<AnalysisResponse | null>(initialAnalysis || null)
     const [error, setError] = useState<string | null>(null)
     const [timeRemaining, setTimeRemaining] = useState<string | null>(null)
+    const [timeRemainingWithPro, setTimeRemainingWithPro] = useState<string | null>(null)
     const [isTimerReady, setIsTimerReady] = useState(false)
     const [showHistoryModal, setShowHistoryModal] = useState(false)
+    const [currentLastReportDate, setCurrentLastReportDate] = useState<string | undefined>(lastReportDate)
 
     // Update countdown timer
     useEffect(() => {
-        if (!lastReportDate || !serverTime) {
+        if (!currentLastReportDate || !serverTime) {
             setTimeRemaining(null)
+            setTimeRemainingWithPro(null)
             setIsTimerReady(true)
             return
         }
@@ -46,7 +54,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
             const now = new Date()
             const adjustedNow = new Date(now.getTime() + timeOffset) // Current server time approximation
 
-            const nextDate = new Date(lastReportDate)
+            const nextDate = new Date(currentLastReportDate)
 
             if (tier === "free") {
                 // Free: 1 month rolling window
@@ -60,6 +68,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
 
             if (diff <= 0) {
                 setTimeRemaining(null)
+                setTimeRemainingWithPro(null)
                 return
             }
 
@@ -68,11 +77,38 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
 
             if (days > 0) {
-                setTimeRemaining(`Actualiza en ${days} días`)
+                const dayLabel = days === 1 ? t("day") : t("days")
+                setTimeRemaining(t("updatesIn", { count: days, unit: dayLabel }))
             } else if (hours > 0) {
-                setTimeRemaining(`Actualiza en ${hours} horas`)
+                const hourLabel = hours === 1 ? t("hour") : t("hours")
+                setTimeRemaining(t("updatesIn", { count: hours, unit: hourLabel }))
             } else {
-                setTimeRemaining(`Actualiza en ${minutes} minutos`)
+                const minuteLabel = minutes === 1 ? t("minute") : t("minutes")
+                setTimeRemaining(t("updatesIn", { count: minutes, unit: minuteLabel }))
+            }
+
+            // Calculate time with Pro (1 week instead of 1 month) for free users
+            if (tier === "free") {
+                const nextDatePro = new Date(currentLastReportDate)
+                nextDatePro.setDate(nextDatePro.getDate() + 7)
+                const diffPro = nextDatePro.getTime() - adjustedNow.getTime()
+
+                if (diffPro > 0) {
+                    const daysPro = Math.floor(diffPro / (1000 * 60 * 60 * 24))
+                    const hoursPro = Math.floor((diffPro % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+
+                    if (daysPro > 0) {
+                        const dayLabel = daysPro === 1 ? t("day") : t("days")
+                        setTimeRemainingWithPro(`${daysPro} ${dayLabel}`)
+                    } else if (hoursPro > 0) {
+                        const hourLabel = hoursPro === 1 ? t("hour") : t("hours")
+                        setTimeRemainingWithPro(`${hoursPro} ${hourLabel}`)
+                    } else {
+                        setTimeRemainingWithPro(t("minutes"))
+                    }
+                } else {
+                    setTimeRemainingWithPro(t("availableNow"))
+                }
             }
         }
 
@@ -81,7 +117,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
         const interval = setInterval(updateTimer, 60000) // Update every minute
 
         return () => clearInterval(interval)
-    }, [lastReportDate, serverTime, tier])
+    }, [currentLastReportDate, serverTime, tier, t])
 
     const handleAnalyze = async () => {
         setIsLoading(true)
@@ -93,7 +129,8 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    period: "monthly"
+                    period: "monthly",
+                    locale: locale
                 }),
             })
 
@@ -112,11 +149,8 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
             }
 
             setAnalysis(data.analysis)
-            // Ideally we would update lastReportDate here too to reset the timer,
-            // but for simplicity we rely on the API 429 to be the ultimate guard.
-            // Client-side visual update:
-            // setLastReportDate(new Date().toISOString()) -- We can't easily update props. 
-            // We could use a local state for lastReportDate initialized from props.
+            // Update lastReportDate to current time to trigger cooldown
+            setCurrentLastReportDate(new Date().toISOString())
         } catch (err: any) {
             console.error(err)
             setError(err.message || "Ocurrió un error inesperado")
@@ -131,9 +165,9 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                 <div className="p-4 bg-primary/10 rounded-full">
                     <Sparkles className="w-12 h-12 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold text-center">Tu Asistente Financiero AI</h2>
+                <h2 className="text-2xl font-bold text-center">{t("title")}</h2>
                 <p className="text-muted-foreground text-center max-w-md">
-                    Analiza tus transacciones mensuales, recibe insights personalizados y descubre oportunidades de ahorro con el poder de la Inteligencia Artificial.
+                    {t("description")}
                 </p>
                 <Button
                     onClick={handleAnalyze}
@@ -142,7 +176,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                     disabled={!isTimerReady || !!timeRemaining}
                 >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    {!isTimerReady ? "Cargando..." : (timeRemaining || "Genera tu primer análisis mensual")}
+                    {!isTimerReady ? t("loading") : (timeRemaining || t("generateFirstAnalysis"))}
                 </Button>
                 {error && (
                     <div className="p-4 mt-4 text-sm text-red-500 bg-red-50 rounded-md">
@@ -154,18 +188,18 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
     }
 
     const getFinancialScoreMessage = (score: number) => {
-        if (score >= 80) return "¡Excelente! Mantienes tus finanzas bajo control."
-        if (score >= 60) return "Vas bien, pero hay áreas de mejora."
-        return "Necesitas ajustar algunos hábitos financieros."
+        if (score >= 80) return t("scoreExcellent")
+        if (score >= 60) return t("scoreGood")
+        return t("scoreNeedsWork")
     }
 
     return (
         <div className="space-y-6">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                    <h2 className="text-xl font-bold">Análisis Financiero</h2>
+                    <h2 className="text-xl font-bold">{t("financialAnalysis")}</h2>
                     <p className="text-sm text-muted-foreground">
-                        {analysis?.period ? `Periodo: ${analysis.period.start} - ${analysis.period.end}` : "Resumen del mes actual"}
+                        {analysis?.period ? t("period", { start: analysis.period.start, end: analysis.period.end }) : t("currentMonthSummary")}
                     </p>
                 </div>
                 {!isLoading && (
@@ -177,19 +211,70 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                             className="px-2 sm:px-3"
                         >
                             <Clock className="w-4 h-4 sm:mr-2" />
-                            <span className="hidden sm:inline">Historial</span>
+                            <span className="hidden sm:inline">{t("history")}</span>
                         </Button>
+                        {/* Desktop button - shows full text */}
                         <Button
                             onClick={handleAnalyze}
                             variant="outline"
                             size="sm"
                             disabled={!isTimerReady || !!timeRemaining}
-                            className="px-2 sm:px-3"
+                            className="hidden sm:flex px-2 sm:px-3"
                         >
                             <Sparkles className="w-4 h-4 sm:mr-2" />
-                            <span className="hidden sm:inline">{!isTimerReady ? "Cargando..." : (timeRemaining || "Actualizar")}</span>
-                            <span className="sm:hidden">{!isTimerReady ? "..." : (timeRemaining ? "⏱" : "↻")}</span>
+                            <span>{!isTimerReady ? t("loading") : (timeRemaining || t("update"))}</span>
                         </Button>
+                        {/* Mobile button - with popover for time remaining */}
+                        {timeRemaining ? (
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="sm:hidden px-2"
+                                    >
+                                        <Sparkles className="w-4 h-4" />
+                                        <span>⏱</span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto max-w-[280px] p-0" align="end">
+                                    {tier === "free" && timeRemainingWithPro ? (
+                                        <div className="p-4 space-y-3">
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-muted-foreground">{timeRemaining}</p>
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <span className="font-semibold text-primary">{timeRemainingWithPro} {t("withPro")}</span>
+                                                </div>
+                                            </div>
+                                            <Link href="/dashboard/profile">
+                                                <Button
+                                                    size="sm"
+                                                    className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white border-0 transition-all duration-300 hover:scale-105"
+                                                >
+                                                    <ArrowUp className="w-3 h-3 mr-1" />
+                                                    {t("upgradeToPro")}
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <div className="p-3">
+                                            <p className="text-sm font-medium">{timeRemaining}</p>
+                                        </div>
+                                    )}
+                                </PopoverContent>
+                            </Popover>
+                        ) : (
+                            <Button
+                                onClick={handleAnalyze}
+                                variant="outline"
+                                size="sm"
+                                disabled={!isTimerReady}
+                                className="sm:hidden px-2"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                <span>{!isTimerReady ? "..." : "↻"}</span>
+                            </Button>
+                        )}
                     </div>
                 )}
             </div>
@@ -202,7 +287,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
                     <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                    <p className="text-sm text-muted-foreground animate-pulse">Analizando tus transacciones...</p>
+                    <p className="text-sm text-muted-foreground animate-pulse">{t("analyzing")}</p>
                 </div>
             ) : analysis ? (
                 <div className="space-y-6">
@@ -211,12 +296,12 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                         <Card className="col-span-full md:col-span-2 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
                             <CardHeader className="pb-2">
                                 <CardTitle className="flex items-center justify-between text-lg">
-                                    Salud Financiera
+                                    {t("financialHealth")}
                                     <Badge variant={analysis.financialScore >= 70 ? "default" : "secondary"}>
                                         {analysis.financialScore}/100
                                     </Badge>
                                 </CardTitle>
-                                <CardDescription>Puntaje basado en tus hábitos</CardDescription>
+                                <CardDescription>{t("scoreBasedOnHabits")}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Progress value={analysis.financialScore} className="h-3 mb-2" />
@@ -228,31 +313,31 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
 
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium">Gastos Totales</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("totalExpenses")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{formatCurrencyWithSymbol(analysis.summary.totalExpenses)}</div>
-                                <p className="text-xs text-muted-foreground">{analysis.summary.transactionCount} transacciones</p>
+                                <p className="text-xs text-muted-foreground">{analysis.summary.transactionCount} {t("transactions")}</p>
                             </CardContent>
                         </Card>
 
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium">Balance Neto</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("netBalance")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className={`text-2xl font-bold ${analysis.summary.netBalance >= 0 ? "text-green-600" : "text-red-600"}`}>
                                     {analysis.summary.netBalance >= 0 ? "+" : ""}{formatCurrencyWithSymbol(analysis.summary.netBalance)}
                                 </div>
-                                <p className="text-xs text-muted-foreground">Ingresos vs Gastos</p>
+                                <p className="text-xs text-muted-foreground">{t("incomeVsExpenses")}</p>
                             </CardContent>
                         </Card>
                     </div >
 
                     <Tabs defaultValue="insights" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-                            <TabsTrigger value="insights">Insights</TabsTrigger>
-                            <TabsTrigger value="recommendations">Recomendaciones</TabsTrigger>
+                            <TabsTrigger value="insights">{t("insights")}</TabsTrigger>
+                            <TabsTrigger value="recommendations">{t("recommendations")}</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="insights" className="mt-4 space-y-4">
@@ -263,14 +348,14 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                                             <Lightbulb className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-sm mb-1">Observación {index + 1}</h4>
+                                            <h4 className="font-semibold text-sm mb-1">{t("observation", { number: index + 1 })}</h4>
                                             <p className="text-sm text-muted-foreground">{insight}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             ))}
                             {analysis.insights.length === 0 && (
-                                <div className="text-center text-muted-foreground p-8">No hay insights disponibles por ahora.</div>
+                                <div className="text-center text-muted-foreground p-8">{t("noInsights")}</div>
                             )}
                         </TabsContent>
 
@@ -282,14 +367,14 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                                             <CheckCircle2 className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-sm mb-1">Recomendación {index + 1}</h4>
+                                            <h4 className="font-semibold text-sm mb-1">{t("recommendation", { number: index + 1 })}</h4>
                                             <p className="text-sm text-muted-foreground">{rec}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             ))}
                             {analysis.recommendations.length === 0 && (
-                                <div className="text-center text-muted-foreground p-8">No hay recomendaciones disponibles por ahora.</div>
+                                <div className="text-center text-muted-foreground p-8">{t("noRecommendations")}</div>
                             )}
                         </TabsContent>
                     </Tabs>
@@ -299,7 +384,7 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                             <div className="mt-6">
                                 <h3 className="mb-4 text-lg font-semibold flex items-center gap-2">
                                     <AlertTriangle className="w-5 h-5 text-amber-500" />
-                                    Alertas Importantes
+                                    {t("importantAlerts")}
                                 </h3>
                                 <div className="space-y-3">
                                     {(analysis as any).alerts.map((alert: string, index: number) => (
