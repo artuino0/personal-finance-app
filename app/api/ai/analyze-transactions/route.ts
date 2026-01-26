@@ -8,7 +8,7 @@ import {
     type AnalysisRequest,
     type AnalysisResponse,
     type Transaction,
-    SYSTEM_PROMPT,
+    getSystemPrompt,
     buildPrompt,
     validateResponse,
 } from "@/lib/ai-prompts"
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     try {
         // 1. Parse request body (only period, no tier)
         const body = await request.json()
-        const { period } = body
+        const { period, locale = "es" } = body
 
         // 2. Authenticate user
         const supabase = await createClient()
@@ -215,7 +215,8 @@ export async function POST(request: Request) {
             formattedTransactions,
             { start: startDate, end: endDate },
             previousPeriodData,
-            previousContext
+            previousContext,
+            locale
         )
 
         // 9. Call Claude Haiku API
@@ -223,7 +224,7 @@ export async function POST(request: Request) {
             model: "claude-3-haiku-20240307",
             max_tokens: tier === "free" ? 1024 : 2048,
             temperature: 0.3,
-            system: SYSTEM_PROMPT,
+            system: getSystemPrompt(locale),
             messages: [
                 {
                     role: "user",

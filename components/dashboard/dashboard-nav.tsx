@@ -41,12 +41,18 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
   const pathname = usePathname()
   const supabase = createClient()
   const [open, setOpen] = useState(false)
+  const [reportsDialogOpen, setReportsDialogOpen] = useState(false)
   const t = useTranslations("DashboardNav")
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push("/auth/login")
     router.refresh()
+  }
+
+  const handleOpenReports = () => {
+    setOpen(false) // Close the Sheet
+    setReportsDialogOpen(true) // Open the Reports Dialog
   }
 
   const navItems = [
@@ -92,15 +98,13 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
                     </Link>
                   )
                 })}
-                <ReportGeneratorDialog>
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-all hover:bg-muted hover:text-foreground w-full"
-                  >
-                    <FileText className="h-5 w-5 text-slate-500" />
-                    <span>{t("reports")}</span>
-                  </button>
-                </ReportGeneratorDialog>
+                <button
+                  onClick={handleOpenReports}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-slate-700 transition-all hover:bg-muted hover:text-foreground w-full"
+                >
+                  <FileText className="h-5 w-5 text-slate-500" />
+                  <span>{t("reports")}</span>
+                </button>
               </div>
 
               {/* Pro Upgrade Banner - Only for Free Tier */}
@@ -214,6 +218,12 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Reports Dialog - rendered outside Sheet to prevent unmounting */}
+      <ReportGeneratorDialog
+        open={reportsDialogOpen}
+        onOpenChange={setReportsDialogOpen}
+      />
     </nav>
   )
 }

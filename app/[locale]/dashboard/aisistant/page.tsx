@@ -28,8 +28,8 @@ export default async function AiSistantPage() {
     const userName = profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"
     const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture
 
-    // Translations (using "Dashboard" namespace as fallback/standard)
-    const t = await getTranslations("Dashboard")
+    // Translations
+    const t = await getTranslations("AiAssistant")
 
     // Fetch latest analysis history (SERVER SIDE for security/time sync)
     const { data: lastReport } = await supabase
@@ -57,8 +57,8 @@ export default async function AiSistantPage() {
                      since we might not have a translation key for it yet.
                  */}
                 <PageHeader
-                    title="Asistente AI"
-                    description="Tu experto financiero personal impulsado por inteligencia artificial"
+                    title={t("pageTitle")}
+                    description={t("pageDescription")}
                     currentUserId={user.id}
                     currentUserName={userName}
                     currentUserEmail={user.email || ""}

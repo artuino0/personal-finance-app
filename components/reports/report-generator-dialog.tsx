@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { createClient } from "@/lib/supabase/client"
 import { format } from "date-fns"
 import { es, enUS } from "date-fns/locale"
-import { CalendarIcon, Loader2, FileText } from "lucide-react"
+import { CalendarIcon, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { pdf } from "@react-pdf/renderer"
 import { TransactionReportPDF } from "@/components/reports/transaction-report-pdf"
@@ -19,18 +19,31 @@ import { useTranslations, useLocale } from "next-intl"
 interface ReportGeneratorDialogProps {
     children?: React.ReactNode
     triggerClassName?: string
+    onDialogOpenChange?: (open: boolean) => void
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
 }
 
-export function ReportGeneratorDialog({ children, triggerClassName }: ReportGeneratorDialogProps) {
+export function ReportGeneratorDialog({
+    children,
+    triggerClassName,
+    onDialogOpenChange,
+    open: controlledOpen,
+    onOpenChange: controlledOnOpenChange
+}: ReportGeneratorDialogProps) {
     const supabase = createClient()
     const [date, setDate] = useState<DateRange | undefined>()
     const [selectedAccountId, setSelectedAccountId] = useState("all")
     const [accounts, setAccounts] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [loadingAccounts, setLoadingAccounts] = useState(true)
-    const [open, setOpen] = useState(false)
+    const [internalOpen, setInternalOpen] = useState(false)
     const t = useTranslations("Reports")
     const locale = useLocale()
+
+    // Use controlled state if provided, otherwise use internal state
+    const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+    const setOpen = controlledOnOpenChange || setInternalOpen
 
     const dateFnsLocale = locale === 'es' ? es : enUS
 
@@ -86,18 +99,16 @@ export function ReportGeneratorDialog({ children, triggerClassName }: ReportGene
 
     const handleOpenChange = (newOpen: boolean) => {
         setOpen(newOpen)
+        onDialogOpenChange?.(newOpen)
     }
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                {children || (
-                    <Button variant="outline" className={triggerClassName}>
-                        <FileText className="mr-2 h-4 w-4" />
-                        {t("button")}
-                    </Button>
-                )}
-            </DialogTrigger>
+            {children && (
+                <DialogTrigger asChild>
+                    {children}
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>{t("title")}</DialogTitle>
