@@ -25,20 +25,22 @@ interface Profile {
 interface ProfileFormProps {
   userId: string
   userEmail: string
+  userAvatar?: string
   initialProfile: Profile | null
 }
 
-export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormProps) {
+export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: ProfileFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const t = useTranslations("Profile")
   const { toast } = useToast()
-  
+
   const [isLoading, setIsLoading] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-  const [avatarUrl, setAvatarUrl] = useState(initialProfile?.avatar_url || "")
+  // Prioritize userAvatar from Google/OAuth, then profile avatar_url, then empty string
+  const [avatarUrl, setAvatarUrl] = useState(userAvatar || initialProfile?.avatar_url || "")
   const [fullName, setFullName] = useState(initialProfile?.full_name || "")
-  
+
   // Password change
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -219,18 +221,18 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
   const tier = (initialProfile?.subscription_tier as "free" | "pro") || "free"
 
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6 md:grid-cols-2">
       {/* Account Info Card */}
-      <Card>
+      <Card className="md:col-span-2">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>{t("accountInfo")}</CardTitle>
               <CardDescription>{t("accountInfoDesc")}</CardDescription>
             </div>
-            <Badge 
+            <Badge
               variant={tier === "pro" ? "default" : "secondary"}
-              className={tier === "pro" ? "bg-gradient-to-r from-yellow-400 to-amber-600" : ""}
+              className={tier === "pro" ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white" : ""}
             >
               {tier === "pro" ? (
                 <>
@@ -246,17 +248,17 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-6">
             {/* Avatar Section */}
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <Avatar className="h-24 w-24">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-6 border-b">
+              <div className="relative group">
+                <Avatar className="h-28 w-28 ring-4 ring-background shadow-lg">
                   <AvatarImage src={avatarUrl || undefined} alt={fullName || userEmail} />
-                  <AvatarFallback className="text-2xl">
+                  <AvatarFallback className="text-3xl font-semibold bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
                     {(fullName || userEmail).charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90 transition-colors"
+                  className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2.5 cursor-pointer hover:bg-primary/90 transition-all shadow-md hover:scale-110"
                 >
                   <Camera className="h-4 w-4" />
                   <input
@@ -269,36 +271,46 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
                   />
                 </label>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">{fullName || t("noName")}</h3>
-                <p className="text-sm text-muted-foreground">{userEmail}</p>
-                <p className="text-xs text-muted-foreground mt-1">
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="font-bold text-xl mb-1">{fullName || t("noName")}</h3>
+                <p className="text-sm text-muted-foreground mb-2">{userEmail}</p>
+                <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
                   {t("memberSince", {
-                    date: new Date(initialProfile?.created_at || Date.now()).toLocaleDateString(),
+                    date: new Date(initialProfile?.created_at || Date.now()).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    }),
                   })}
                 </p>
               </div>
             </div>
 
-            {/* Name Input */}
-            <div className="space-y-2">
-              <Label htmlFor="full_name">{t("fullName")}</Label>
-              <Input
-                id="full_name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder={t("fullNamePlaceholder")}
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Name Input */}
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="full_name">{t("fullName")}</Label>
+                <Input
+                  id="full_name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder={t("fullNamePlaceholder")}
+                  className="h-11"
+                />
+              </div>
+
+              {/* Email (Read-only) */}
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="email">{t("email")}</Label>
+                <Input id="email" value={userEmail} disabled className="h-11 bg-muted/50" />
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  {t("emailCannotChange")}
+                </p>
+              </div>
             </div>
 
-            {/* Email (Read-only) */}
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("email")}</Label>
-              <Input id="email" value={userEmail} disabled />
-              <p className="text-xs text-muted-foreground">{t("emailCannotChange")}</p>
-            </div>
-
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
               {isLoading ? t("saving") : t("saveChanges")}
             </Button>
           </form>
@@ -309,7 +321,7 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
+            <Shield className="h-5 w-5 text-primary" />
             <div>
               <CardTitle>{t("security")}</CardTitle>
               <CardDescription>{t("securityDesc")}</CardDescription>
@@ -326,6 +338,7 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder={t("newPasswordPlaceholder")}
+                className="h-11"
               />
             </div>
 
@@ -337,10 +350,15 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder={t("confirmPasswordPlaceholder")}
+                className="h-11"
               />
             </div>
 
-            <Button type="submit" disabled={isChangingPassword || !newPassword || !confirmPassword}>
+            <Button
+              type="submit"
+              disabled={isChangingPassword || !newPassword || !confirmPassword}
+              className="w-full"
+            >
               {isChangingPassword ? t("changing") : t("changePassword")}
             </Button>
           </form>
@@ -349,30 +367,45 @@ export function ProfileForm({ userId, userEmail, initialProfile }: ProfileFormPr
 
       {/* Subscription Card */}
       {tier === "free" && (
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+        <Card className="border-primary/20 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Gem className="h-5 w-5 text-primary" />
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                <Gem className="h-4 w-4 text-white" />
+              </div>
               {t("upgradeToPro")}
             </CardTitle>
-            <CardDescription>{t("upgradeDesc")}</CardDescription>
+            <CardDescription className="text-foreground/70">{t("upgradeDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 mb-4 text-sm">
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                {t("proFeature1")}
+            <ul className="space-y-3 mb-6 text-sm">
+              <li className="flex items-start gap-3">
+                <div className="h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-foreground/80">{t("proFeature1")}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                {t("proFeature2")}
+              <li className="flex items-start gap-3">
+                <div className="h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-foreground/80">{t("proFeature2")}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                {t("proFeature3")}
+              <li className="flex items-start gap-3">
+                <div className="h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-foreground/80">{t("proFeature3")}</span>
               </li>
             </ul>
-            <Button className="w-full bg-gradient-to-r from-primary to-primary/80">
+            <Button className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all">
+              <Gem className="h-4 w-4 mr-2" />
               {t("upgradeNow")}
             </Button>
           </CardContent>

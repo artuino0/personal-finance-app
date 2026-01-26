@@ -34,11 +34,18 @@ export default async function ProfilePage() {
         tier={(profile?.subscription_tier as "free" | "pro") || "free"}
       />
       <main className="container mx-auto p-6 max-w-4xl">
-        <PageHeader title={t("title")} subtitle={t("description")} />
-        
-        <ProfileForm 
+        <PageHeader
+          title={t("title")}
+          description={t("description")}
+          currentUserId={user.id}
+          currentUserName={profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || "Usuario"}
+          currentUserEmail={user.email || ""}
+        />
+
+        <ProfileForm
           userId={user.id}
           userEmail={user.email || ""}
+          userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
           initialProfile={profile}
         />
       </main>
