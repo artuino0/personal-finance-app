@@ -1,5 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
+import { createServerClient } from "@supabase/ssr"
 import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
 
 export async function GET(request: Request) {
   const { searchParams, origin, pathname } = new URL(request.url)
@@ -12,7 +13,27 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? `/${locale}/dashboard`
 
   if (code) {
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    let response = NextResponse.next()
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+              response.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
@@ -43,12 +64,13 @@ export async function GET(request: Request) {
       const isLocalEnv = process.env.NODE_ENV === "development"
 
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
+        response = NextResponse.redirect(`${origin}${next}`)
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+        response = NextResponse.redirect(`https://${forwardedHost}${next}`)
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        response = NextResponse.redirect(`${origin}${next}`)
       }
+      return response
     }
   }
 
