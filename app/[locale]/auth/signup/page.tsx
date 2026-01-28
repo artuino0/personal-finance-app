@@ -51,9 +51,7 @@ export default function SignupPage() {
   const handleGoogleLogin = async () => {
     const supabase = createClient()
 
-    // Ensure accurate URL handling by removing any trailing slash from the base URL
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || window.location.origin).replace(/\/$/, "")
-    const redirectTo = `${appUrl}/${locale}/auth/callback`
+    const redirectTo = `${window.location.origin}/${locale}/auth/callback`
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

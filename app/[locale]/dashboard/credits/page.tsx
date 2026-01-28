@@ -8,6 +8,8 @@ import { Link } from "@/lib/i18n/navigation"
 import { getTranslations } from "next-intl/server"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { checkCreditLimit } from "@/lib/limit-utils"
+import { Crown, Plus } from "lucide-react"
 
 export default async function CreditsPage() {
   const supabase = await createClient()
@@ -38,6 +40,9 @@ export default async function CreditsPage() {
 
   const t = await getTranslations("Credits");
 
+  // Check limit
+  const { allowed: canAdd } = await checkCreditLimit(selectedAccountId)
+
   return (
     <div className="min-h-screen bg-secondary/30">
       <DashboardNav
@@ -56,9 +61,31 @@ export default async function CreditsPage() {
           isSharedAccount={isSharedAccount}
           permissions={permissions}
           actions={
-            <Button asChild>
-              <Link href="/dashboard/credits/new">{t("newCredit")}</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              {!isSharedAccount && !canAdd && (
+                <Button variant="outline" asChild className="gap-2 border-amber-500 text-amber-600 hover:text-amber-700 hover:bg-amber-50">
+                  <Link href="/dashboard/upgrade">
+                    <Crown className="h-4 w-4" />
+                    {t("upgradeToadd")}
+                  </Link>
+                </Button>
+              )}
+              {(!isSharedAccount || permissions.create) && (
+                <Button className="gap-2" disabled={!canAdd && !isSharedAccount} asChild={canAdd || isSharedAccount}>
+                  {(canAdd || isSharedAccount) ? (
+                    <Link href="/dashboard/credits/new" className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      {t("newCredit")}
+                    </Link>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      {t("newCredit")}
+                    </span>
+                  )}
+                </Button>
+              )}
+            </div>
           }
         />
 

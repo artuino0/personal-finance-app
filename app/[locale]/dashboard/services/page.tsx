@@ -2,11 +2,12 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Crown } from "lucide-react"
 import { Link } from "@/lib/i18n/navigation"
 import { ServicesList } from "@/components/services/services-list"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { checkServiceLimit } from "@/lib/limit-utils"
 
 import { getTranslations } from "next-intl/server"
 
@@ -37,6 +38,9 @@ export default async function ServicesPage() {
   const activeServices = services?.filter((s) => s.is_active) || []
   const inactiveServices = services?.filter((s) => !s.is_active) || []
 
+  // Check limits
+  const { allowed: canAdd } = await checkServiceLimit(selectedAccountId)
+
   const totalMonthly = activeServices.reduce((sum, service) => {
     if (service.frequency === "monthly") return sum + Number(service.amount)
     if (service.frequency === "yearly") return sum + Number(service.amount) / 12
@@ -63,12 +67,31 @@ export default async function ServicesPage() {
           isSharedAccount={isSharedAccount}
           permissions={permissions}
           actions={
-            <Button className="gap-2">
-              <Link href="/dashboard/services/new" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                {t("newService")}
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              {!isSharedAccount && !canAdd && (
+                <Button variant="outline" asChild className="gap-2 border-amber-500 text-amber-600 hover:text-amber-700 hover:bg-amber-50">
+                  <Link href="/dashboard/upgrade">
+                    <Crown className="h-4 w-4" />
+                    {t("upgradeToadd")}
+                  </Link>
+                </Button>
+              )}
+              {(!isSharedAccount || permissions.create) && (
+                <Button className="gap-2" disabled={!canAdd && !isSharedAccount} asChild={canAdd || isSharedAccount}>
+                  {canAdd || isSharedAccount ? (
+                    <Link href="/dashboard/services/new" className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      {t("newService")}
+                    </Link>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      {t("newService")}
+                    </span>
+                  )}
+                </Button>
+              )}
+            </div>
           }
         />
 
