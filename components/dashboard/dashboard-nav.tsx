@@ -13,7 +13,8 @@ import {
   Repeat,
   CreditCard,
   Users,
-  FileText
+  FileText,
+  Receipt
 } from "lucide-react"
 import { Link, useRouter, usePathname } from "@/lib/i18n/navigation"
 import { ReportGeneratorDialog } from "@/components/reports/report-generator-dialog"
@@ -62,6 +63,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
     { href: "/dashboard/transactions", label: t("transactions"), icon: ArrowLeftRight },
     { href: "/dashboard/services", label: t("services"), icon: Repeat },
     { href: "/dashboard/credits", label: t("credits"), icon: CreditCard },
+    { href: "/dashboard/invoicing", label: t("invoicing"), icon: Receipt },
     { href: "/dashboard/sharing", label: t("sharing"), icon: Users },
   ]
 

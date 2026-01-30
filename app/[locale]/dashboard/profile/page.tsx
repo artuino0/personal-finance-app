@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { ProfileForm } from "@/components/profile/profile-form"
+import { FacturapiConfig } from "@/components/profile/facturapi-config"
 import { getTranslations } from "next-intl/server"
 import { PageHeader } from "@/components/dashboard/page-header"
 
@@ -20,6 +21,12 @@ export default async function ProfilePage() {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
+    .maybeSingle()
+
+  const { data: facturapiConfig } = await supabase
+    .from("facturapi_config")
+    .select("*")
+    .eq("user_id", user.id)
     .maybeSingle()
 
   const t = await getTranslations("Profile")
@@ -42,12 +49,16 @@ export default async function ProfilePage() {
           currentUserEmail={user.email || ""}
         />
 
-        <ProfileForm
-          userId={user.id}
-          userEmail={user.email || ""}
-          userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
-          initialProfile={profile}
-        />
+        <div className="space-y-6">
+          <ProfileForm
+            userId={user.id}
+            userEmail={user.email || ""}
+            userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
+            initialProfile={profile}
+          />
+
+          <FacturapiConfig userId={user.id} initialConfig={facturapiConfig} />
+        </div>
       </main>
     </div>
   )
