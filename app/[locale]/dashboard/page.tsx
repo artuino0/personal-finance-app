@@ -11,6 +11,7 @@ import { ReportGeneratorDialog } from "@/components/reports/report-generator-dia
 import { AccountSelector } from "@/components/dashboard/account-selector"
 import { cookies } from "next/headers"
 import { getTranslations, getLocale } from "next-intl/server"
+import { DashboardTour } from "@/components/dashboard/dashboard-tour"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -191,13 +192,14 @@ export default async function DashboardPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <RecentTransactions transactions={localizedTransactions || []} />
-          <DashboardClientWrapper 
-            credits={credits || []} 
+          <DashboardClientWrapper
+            credits={credits || []}
             services={services || []}
             locale={locale}
           />
         </div>
       </main>
+      <DashboardTour tourId="dashboard" />
     </div>
   )
 }

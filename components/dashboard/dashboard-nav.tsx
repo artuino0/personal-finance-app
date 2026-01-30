@@ -153,6 +153,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
               <Link
                 key={item.href}
                 href={item.href}
+                id={item.href === "/dashboard/sharing" ? "tour-nav-sharing" : undefined}
                 className={`text-sm font-medium transition-colors hover:text-foreground ${pathname === item.href ? "text-foreground" : "text-slate-700"
                   }`}
               >
@@ -160,7 +161,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
               </Link>
             ))}
             <ReportGeneratorDialog>
-              <span className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">{t("reports")}</span>
+              <span id="tour-nav-reports" className="text-sm font-medium text-slate-700 hover:text-foreground cursor-pointer">{t("reports")}</span>
             </ReportGeneratorDialog>
           </div>
         </div>
@@ -168,6 +169,7 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <Button
+            id="tour-ai-button"
             variant="ghost"
             size="icon"
             className="relative h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 transition-all duration-300 hover:scale-105"
@@ -177,49 +179,51 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
             <Sparkles className="h-5 w-5 text-white" />
           </Button>
           {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
-              >
-                <div className="relative">
-                  <div className={`overflow-hidden flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm ${tier === "premium" ? "ring-2 ring-purple-500" : tier === "pro" ? "ring-2 ring-yellow-400" : ""
-                    }`}>
-                    {userAvatar ? (
-                      <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
-                    ) : (
-                      userName.charAt(0).toUpperCase()
+          <div id="tour-user-menu">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-3 rounded-full pl-1 pr-4 py-1 hover:bg-muted/50 transition-all h-auto"
+                >
+                  <div className="relative">
+                    <div className={`overflow-hidden flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm ${tier === "premium" ? "ring-2 ring-purple-500" : tier === "pro" ? "ring-2 ring-yellow-400" : ""
+                      }`}>
+                      {userAvatar ? (
+                        <img src={userAvatar || "/placeholder.svg"} alt={userName} className="h-full w-full object-cover" />
+                      ) : (
+                        userName.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    {/* Premium Tier Badge - Purple Crown */}
+                    {tier === "premium" && (
+                      <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 border-2 border-purple-300 flex items-center justify-center shadow-lg">
+                        <Crown className="h-2 w-2 text-white" />
+                      </div>
+                    )}
+                    {/* Pro Tier Badge - Golden Diamond */}
+                    {tier === "pro" && (
+                      <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg">
+                        <Gem className="h-2 w-2 text-white" />
+                      </div>
                     )}
                   </div>
-                  {/* Premium Tier Badge - Purple Crown */}
-                  {tier === "premium" && (
-                    <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 border-2 border-purple-300 flex items-center justify-center shadow-lg">
-                      <Crown className="h-2 w-2 text-white" />
-                    </div>
-                  )}
-                  {/* Pro Tier Badge - Golden Diamond */}
-                  {tier === "pro" && (
-                    <div className="absolute -bottom-1 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg">
-                      <Gem className="h-2 w-2 text-white" />
-                    </div>
-                  )}
-                </div>
-                <span className="hidden md:inline text-sm font-medium">{userName}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t("myAccount")}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">{t("profile")}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                {t("logout")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <span className="hidden md:inline text-sm font-medium">{userName}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{t("myAccount")}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile">{t("profile")}</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  {t("logout")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

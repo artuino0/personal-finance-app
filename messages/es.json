@@ -33,6 +33,7 @@
         "thisMonth": "Este mes",
         "accountsCount": "{count} cuentas",
         "viewingFinancesOf": "Viendo finanzas de {name}",
+        "newTransaction": "Nueva Transacción",
         "income": "Ingresos",
         "expenses": "Gastos"
     },
@@ -619,5 +620,21 @@
         "description": "Tu suscripción ha sido procesada. Puede tomar unos momentos actualizar el estado de tu cuenta.",
         "webhookNote": "Nota: En desarrollo local, necesitas reenviar los webhooks para que el estado se actualice automáticamente.",
         "continue": "Continuar"
+    },
+    "Tour": {
+        "Dashboard": {
+            "welcomeTitle": "Bienvenido a tu Dashboard Financiero",
+            "welcomeDesc": "Hagamos un recorrido rápido por las funciones principales.",
+            "newTransactionTitle": "Acciones Rápidas",
+            "newTransactionDesc": "Usa este botón para registrar ingresos o gastos rápidamente.",
+            "navReportsTitle": "Reportes Financieros",
+            "navReportsDesc": "Genera reportes PDF detallados de tus finanzas aquí.",
+            "navSharingTitle": "Compartir Cuentas",
+            "navSharingDesc": "Invita a otros o administra cuentas compartidas desde este menú.",
+            "aiTitle": "Asistente IA",
+            "aiDesc": "Obtén análisis inteligentes y consejos financieros personalizados.",
+            "finishTitle": "¡Todo listo!",
+            "finishDesc": "Disfruta gestionando tus finanzas con claridad."
+        }
     }
 }

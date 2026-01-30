@@ -33,6 +33,7 @@
         "thisMonth": "This month",
         "accountsCount": "{count} accounts",
         "viewingFinancesOf": "Viewing finances of {name}",
+        "newTransaction": "New Transaction",
         "income": "Income",
         "expenses": "Expenses",
         "upgradeToCreate": "Upgrade to Create"
@@ -615,5 +616,21 @@
         "description": "Your subscription has been processed. It may take a few moments to update your account status.",
         "webhookNote": "Note: In local development, you need to forward webhooks for the status to update automatically.",
         "continue": "Continue"
+    },
+    "Tour": {
+        "Dashboard": {
+            "welcomeTitle": "Welcome to your Finance Dashboard",
+            "welcomeDesc": "Let's take a quick tour to show you the main features.",
+            "newTransactionTitle": "Quick Actions",
+            "newTransactionDesc": "Use this button to quickly record income or expenses.",
+            "navReportsTitle": "Financial Reports",
+            "navReportsDesc": "Generate detailed PDF reports of your finances here.",
+            "navSharingTitle": "Share Accounts",
+            "navSharingDesc": "Invite others or manage shared accounts from this menu.",
+            "aiTitle": "AI Assistant",
+            "aiDesc": "Get smart insights and financial advice customized for you.",
+            "finishTitle": "You're all set!",
+            "finishDesc": "Enjoy managing your finances with clarity."
+        }
     }
 }

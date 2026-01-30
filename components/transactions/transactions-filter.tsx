@@ -45,7 +45,7 @@ export function TransactionsFilter({ accounts, categories }: TransactionsFilterP
   }
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6" id="tour-filters">
       <CardContent className="pt-6">
         <div className="md:hidden">
           <Button
