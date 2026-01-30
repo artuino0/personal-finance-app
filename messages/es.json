@@ -513,6 +513,8 @@
         "generate": "Generar Reporte"
     },
     "Profile": {
+        "title": "Mi Perfil",
+        "description": "Gestiona tu información personal y configuración de la cuenta",
         "accountInfo": "Información de la Cuenta",
         "accountInfoDesc": "Actualiza tu información personal",
         "fullName": "Nombre Completo",
@@ -723,6 +725,5 @@
         },
         "saving": "Guardando...",
         "loading": "Cargando..."
-    }
     }
 }

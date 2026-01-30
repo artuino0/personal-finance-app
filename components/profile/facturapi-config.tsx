@@ -43,11 +43,11 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
       // Upload certificate if new file selected
       if (certificateFile) {
         const certExt = certificateFile.name.split(".").pop()
-        const certFileName = `${userId}-cert-${Date.now()}.${certExt}`
-        const certFilePath = `certificates/${certFileName}`
+        const certFileName = `cert-${Date.now()}.${certExt}`
+        const certFilePath = `${userId}/${certFileName}`
 
         const { error: uploadCertError } = await supabase.storage
-          .from("invoicing_certificates")
+          .from("invoice-certificates")
           .upload(certFilePath, certificateFile, { upsert: true })
 
         if (uploadCertError) throw uploadCertError
@@ -58,11 +58,11 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
       // Upload key if new file selected
       if (keyFile) {
         const keyExt = keyFile.name.split(".").pop()
-        const keyFileName = `${userId}-key-${Date.now()}.${keyExt}`
-        const keyFilePath = `keys/${keyFileName}`
+        const keyFileName = `key-${Date.now()}.${keyExt}`
+        const keyFilePath = `${userId}/${keyFileName}`
 
         const { error: uploadKeyError } = await supabase.storage
-          .from("invoicing_certificates")
+          .from("invoice-certificates")
           .upload(keyFilePath, keyFile, { upsert: true })
 
         if (uploadKeyError) throw uploadKeyError
@@ -80,6 +80,8 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
           certificate_password: certificatePassword || null,
           certificate_expiry: certificateExpiry || null,
           updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id'
         })
 
       if (configError) throw configError
