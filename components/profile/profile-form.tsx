@@ -235,9 +235,9 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
               variant={tier !== "free" ? "default" : "secondary"}
               className={
                 tier === "premium"
-                  ? "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white"
+                  ? "bg-linear-to-r from-purple-600 via-pink-600 to-orange-500 text-white"
                   : tier === "pro"
-                    ? "bg-gradient-to-r from-yellow-400 to-amber-600 text-white"
+                    ? "bg-linear-to-r from-yellow-400 to-amber-600 text-white"
                     : ""
               }
             >
@@ -263,7 +263,7 @@ export function ProfileForm({ userId, userEmail, userAvatar, initialProfile }: P
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-6 border-b">
               <div className="relative group">
                 <Avatar className="h-28 w-28 ring-4 ring-background shadow-lg">
-                  <AvatarImage src={avatarUrl || undefined} alt={fullName || userEmail} />
+                  <AvatarImage src={avatarUrl || undefined} alt={fullName || userEmail} className="object-cover" />
                   <AvatarFallback className="text-3xl font-semibold bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
                     {(fullName || userEmail).charAt(0).toUpperCase()}
                   </AvatarFallback>

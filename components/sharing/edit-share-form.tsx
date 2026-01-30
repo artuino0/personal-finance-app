@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/lib/i18n/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useTranslations } from "next-intl"
 
 interface EditShareFormProps {
   share: {
@@ -38,16 +39,18 @@ interface EditShareFormProps {
 }
 
 const RESOURCES = [
-  { id: "accounts", label: "Cuentas", description: "Ver y gestionar cuentas bancarias" },
-  { id: "transactions", label: "Transacciones", description: "Ver y crear transacciones" },
-  { id: "credits", label: "Créditos", description: "Ver y gestionar créditos/préstamos" },
-  { id: "services", label: "Servicios", description: "Ver y gestionar servicios recurrentes" },
-  { id: "categories", label: "Categorías", description: "Ver y gestionar categorías" },
+  { id: "accounts" },
+  { id: "transactions" },
+  { id: "credits" },
+  { id: "services" },
+  { id: "categories" },
 ]
 
 export function EditShareForm({ share }: EditShareFormProps) {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations("Sharing")
+  const tCommon = useTranslations("Common")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -103,7 +106,7 @@ export function EditShareForm({ share }: EditShareFormProps) {
       router.push("/dashboard/sharing")
       router.refresh()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error")
+      setError(err instanceof Error ? err.message : tCommon("error"))
     } finally {
       setIsLoading(false)
     }
@@ -128,14 +131,14 @@ export function EditShareForm({ share }: EditShareFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <Label>Permisos de Acceso</Label>
+        <Label>{t("accessPermissions")}</Label>
         {RESOURCES.map((resource) => (
           <Card key={resource.id}>
             <CardContent className="pt-4">
               <div className="space-y-3">
                 <div>
-                  <h4 className="font-medium">{resource.label}</h4>
-                  <p className="text-sm text-muted-foreground">{resource.description}</p>
+                  <h4 className="font-medium">{t(`resources.${resource.id}.label`)}</h4>
+                  <p className="text-sm text-muted-foreground">{t(`resources.${resource.id}.description`)}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   <div className="flex items-center space-x-2">
@@ -145,7 +148,7 @@ export function EditShareForm({ share }: EditShareFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "view")}
                     />
                     <label htmlFor={`${resource.id}-view`} className="text-sm cursor-pointer">
-                      Ver
+                      {t("permissions.view")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -155,7 +158,7 @@ export function EditShareForm({ share }: EditShareFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "create")}
                     />
                     <label htmlFor={`${resource.id}-create`} className="text-sm cursor-pointer">
-                      Crear
+                      {t("permissions.create")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -165,7 +168,7 @@ export function EditShareForm({ share }: EditShareFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "edit")}
                     />
                     <label htmlFor={`${resource.id}-edit`} className="text-sm cursor-pointer">
-                      Editar
+                      {t("permissions.edit")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -175,7 +178,7 @@ export function EditShareForm({ share }: EditShareFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "delete")}
                     />
                     <label htmlFor={`${resource.id}-delete`} className="text-sm cursor-pointer">
-                      Eliminar
+                      {t("permissions.delete")}
                     </label>
                   </div>
                 </div>
@@ -189,34 +192,34 @@ export function EditShareForm({ share }: EditShareFormProps) {
 
       <div className="flex flex-col gap-3">
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Guardar Cambios"}
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t("saveChanges")}
         </Button>
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button type="button" variant="destructive" className="w-full" disabled={isLoading}>
               <Trash2 className="mr-2 h-4 w-4" />
-              Desactivar Acceso Compartido
+              {t("deactivateShare")}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>¿Desactivar acceso compartido?</AlertDialogTitle>
+              <AlertDialogTitle>{t("deactivateShareTitle")}</AlertDialogTitle>
               <AlertDialogDescription>
-                El usuario ya no podrá acceder a tus finanzas. Puedes volver a compartir en cualquier momento.
+                {t("deactivateShareDesc")}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeactivate} className="bg-destructive text-destructive-foreground">
-                Desactivar
+              <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeactivate} className="bg-destructive text-white">
+                {t("deactivateConfirm")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
 
         <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancelar
+          {tCommon("cancel")}
         </Button>
       </div>
     </form>

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Settings } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 

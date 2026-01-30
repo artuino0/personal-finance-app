@@ -284,7 +284,7 @@ export function TransactionForm({ userId, accounts, categories, transaction, onS
         <Button type="submit" disabled={isLoading} className="flex-1">
           {isLoading ? t("saving") : transaction ? t("updateTransaction") : t("createTransaction")}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+        <Button type="button" variant="outline" onClick={() => (onSuccess ? onSuccess() : router.back())}>
           {t("cancel")}
         </Button>
       </div>

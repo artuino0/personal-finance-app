@@ -209,6 +209,10 @@
         "title": "Créditos y Préstamos",
         "description": "Gestiona tus deudas y obligaciones financieras",
         "newCredit": "+ Nuevo Crédito",
+        "newCreditDescription": "Registra un nuevo crédito o préstamo",
+        "limitReachedTitle": "Límite Alcanzado",
+        "limitReachedDescription": "Has alcanzado el límite de {limit} créditos de tu plan actual.",
+        "upgradePlan": "Actualizar Plan",
         "totalDebt": "Deuda Total",
         "activeCredits": "Créditos Activos",
         "totalMonthlyPayment": "Pago Mensual Total",
@@ -274,7 +278,8 @@
         "delete": "Eliminar",
         "deleting": "Eliminando...",
         "confirmDelete": "¿Estás seguro de eliminar este crédito? Esta acción no se puede deshacer.",
-        "deleteError": "Error al eliminar el crédito. Por favor intenta de nuevo."
+        "deleteError": "Error al eliminar el crédito. Por favor intenta de nuevo.",
+        "upgradeToadd": "Actualizar para Agregar"
     },
     "Services": {
         "title": "Servicios Recurrentes",
@@ -288,6 +293,7 @@
         "dueToday": "Vence hoy",
         "dueInDays": "Vence en {days} días",
         "account": "Cuenta",
+        "back": "Volver",
         "actions": {
             "registerPayment": "Registrar Pago",
             "edit": "Editar",
@@ -334,6 +340,8 @@
     "Accounts": {
         "title": "Cuentas",
         "totalBalance": "Balance total: ${balance}",
+        "newAccountTitle": "Nueva Cuenta",
+        "newAccountDesc": "Agrega una nueva cuenta bancaria o de efectivo",
         "newAccount": "+ Nueva Cuenta",
         "noAccounts": "No hay cuentas registradas",
         "createFirstAccount": "Crear mi primera cuenta",
@@ -358,7 +366,11 @@
             "credit_card": "Tarjeta de Crédito",
             "cash": "Efectivo",
             "investment": "Inversión"
-        }
+        },
+        "upgradeToView": "Actualizar para Ver",
+        "upgradeToCreate": "Actualizar para Crear",
+        "upgradePlan": "Actualizar Plan",
+        "accountLocked": "Cuenta Bloqueada"
     },
     "Transactions": {
         "title": "Transacciones",
@@ -428,7 +440,64 @@
         "receivedInvitations": "Invitaciones Recibidas",
         "receivedInvitationsDesc": "Invitaciones para acceder a las finanzas de otros usuarios",
         "noShares": "No has compartido tus finanzas con nadie",
-        "noSharedWithMe": "Nadie ha compartido sus finanzas contigo"
+        "noSharedWithMe": "Nadie ha compartido sus finanzas contigo",
+        "upgradeToInvite": "Actualizar para Invitar",
+        "accessPermissions": "Permisos de Acceso",
+        "permissions": {
+            "view": "Ver",
+            "create": "Crear",
+            "edit": "Editar",
+            "delete": "Eliminar"
+        },
+        "resources": {
+            "accounts": {
+                "label": "Cuentas",
+                "description": "Ver y gestionar cuentas bancarias"
+            },
+            "transactions": {
+                "label": "Transacciones",
+                "description": "Ver y crear transacciones"
+            },
+            "credits": {
+                "label": "Créditos",
+                "description": "Ver y gestionar créditos/préstamos"
+            },
+            "services": {
+                "label": "Servicios",
+                "description": "Ver y gestionar servicios recurrentes"
+            },
+            "categories": {
+                "label": "Categorías",
+                "description": "Ver y gestionar categorías"
+            }
+        },
+        "deactivateShare": "Desactivar Acceso Compartido",
+        "deactivateShareTitle": "¿Desactivar acceso compartido?",
+        "deactivateShareDesc": "El usuario ya no podrá acceder a tus finanzas. Puedes volver a compartir en cualquier momento.",
+        "deactivateConfirm": "Desactivar",
+        "saveChanges": "Guardar Cambios",
+        "editPermissions": "Editar Permisos",
+        "sharedWith": "Compartido con",
+        "managePermissions": "Gestionar Permisos",
+        "managePermissionsDesc": "Actualiza los permisos de acceso o desactiva el acceso compartido",
+        "inviteTitle": "Invitar Usuario",
+        "inviteDesc": "Comparte el acceso a tus finanzas con otra persona",
+        "newInvitation": "Nueva Invitación",
+        "newInvitationDesc": "Ingresa el correo electrónico del usuario y selecciona los permisos que deseas compartir",
+        "emailLabel": "Correo Electrónico",
+        "verify": "Verificar",
+        "userFound": "Usuario encontrado",
+        "userNotFound": "Usuario no registrado",
+        "userNotFoundDesc": "Se enviará una invitación por correo",
+        "inviteBadge": "Invitación",
+        "foundBadge": "Encontrado",
+        "invitingTo": "Invitando a",
+        "sendInvitation": "Enviar Invitación",
+        "back": "Atrás",
+        "cancel": "Cancelar",
+        "next": "Siguiente",
+        "errorVerify": "Error al verificar el email",
+        "errorGeneric": "Ocurrió un error"
     },
     "Reports": {
         "button": "Reportes",
@@ -485,9 +554,12 @@
         "upgradeNow": "Actualizar Ahora",
         "manageBillingDesc": "Gestiona tu suscripción y detalles de facturación",
         "openBillingPortal": "Abrir Portal de Facturación",
-        "upgradeToPremium": "Actualizar a Premium"
+        "upgradeToPremium": "Actualizar a Premium",
+        "upgradeToCreate": "Actualizar para Crear"
     },
     "AiAssistant": {
+        "pageTitle": "Asistente AI",
+        "pageDescription": "Análisis inteligente de tus finanzas",
         "withPro": "con Pro",
         "upgradeToPro": "Actualizar a Pro",
         "updatesIn": "Actualiza en {count} {unit}",
@@ -524,7 +596,8 @@
         "loadPrevious": "Cargar Anteriores",
         "loadMore": "Cargar Más",
         "noMoreMessages": "No hay más mensajes",
-        "clearHistory": "Limpiar Historial"
+        "clearHistory": "Limpiar Historial",
+        "importantAlerts": "Alertas Importantes"
     },
     "Upgrade": {
         "title": "Actualiza Tu Plan",

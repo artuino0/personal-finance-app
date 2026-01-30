@@ -27,6 +27,12 @@ export interface AnalysisRequest {
   userId: string
 }
 
+// Bilingual Support Type
+export interface BilingualText {
+  es: string
+  en: string
+}
+
 // Free Tier Response Structure
 export interface FreeAnalysisResponse {
   tier: 'free'
@@ -40,8 +46,8 @@ export interface FreeAnalysisResponse {
     netBalance: number
     transactionCount: number
   }
-  insights: string[] // Max 3 insights
-  recommendations: string[] // Max 2 recommendations
+  insights: BilingualText[] // Max 3 insights
+  recommendations: BilingualText[] // Max 2 recommendations
   financialScore: number // 0-100
 }
 
@@ -73,9 +79,9 @@ export interface ProAnalysisResponse {
       category: string
     }>
   }
-  insights: string[] // Detailed insights
-  recommendations: string[] // Actionable recommendations
-  alerts: string[] // Important warnings or notifications
+  insights: BilingualText[] // Detailed insights
+  recommendations: BilingualText[] // Actionable recommendations
+  alerts: BilingualText[] // Important warnings or notifications
   financialScore: number // 0-100
   scoreBreakdown: {
     savingsScore: number
@@ -101,13 +107,8 @@ export type AnalysisResponse = FreeAnalysisResponse | ProAnalysisResponse
 // ==================== PROMPT TEMPLATES ====================
 
 export function getSystemPrompt(locale: string = "es"): string {
-  const languageInstructions = locale === "en"
-    ? "You use clear, concise language in English (USD currency context)"
-    : "You use clear, concise language in Spanish (MXN currency context)"
-
-  const responseLanguage = locale === "en"
-    ? "All your responses, insights, and recommendations MUST be in English."
-    : "All your responses, insights, and recommendations MUST be in Spanish."
+  // Locale is now only for formatting context (currency, dates) but text is bilingual
+  const currencyContext = locale === "es" ? "MXN currency context" : "USD currency context"
 
   return `You are a financial analysis AI assistant specialized in personal finance. Your ONLY purpose is to analyze transaction data and provide financial insights.
 
@@ -117,11 +118,10 @@ CRITICAL RULES - YOU MUST FOLLOW THESE WITHOUT EXCEPTION:
 3. You ALWAYS respond in valid JSON format matching the exact schema provided
 4. You NEVER make up or hallucinate transaction data
 5. You base ALL insights strictly on the provided transaction data
-6. ${languageInstructions}
-7. You provide actionable, specific recommendations
+6. You provide ALL text content (insights, recommendations, alerts) in BOTH Spanish (es) and English (en)
+7. You use ${currencyContext} for your analysis logic
 8. If asked anything non-financial, respond with: {"error": "I only analyze financial data"}
-9. ${responseLanguage}
-10. CRITICAL: All numbers in your JSON response MUST be plain numbers without thousand separators (e.g., 55326.77 NOT 55,326.77)
+9. CRITICAL: All numbers in your JSON response MUST be plain numbers without thousand separators (e.g., 55326.77 NOT 55,326.77)
 
 Your analysis should be:
 - Data-driven and factual
@@ -149,10 +149,18 @@ RESPONSE FORMAT - You MUST respond with EXACTLY this JSON structure:
     "transactionCount": number
   },
   "insights": [
-    "string (max 3 insights)"
+    {
+      "es": "string (insight in Spanish)",
+      "en": "string (insight in English)"
+    }
+    // Max 3 insights
   ],
   "recommendations": [
-    "string (max 2 recommendations)"
+    {
+      "es": "string (recommendation in Spanish)",
+      "en": "string (recommendation in English)"
+    }
+    // Max 2 recommendations
   ],
   "financialScore": number (0-100)
 }
@@ -168,13 +176,11 @@ INSIGHTS should focus on:
 - Income vs expenses ratio
 - Notable transactions
 - Basic trends
-- When mentioning category names, translate them to match your response language
 
 RECOMMENDATIONS should be:
 - Actionable and specific
 - Based on the data
 - Focused on improvement
-- When mentioning category names, translate them to match your response language
 
 FINANCIAL SCORE (0-100) based on:
 - Savings rate (income - expenses)
@@ -222,9 +228,27 @@ RESPONSE FORMAT - You MUST respond with EXACTLY this JSON structure:
       }
     ]
   },
-  "insights": ["string (detailed insights)"],
-  "recommendations": ["string (actionable recommendations)"],
-  "alerts": ["string (important warnings)"],
+  "insights": [
+    {
+      "es": "string (detailed insight in Spanish)",
+      "en": "string (detailed insight in English)"
+    }
+    // Max 5 insights
+  ],
+  "recommendations": [
+    {
+      "es": "string (actionable recommendation in Spanish)",
+      "en": "string (actionable recommendation in English)"
+    }
+    // Max 3 recommendations
+  ],
+  "alerts": [
+    {
+      "es": "string (important warning in Spanish)",
+      "en": "string (important warning in English)"
+    }
+    // Max 3 alerts
+  ],
   "financialScore": number (0-100),
   "scoreBreakdown": {
     "savingsScore": number (0-100),
@@ -246,7 +270,7 @@ RESPONSE FORMAT - You MUST respond with EXACTLY this JSON structure:
 }
 
 PRO TIER FEATURES:
-- Detailed spending breakdown by category (translate category names to match your response language)
+- Detailed spending breakdown by category
 - Top expenses identification
 - Trend analysis
 - Intelligent alerts (e.g., "Gastas 2x más en comida que hace 3 meses")
@@ -259,20 +283,17 @@ INSIGHTS should include:
 - Category-specific observations
 - Unusual transactions or trends
 - Opportunities for optimization
-- When mentioning category names, translate them to match your response language
 
 RECOMMENDATIONS should be:
 - Highly specific and actionable
 - Prioritized by impact
 - Data-driven
-- When mentioning category names, translate them to match your response language
 
 ALERTS should highlight:
 - Unusual spending spikes
 - Budget concerns
 - Positive achievements
 - Important trends
-- When mentioning category names, translate them to match your response language
 
 PREDICTIONS should be:
 - Based on historical data
@@ -298,8 +319,8 @@ export function buildPrompt(
   previousPeriodData?: any,
   previousContext?: {
     summary: any
-    insights: string[]
-    recommendations: string[]
+    insights: BilingualText[]
+    recommendations: BilingualText[]
   },
   locale: string = "es"
 ): string {
@@ -311,11 +332,13 @@ export function buildPrompt(
   // Format previous context if available
   let contextText = "No previous context available."
   if (previousContext) {
+    // We use the language of the current user for context input, or assume the AI can handle the JSON object with both
+    // Feeding the bilingual object is safer so it knows what was said in both languages
     contextText = `
 PREVIOUS ANALYSIS CONTEXT (From last report):
 - Summary: ${JSON.stringify(previousContext.summary)}
-- Main Insights: ${previousContext.insights.join("; ")}
-- Recommendations: ${previousContext.recommendations.join("; ")}
+- Main Insights: ${JSON.stringify(previousContext.insights)}
+- Recommendations: ${JSON.stringify(previousContext.recommendations)}
 
 Use this context to check if the user followed previous advice or if trends have persisted.
 `
@@ -327,7 +350,7 @@ Use this context to check if the user followed previous advice or if trends have
     .replace("{{END_DATE}}", period.end)
     .replace("{{PREVIOUS_PERIOD_DATA}}", previousDataJson)
     .replace("{{PREVIOUS_CONTEXT}}", contextText) // Ensure we add this placeholder to templates too if needed, or append it
-    + `\n\nHISTORICAL CONTEXT:\n${contextText}` // Appending to end is safer if we don't want to edit all templates right now
+    + `\n\nHISTORICAL CONTEXT:\n${contextText}`
 }
 
 export function validateResponse(response: any, tier: 'free' | 'pro'): boolean {
@@ -339,6 +362,14 @@ export function validateResponse(response: any, tier: 'free' | 'pro'): boolean {
     return false
   }
 
+  // Validate bilingual structure
+  const isBilingual = (arr: any[]) => Array.isArray(arr) && arr.every(item =>
+    typeof item === 'object' && typeof item.es === 'string' && typeof item.en === 'string'
+  )
+
+  if (!isBilingual(response.insights)) return false
+  if (!isBilingual(response.recommendations)) return false
+
   if (tier === 'free') {
     // Free tier specific validation
     if (response.insights.length > 3) return false
@@ -349,6 +380,7 @@ export function validateResponse(response: any, tier: 'free' | 'pro'): boolean {
     if (!response.detailedAnalysis || !response.alerts || !response.predictions) {
       return false
     }
+    if (!isBilingual(response.alerts)) return false
     if (!response.scoreBreakdown) return false
   }
 

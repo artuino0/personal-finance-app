@@ -3,11 +3,10 @@ import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { TransactionsClient } from "@/components/transactions/transactions-client"
 import { TransactionsFilter } from "@/components/transactions/transactions-filter"
-import { Button } from "@/components/ui/button"
-import { Link } from "@/lib/i18n/navigation"
 import { getSelectedAccountId, getAccountPermissions } from "@/lib/utils/account-context"
 import { getTranslations, getLocale } from "next-intl/server"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { NewTransactionButton } from "@/components/transactions/new-transaction-button"
 
 export default async function TransactionsPage({
   searchParams,
@@ -123,9 +122,7 @@ export default async function TransactionsPage({
           isSharedAccount={isSharedAccount}
           permissions={permissions}
           actions={
-            <Button asChild>
-              <Link href="/dashboard/transactions/new">{t("newTransaction")}</Link>
-            </Button>
+            <NewTransactionButton label={t("newTransaction")} locale={locale} />
           }
         />
 

@@ -214,9 +214,6 @@ export function DashboardNav({ userName, userAvatar, tier = "free" }: DashboardN
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/profile">{t("profile")}</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings">{t("settings")}</Link>
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 {t("logout")}

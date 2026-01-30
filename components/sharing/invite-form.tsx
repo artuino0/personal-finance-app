@@ -3,39 +3,45 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/lib/i18n/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, CheckCircle2, XCircle, Mail } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, Mail, Check } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { useTranslations } from "next-intl"
 
 interface InviteFormProps {
   userId: string
   userEmail: string
 }
 
-const RESOURCES = [
-  { id: "accounts", label: "Cuentas", description: "Ver y gestionar cuentas bancarias" },
-  { id: "transactions", label: "Transacciones", description: "Ver y crear transacciones" },
-  { id: "credits", label: "Créditos", description: "Ver y gestionar créditos/préstamos" },
-  { id: "services", label: "Servicios", description: "Ver y gestionar servicios recurrentes" },
-  { id: "categories", label: "Categorías", description: "Ver y gestionar categorías" },
-]
-
 export function InviteForm({ userId }: InviteFormProps) {
   const router = useRouter()
+  const t = useTranslations("Sharing")
   const supabase = createClient()
   const [email, setEmail] = useState("")
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
   const [userExists, setUserExists] = useState<boolean | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
   const [foundUserId, setFoundUserId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentStep, setCurrentStep] = useState<"email" | "permissions">("email")
+
+  // RESOURCES array moved inside or translated dynamically
+  const RESOURCES = [
+    { id: "accounts", label: t("resources.accounts.label"), description: t("resources.accounts.description") },
+    { id: "transactions", label: t("resources.transactions.label"), description: t("resources.transactions.description") },
+    { id: "credits", label: t("resources.credits.label"), description: t("resources.credits.description") },
+    { id: "services", label: t("resources.services.label"), description: t("resources.services.description") },
+    { id: "categories", label: t("resources.categories.label"), description: t("resources.categories.description") },
+  ]
 
   const [permissions, setPermissions] = useState<
     Record<string, { view: boolean; create: boolean; edit: boolean; delete: boolean }>
@@ -54,6 +60,7 @@ export function InviteForm({ userId }: InviteFormProps) {
     setError(null)
     setUserExists(null)
     setUserName(null)
+    setUserAvatar(null)
     setFoundUserId(null)
 
     try {
@@ -68,20 +75,21 @@ export function InviteForm({ userId }: InviteFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        setError(result.error || "Error al verificar el email")
+        setError(result.error || t("errorVerify"))
         return
       }
 
       if (result.exists) {
         setUserExists(true)
         setUserName(result.user.name)
+        setUserAvatar(result.user.avatar_url)
         setFoundUserId(result.user.id)
       } else {
         setUserExists(false)
       }
     } catch (err) {
       console.error("[v0] Error checking email:", err)
-      setError("Error al verificar el email")
+      setError(t("errorVerify"))
     } finally {
       setIsCheckingEmail(false)
     }
@@ -155,7 +163,7 @@ export function InviteForm({ userId }: InviteFormProps) {
       router.push("/dashboard/sharing")
       router.refresh()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error")
+      setError(err instanceof Error ? err.message : t("errorGeneric"))
     } finally {
       setIsLoading(false)
     }
@@ -165,7 +173,7 @@ export function InviteForm({ userId }: InviteFormProps) {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="email">Correo Electrónico</Label>
+          <Label htmlFor="email">{t("emailLabel")}</Label>
           <div className="flex gap-2">
             <Input
               id="email"
@@ -186,53 +194,67 @@ export function InviteForm({ userId }: InviteFormProps) {
               }}
             />
             <Button type="button" onClick={handleCheckEmail} disabled={!email || isCheckingEmail}>
-              {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verificar"}
+              {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : t("verify")}
             </Button>
           </div>
         </div>
 
         {userExists === true && (
-          <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-            <CardContent className="flex items-center gap-3 pt-4">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <div>
-                <p className="font-medium text-green-900 dark:text-green-100">Usuario encontrado</p>
-                <p className="text-sm text-green-700 dark:text-green-300">{userName || email}</p>
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm animate-in fade-in-50 slide-in-from-bottom-2">
+            <div className="p-4 flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-12 w-12 border-3 border-green-500">
+                  <AvatarImage src={userAvatar || undefined} alt={userName || email} />
+                  <AvatarFallback className="bg-primary/5 text-primary text-lg font-medium">
+                    {((userName || email || "?")[0]).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-0.5 -right-1 bg-green-500 text-white rounded-full p-0.5 border-2 border-white dark:border-background">
+                  <Check className="h-3 w-3" />
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h4 className="font-semibold text-base truncate">{userName || "Usuario"}</h4>
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200 h-5 px-1.5 text-[10px] uppercase tracking-wide font-bold">
+                    {t("foundBadge")}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground truncate">{email}</p>
+              </div>
+            </div>
+          </div>
         )}
 
         {userExists === false && (
-          <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
-            <CardContent className="pt-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <XCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                <div>
-                  <p className="font-medium text-orange-900 dark:text-orange-100">Usuario no registrado</p>
-                  <p className="text-sm text-orange-700 dark:text-orange-300">
-                    Este usuario deberá registrarse en Kountly para aceptar la invitación
-                  </p>
-                </div>
+          <div className="rounded-lg border border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20 text-card-foreground shadow-sm animate-in fade-in-50 slide-in-from-bottom-2">
+            <div className="p-4 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0 border-2 border-orange-200 dark:border-orange-800">
+                <Mail className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <div className="flex items-start gap-2 rounded-md bg-orange-100 dark:bg-orange-900 p-3">
-                <Mail className="h-4 w-4 text-orange-600 dark:text-orange-400 mt-0.5" />
-                <p className="text-xs text-orange-800 dark:text-orange-200">
-                  Se enviará un correo de invitación con un enlace para registrarse
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h4 className="font-semibold text-base text-orange-900 dark:text-orange-100 truncate">{t("userNotFound")}</h4>
+                  <Badge variant="outline" className="text-orange-700 border-orange-200 bg-orange-100 h-5 px-1.5 text-[10px] uppercase tracking-wide font-bold">
+                    {t("inviteBadge")}
+                  </Badge>
+                </div>
+                <p className="text-sm text-orange-700 dark:text-orange-300 truncate">
+                  {t("userNotFoundDesc")}
                 </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 flex items-center gap-2"><XCircle className="h-4 w-4" /> {error}</p>}
 
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1">
-            Cancelar
+            {t("cancel")}
           </Button>
           <Button type="button" onClick={handleNextStep} disabled={!email || userExists === null} className="flex-1">
-            Siguiente
+            {t("next")}
           </Button>
         </div>
       </div>
@@ -241,12 +263,21 @@ export function InviteForm({ userId }: InviteFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="rounded-md bg-muted/50 p-4">
-        <p className="text-sm font-medium">Invitando a: {userName || email}</p>
+      <div className="rounded-lg border bg-card p-4 flex items-center gap-4">
+        <Avatar className="h-10 w-10 border border-primary/10">
+          <AvatarImage src={userAvatar || undefined} />
+          <AvatarFallback className="bg-primary/5 text-primary">
+            {((userName || email || "?")[0]).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-muted-foreground">{t("invitingTo")}</p>
+          <p className="font-semibold">{userName || email}</p>
+        </div>
       </div>
 
       <div className="space-y-4">
-        <Label>Permisos de Acceso</Label>
+        <Label>{t("accessPermissions")}</Label>
         {RESOURCES.map((resource) => (
           <Card key={resource.id}>
             <CardContent className="pt-4">
@@ -263,7 +294,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "view")}
                     />
                     <label htmlFor={`${resource.id}-view`} className="text-sm cursor-pointer">
-                      Ver
+                      {t("permissions.view")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -273,7 +304,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "create")}
                     />
                     <label htmlFor={`${resource.id}-create`} className="text-sm cursor-pointer">
-                      Crear
+                      {t("permissions.create")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -283,7 +314,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "edit")}
                     />
                     <label htmlFor={`${resource.id}-edit`} className="text-sm cursor-pointer">
-                      Editar
+                      {t("permissions.edit")}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -293,7 +324,7 @@ export function InviteForm({ userId }: InviteFormProps) {
                       onCheckedChange={() => togglePermission(resource.id, "delete")}
                     />
                     <label htmlFor={`${resource.id}-delete`} className="text-sm cursor-pointer">
-                      Eliminar
+                      {t("permissions.delete")}
                     </label>
                   </div>
                 </div>
@@ -307,10 +338,10 @@ export function InviteForm({ userId }: InviteFormProps) {
 
       <div className="flex gap-3">
         <Button type="button" variant="outline" onClick={() => setCurrentStep("email")} className="flex-1">
-          Atrás
+          {t("back")}
         </Button>
         <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enviar Invitación"}
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t("sendInvitation")}
         </Button>
       </div>
     </form>

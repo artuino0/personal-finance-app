@@ -4,7 +4,7 @@ import type React from "react"
 import { useTranslations } from "next-intl"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/lib/i18n/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"

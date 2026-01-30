@@ -349,7 +349,9 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-sm mb-1">{t("observation", { number: index + 1 })}</h4>
-                                            <p className="text-sm text-muted-foreground">{insight}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {typeof insight === 'string' ? insight : (locale === 'es' ? insight.es : insight.en)}
+                                            </p>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -368,7 +370,9 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-sm mb-1">{t("recommendation", { number: index + 1 })}</h4>
-                                            <p className="text-sm text-muted-foreground">{rec}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {typeof rec === 'string' ? rec : (locale === 'es' ? rec.es : rec.en)}
+                                            </p>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -387,9 +391,9 @@ export function AiAssistantView({ tier, initialAnalysis, lastReportDate, serverT
                                     {t("importantAlerts")}
                                 </h3>
                                 <div className="space-y-3">
-                                    {(analysis as any).alerts.map((alert: string, index: number) => (
+                                    {(analysis as any).alerts.map((alert: any, index: number) => (
                                         <div key={index} className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-200 text-sm">
-                                            {alert}
+                                            {typeof alert === 'string' ? alert : (locale === 'es' ? alert.es : alert.en)}
                                         </div>
                                     ))}
                                 </div>

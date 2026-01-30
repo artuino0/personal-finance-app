@@ -175,7 +175,7 @@ export function CreditDetails({ credit, payments, userId, permissions }: CreditD
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-slate-500">{t("interestRate")}</p>
-                <p className="font-medium">{t("annualRate", { rate: credit.interest_rate })}</p>
+                <p className="font-medium">{t("annualRate", { rate: credit.interest_rate ?? 0 })}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-500">{t("startDate")}</p>

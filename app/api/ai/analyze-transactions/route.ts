@@ -215,14 +215,14 @@ export async function POST(request: Request) {
             formattedTransactions,
             { start: startDate, end: endDate },
             previousPeriodData,
-            previousContext,
+            previousContext as any,
             locale
         )
 
         // 9. Call Claude Haiku API
         const message = await anthropic.messages.create({
             model: "claude-3-haiku-20240307",
-            max_tokens: tier === "free" ? 1024 : 2048,
+            max_tokens: tier === "free" ? 2000 : 4000,
             temperature: 0.3,
             system: getSystemPrompt(locale),
             messages: [

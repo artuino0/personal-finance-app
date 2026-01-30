@@ -54,7 +54,7 @@ export default async function NewServicePage() {
                   </div>
                   <h2 className="mb-2 font-bold text-xl text-amber-800">{t("limitReachedTitle")}</h2>
                   <p className="mb-6 max-w-md text-amber-700">
-                    {t("limitReachedDescription", { limit: limit })}
+                    {t("limitReachedDescription", { limit: limit ?? 0 })}
                   </p>
                   <Button asChild size="lg" className="gap-2 bg-amber-600 hover:bg-amber-700">
                     <Link href="/dashboard/upgrade">

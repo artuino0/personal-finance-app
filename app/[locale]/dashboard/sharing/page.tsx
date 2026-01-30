@@ -8,6 +8,8 @@ import { SharesList } from "@/components/sharing/shares-list"
 import { InvitationsList } from "@/components/sharing/invitations-list"
 import { AcceptInvitationModal } from "@/components/sharing/accept-invitation-modal"
 import { getTranslations } from "next-intl/server"
+import { checkSharedUserLimit } from "@/lib/limit-utils"
+import { Lock } from "lucide-react"
 
 export default async function SharingPage() {
   const supabase = await createClient()
@@ -101,6 +103,12 @@ export default async function SharingPage() {
   const hasOnlyOneInvitationType =
     (pendingInvitations && pendingInvitations.length > 0) !== (receivedInvitations && receivedInvitations.length > 0)
 
+  /* Limit Check */
+  const { allowed: canInvite, limit } = await checkSharedUserLimit(user.id)
+
+  // Use profile tier or fallback to free
+  const tier = (profile?.subscription_tier as "free" | "pro" | "premium") || "free"
+
   const t = await getTranslations("Sharing")
 
   return (
@@ -109,7 +117,7 @@ export default async function SharingPage() {
       <DashboardNav
         userName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
         userAvatar={user.user_metadata?.avatar_url || user.user_metadata?.picture}
-        tier={(profile?.subscription_tier as "free" | "pro") || "free"}
+        tier={tier === "premium" ? "pro" : tier === "pro" ? "pro" : "free"}
       />
       <main className="container mx-auto p-4 md:p-6 max-w-7xl">
         <div className="mb-6 space-y-4">
@@ -117,9 +125,19 @@ export default async function SharingPage() {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t("title")}</h1>
             <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
           </div>
-          <Button asChild className="w-full md:w-auto">
-            <Link href="/dashboard/sharing/invite">{t("inviteUser")}</Link>
-          </Button>
+
+          {canInvite ? (
+            <Button asChild className="w-full md:w-auto">
+              <Link href="/dashboard/sharing/invite">{t("inviteUser")}</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="default" className="w-full md:w-auto bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
+              <Link href="/dashboard/upgrade" className="flex items-center justify-center gap-2">
+                <Lock className="h-4 w-4" />
+                {t("upgradeToInvite")}
+              </Link>
+            </Button>
+          )}
         </div>
 
         <div className="space-y-6">
