@@ -7,13 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useTranslations } from "next-intl"
-import { FileText, Key, Lock, Calendar } from "lucide-react"
+import { FileText, Lock, Calendar } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface FacturapiConfigProps {
   userId: string
   initialConfig?: {
-    api_key?: string
     certificate_file_path?: string
     key_file_path?: string
     certificate_expiry?: string
@@ -26,7 +25,6 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
   const { toast } = useToast()
 
   const [isLoading, setIsLoading] = useState(false)
-  const [apiKey, setApiKey] = useState(initialConfig?.api_key || "")
   const [certificatePassword, setCertificatePassword] = useState("")
   const [certificateExpiry, setCertificateExpiry] = useState(
     initialConfig?.certificate_expiry || ""
@@ -77,7 +75,6 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
         .from("facturapi_config")
         .upsert({
           user_id: userId,
-          api_key: apiKey || null,
           certificate_file_path: certificatePath,
           key_file_path: keyPath,
           certificate_password: certificatePassword || null,
@@ -121,22 +118,6 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* API Key */}
-          <div className="space-y-2">
-            <Label htmlFor="api_key" className="flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              {t("facturapiApiKey")}
-            </Label>
-            <Input
-              id="api_key"
-              type="text"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder={t("facturapiApiKeyPlaceholder")}
-              className="h-11 font-mono text-sm"
-            />
-          </div>
-
           {/* Certificate Upload */}
           <div className="space-y-2">
             <Label htmlFor="certificate" className="flex items-center gap-2">
