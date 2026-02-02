@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl"
 import { FileText, Lock, Calendar } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-interface FacturapiConfigProps {
+interface CSDConfigProps {
   userId: string
   initialConfig?: {
     certificate_file_path?: string
@@ -19,7 +19,7 @@ interface FacturapiConfigProps {
   } | null
 }
 
-export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps) {
+export function CSDConfig({ userId, initialConfig }: CSDConfigProps) {
   const supabase = createClient()
   const t = useTranslations("Profile")
   const { toast } = useToast()
@@ -88,7 +88,7 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
 
       toast({
         title: t("success"),
-        description: t("facturapiConfigured"),
+        description: t("csdConfigured"),
       })
 
       // Clear file inputs and password
@@ -96,10 +96,10 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
       setKeyFile(null)
       setCertificatePassword("")
     } catch (error) {
-      console.error("Error saving Facturapi config:", error)
+      console.error("Error saving CSD config:", error)
       toast({
         title: t("error"),
-        description: t("facturapiConfigError"),
+        description: t("csdConfigError"),
         variant: "destructive",
       })
     } finally {
@@ -113,8 +113,8 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
         <div className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-primary" />
           <div>
-            <CardTitle>{t("facturapiConfig")}</CardTitle>
-            <CardDescription>{t("facturapiConfigDesc")}</CardDescription>
+            <CardTitle>{t("csdConfig")}</CardTitle>
+            <CardDescription>{t("csdConfigDesc")}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -175,7 +175,7 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
               className="h-11"
             />
             <p className="text-xs text-muted-foreground">
-              No se guarda por seguridad. Ingrésalo cada vez que actualices certificados.
+              Por seguridad, la contraseña NO se almacena. Ingrésala cada vez que actualices los certificados.
             </p>
           </div>
 
@@ -195,8 +195,11 @@ export function FacturapiConfig({ userId, initialConfig }: FacturapiConfigProps)
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? t("uploadingFiles") : t("configureFacturapi")}
+            {isLoading ? t("uploadingFiles") : t("saveCSD")}
           </Button>
+          <p className="text-xs text-center text-muted-foreground">
+            {t("csdNote")}
+          </p>
         </form>
       </CardContent>
     </Card>

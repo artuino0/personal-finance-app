@@ -34,12 +34,12 @@ export default async function InvoicingPage() {
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
   const tier = (profile?.subscription_tier as "free" | "pro" | "premium") || "free"
 
-  // Check if Facturapi is configured
+  // Check if CSD is configured
   const { data: config } = await supabase
     .from("facturapi_config")
     .select("*")
     .eq("user_id", user.id)
-    .single()
+    .maybeSingle()
 
   // Get invoices
   const { data: invoices } = await supabase
@@ -53,7 +53,8 @@ export default async function InvoicingPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
 
-  const isConfigured = config && config.api_key
+  // Check if CSD certificates are configured
+  const isConfigured = config && config.certificate_file_path && config.key_file_path
 
   const t = await getTranslations("Invoicing")
 
@@ -66,8 +67,8 @@ export default async function InvoicingPage() {
       />
       <main className="container mx-auto p-6">
         <PageHeader
-          title="Facturación Electrónica"
-          description="Emite facturas usando Facturapi como PAC"
+          title={t("title")}
+          description={t("description")}
           currentUserId={user.id}
           currentUserName={profile?.full_name || user.user_metadata?.full_name || user.email || "Usuario"}
           currentUserEmail={user.email || ""}
@@ -92,10 +93,10 @@ export default async function InvoicingPage() {
                   <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
                   <div className="flex-1">
                     <CardTitle className="text-orange-900 dark:text-orange-100">
-                      Configuración Requerida
+                      {t("configurationRequired")}
                     </CardTitle>
                     <CardDescription className="text-orange-700 dark:text-orange-300">
-                      Configura Facturapi en tu perfil para comenzar a emitir facturas
+                      {t("uploadCSDToStart")}
                     </CardDescription>
                   </div>
                 </div>
@@ -104,7 +105,7 @@ export default async function InvoicingPage() {
                 <Link href="/dashboard/profile">
                   <Button variant="outline" className="border-orange-600 text-orange-600">
                     <FileText className="h-4 w-4 mr-2" />
-                    Ir a Perfil
+                    {t("goToProfile")}
                   </Button>
                 </Link>
               </CardContent>
@@ -114,20 +115,20 @@ export default async function InvoicingPage() {
           {/* Invoices List */}
           {isConfigured && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Facturas Emitidas</h2>
+              <h2 className="text-xl font-semibold">{t("invoicesList")}</h2>
 
               {!invoices || invoices.length === 0 ? (
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No hay facturas emitidas</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t("noInvoices")}</h3>
                     <p className="text-muted-foreground text-center mb-6">
-                      Comienza emitiendo tu primera factura electrónica
+                      Comienza emitiendo tu primera factura electrónica CFDI 4.0
                     </p>
                     <Link href="/dashboard/invoicing/new">
                       <Button>
                         <Plus className="h-4 w-4 mr-2" />
-                        Crear mi primera factura
+                        {t("createFirstInvoice")}
                       </Button>
                     </Link>
                   </CardContent>

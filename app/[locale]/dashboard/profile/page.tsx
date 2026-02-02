@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { ProfileForm } from "@/components/profile/profile-form"
-import { FacturapiConfig } from "@/components/profile/facturapi-config"
+import { CSDConfig } from "@/components/profile/csd-config"
 import { getTranslations } from "next-intl/server"
 import { PageHeader } from "@/components/dashboard/page-header"
 
@@ -57,7 +57,7 @@ export default async function ProfilePage() {
             initialProfile={profile}
           />
 
-          <FacturapiConfig userId={user.id} initialConfig={facturapiConfig} />
+          <CSDConfig userId={user.id} initialConfig={facturapiConfig} />
         </div>
       </main>
     </div>
