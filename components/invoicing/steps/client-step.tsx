@@ -16,15 +16,18 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { InvoiceClient } from "../invoice-wizard"
 import { UserPlus, Users } from "lucide-react"
+import { TaxSystem, CFDIUse } from "@/hooks/use-facturapi-catalogs"
 
 interface ClientStepProps {
   userId: string
   initialClient: InvoiceClient | null
+  taxSystems: TaxSystem[]
+  cfdiUses: CFDIUse[]
   onClientSaved: (client: InvoiceClient) => void
   onBack: () => void
 }
 
-export function ClientStep({ userId, initialClient, onClientSaved, onBack }: ClientStepProps) {
+export function ClientStep({ userId, initialClient, taxSystems, cfdiUses, onClientSaved, onBack }: ClientStepProps) {
   const t = useTranslations("Invoicing")
   const { toast } = useToast()
   const supabase = createClient()
@@ -119,56 +122,6 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
     }
   }
 
-  const regimens = [
-    "601",
-    "603",
-    "605",
-    "606",
-    "607",
-    "608",
-    "610",
-    "611",
-    "612",
-    "614",
-    "615",
-    "616",
-    "620",
-    "621",
-    "622",
-    "623",
-    "624",
-    "625",
-    "626",
-  ]
-
-  const cfdiUses = [
-    "G01",
-    "G02",
-    "G03",
-    "I01",
-    "I02",
-    "I03",
-    "I04",
-    "I05",
-    "I06",
-    "I07",
-    "I08",
-    "D01",
-    "D02",
-    "D03",
-    "D04",
-    "D05",
-    "D06",
-    "D07",
-    "D08",
-    "D09",
-    "D10",
-    "P01",
-    "S01",
-    "CP01",
-    "CN01",
-  ]
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -262,9 +215,9 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
                   <SelectValue placeholder={t("clientRegimenPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {regimens.map((regime) => (
-                    <SelectItem key={regime} value={regime}>
-                      {t(`regimens.${regime}` as any)}
+                  {taxSystems.map((regime) => (
+                    <SelectItem key={regime.value} value={regime.value}>
+                      {regime.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -293,8 +246,8 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
                 </SelectTrigger>
                 <SelectContent>
                   {cfdiUses.map((use) => (
-                    <SelectItem key={use} value={use}>
-                      {t(`usoCFDI.${use}` as any)}
+                    <SelectItem key={use.value} value={use.value}>
+                      {use.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

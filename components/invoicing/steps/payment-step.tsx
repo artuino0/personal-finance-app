@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/select"
 import { Card } from "@/components/ui/card"
 import { ChevronLeft, CreditCard } from "lucide-react"
+import { PaymentForm } from "@/hooks/use-facturapi-catalogs"
 
 interface PaymentStepProps {
   initialPaymentForm: string
   initialPaymentMethod: string
   initialCurrency: string
+  paymentForms: PaymentForm[]
   onPaymentSaved: (payment_form: string, payment_method: string, currency: string) => void
   onBack: () => void
 }
@@ -27,6 +29,7 @@ export function PaymentStep({
   initialPaymentForm,
   initialPaymentMethod,
   initialCurrency,
+  paymentForms,
   onPaymentSaved,
   onBack,
 }: PaymentStepProps) {
@@ -39,31 +42,6 @@ export function PaymentStep({
   const handleContinue = () => {
     onPaymentSaved(paymentForm, paymentMethod, currency)
   }
-
-  const paymentForms = [
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "08",
-    "12",
-    "13",
-    "14",
-    "15",
-    "17",
-    "23",
-    "24",
-    "25",
-    "26",
-    "27",
-    "28",
-    "29",
-    "30",
-    "31",
-    "99",
-  ]
 
   const currencies = [
     { code: "MXN", name: "Peso Mexicano" },
@@ -91,8 +69,8 @@ export function PaymentStep({
               </SelectTrigger>
               <SelectContent>
                 {paymentForms.map((form) => (
-                  <SelectItem key={form} value={form}>
-                    {t(`paymentForms.${form}` as any)}
+                  <SelectItem key={form.value} value={form.value}>
+                    {form.name}
                   </SelectItem>
                 ))}
               </SelectContent>

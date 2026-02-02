@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, FileCheck } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileCheck, Loader2 } from "lucide-react"
+import { useInvoiceCatalogs } from "@/hooks/use-facturapi-catalogs"
 import { ClientStep } from "./steps/client-step"
 import { ProductsStep } from "./steps/products-step"
 import { PaymentStep } from "./steps/payment-step"
@@ -49,6 +50,7 @@ const STEPS = [
 
 export function InvoiceWizard({ userId }: { userId: string }) {
   const t = useTranslations("Invoicing")
+  const { taxSystems, cfdiUses, paymentForms, units, isLoading, error } = useInvoiceCatalogs()
   const [currentStep, setCurrentStep] = useState(1)
   const [invoiceData, setInvoiceData] = useState<InvoiceData>({
     client: null,
@@ -57,6 +59,28 @@ export function InvoiceWizard({ userId }: { userId: string }) {
     payment_method: "PUE",
     currency: "MXN",
   })
+
+  // Don't render form until catalogs are loaded
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">{t("loading")}</p>
+        <p className="text-xs text-muted-foreground">Cargando catálogos del SAT...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <p className="text-sm text-destructive">Error al cargar catálogos</p>
+        <Button onClick={() => window.location.reload()} variant="outline">
+          Reintentar
+        </Button>
+      </div>
+    )
+  }
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
@@ -130,6 +154,8 @@ export function InvoiceWizard({ userId }: { userId: string }) {
           <ClientStep
             userId={userId}
             initialClient={invoiceData.client}
+            taxSystems={taxSystems}
+            cfdiUses={cfdiUses}
             onClientSaved={handleClientSaved}
             onBack={() => {}}
           />
@@ -139,6 +165,7 @@ export function InvoiceWizard({ userId }: { userId: string }) {
           <ProductsStep
             userId={userId}
             initialProducts={invoiceData.products}
+            units={units}
             onProductsSaved={handleProductsSaved}
             onBack={handleBack}
           />
@@ -149,6 +176,7 @@ export function InvoiceWizard({ userId }: { userId: string }) {
             initialPaymentForm={invoiceData.payment_form}
             initialPaymentMethod={invoiceData.payment_method}
             initialCurrency={invoiceData.currency}
+            paymentForms={paymentForms}
             onPaymentSaved={handlePaymentSaved}
             onBack={handleBack}
           />
