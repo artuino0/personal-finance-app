@@ -17,17 +17,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { invoice_id, client, products, payment_form, payment_method, currency } = body
 
-    // Get Facturapi config
+    // Get user's CSD config
     const { data: config, error: configError } = await supabase
       .from("facturapi_config")
       .select("*")
       .eq("user_id", user.id)
       .single()
 
-    if (configError || !config || !config.api_key) {
+    if (configError || !config || !config.certificate_file_path || !config.key_file_path) {
       return NextResponse.json(
-        { error: "Facturapi no está configurado. Ve a tu perfil para configurarlo." },
+        { error: "Certificados SAT no configurados. Ve a tu perfil para subirlos." },
         { status: 400 }
+      )
+    }
+
+    // Use global Facturapi API key
+    const facturapiApiKey = process.env.FACTURAPI_API_KEY
+    if (!facturapiApiKey) {
+      return NextResponse.json(
+        { error: "Facturapi no está configurado en el servidor" },
+        { status: 500 }
       )
     }
 
@@ -63,12 +72,12 @@ export async function POST(request: NextRequest) {
       use: client.cfdi_use,
     }
 
-    // Call Facturapi API
+    // Call Facturapi API using global API key and user's CSD
     const response = await fetch("https://www.facturapi.io/v2/invoices", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${config.api_key}`,
+        Authorization: `Bearer ${facturapiApiKey}`,
       },
       body: JSON.stringify(facturapiData),
     })
