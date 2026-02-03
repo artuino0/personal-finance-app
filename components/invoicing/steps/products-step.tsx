@@ -60,7 +60,7 @@ export function ProductsStep({
         .from("invoice_products")
         .select("*")
         .eq("user_id", userId)
-        .order("description")
+        .order("descripcion")
 
       if (error) throw error
       setSavedProducts(data || [])
@@ -73,17 +73,17 @@ export function ProductsStep({
     const product = savedProducts.find((p) => p.id === productId)
     if (product) {
       setIsNewProduct(false)
-      setProductKey(product.product_key)
-      setDescription(product.description)
-      setUnitKey(product.unit_key)
-      setUnitPrice(product.unit_price)
-      setTaxRate(product.tax_rate)
+      setProductKey(product.clave_prod_serv)
+      setDescription(product.descripcion)
+      setUnitKey(product.clave_unidad)
+      setUnitPrice(product.precio_unitario)
+      setTaxRate(product.tasa_iva || 16)
     }
   }
 
   const calculateTotals = () => {
     const subtotal = quantity * unitPrice
-    const tax = subtotal * (taxRate / 100)
+    const tax = taxRate >= 0 ? subtotal * (taxRate / 100) : 0
     const total = subtotal + tax
     return { subtotal, tax, total }
   }
@@ -107,11 +107,13 @@ export function ProductsStep({
       if (isNewProduct) {
         const { error } = await supabase.from("invoice_products").insert({
           user_id: userId,
-          product_key: productKey,
-          description,
-          unit_key: unitKey,
-          unit_price: unitPrice,
-          tax_rate: taxRate,
+          clave_prod_serv: productKey,
+          descripcion: description,
+          clave_unidad: unitKey,
+          precio_unitario: unitPrice,
+          objeto_impuesto: taxRate >= 0 ? "02" : "01", // 01=No objeto, 02=Sí objeto
+          tiene_iva: taxRate >= 0,
+          tasa_iva: taxRate >= 0 ? taxRate : null,
         })
 
         if (error) throw error
@@ -297,17 +299,22 @@ export function ProductsStep({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tax_rate">{t("productTax")}</Label>
-              <Input
-                id="tax_rate"
-                type="number"
-                value={taxRate}
-                onChange={(e) => setTaxRate(Number(e.target.value))}
-                min="0"
-                max="100"
+              <Label htmlFor="tax_rate">IVA (%)</Label>
+              <Select
+                value={taxRate.toString()}
+                onValueChange={(value) => setTaxRate(Number(value))}
                 disabled={!isNewProduct}
-                className="h-11"
-              />
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="16">16% - Tasa general</SelectItem>
+                  <SelectItem value="8">8% - Frontera</SelectItem>
+                  <SelectItem value="0">0% - Tasa 0</SelectItem>
+                  <SelectItem value="-1">Exento</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
