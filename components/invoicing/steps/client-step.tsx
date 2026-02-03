@@ -36,10 +36,10 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
 
   // Form fields
   const [rfc, setRfc] = useState(initialClient?.rfc || "")
-  const [legalName, setLegalName] = useState(initialClient?.legal_name || "")
-  const [taxRegime, setTaxRegime] = useState(initialClient?.tax_regime || "")
-  const [zipCode, setZipCode] = useState(initialClient?.zip_code || "")
-  const [cfdiUse, setCfdiUse] = useState(initialClient?.cfdi_use || "")
+  const [legalName, setLegalName] = useState(initialClient?.nombre || "")
+  const [taxRegime, setTaxRegime] = useState(initialClient?.regimen_fiscal || "")
+  const [zipCode, setZipCode] = useState(initialClient?.codigo_postal || "")
+  const [cfdiUse, setCfdiUse] = useState(initialClient?.uso_cfdi || "")
 
   useEffect(() => {
     loadClients()
@@ -51,7 +51,7 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
         .from("invoice_clients")
         .select("*")
         .eq("user_id", userId)
-        .order("legal_name")
+        .order("nombre")
 
       if (error) throw error
       setExistingClients(data || [])
@@ -68,10 +68,10 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
     const client = existingClients.find((c) => c.id === clientId)
     if (client) {
       setRfc(client.rfc)
-      setLegalName(client.legal_name)
-      setTaxRegime(client.tax_regime)
-      setZipCode(client.zip_code)
-      setCfdiUse(client.cfdi_use)
+      setLegalName(client.nombre)
+      setTaxRegime(client.regimen_fiscal)
+      setZipCode(client.codigo_postal)
+      setCfdiUse(client.uso_cfdi)
     }
   }
 
@@ -87,10 +87,10 @@ export function ClientStep({ userId, initialClient, onClientSaved, onBack }: Cli
           .insert({
             user_id: userId,
             rfc: rfc.toUpperCase(),
-            legal_name: legalName,
-            tax_regime: taxRegime,
-            zip_code: zipCode,
-            cfdi_use: cfdiUse,
+            nombre: legalName,
+            regimen_fiscal: taxRegime,
+            codigo_postal: zipCode,
+            uso_cfdi: cfdiUse,
           })
           .select()
           .single()
