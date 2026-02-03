@@ -17,12 +17,10 @@ import { Card } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { InvoiceProduct } from "../invoice-wizard"
 import { Plus, Trash2, Package, ChevronLeft } from "lucide-react"
-import { Unit } from "@/hooks/use-facturapi-catalogs"
 
 interface ProductsStepProps {
   userId: string
   initialProducts: InvoiceProduct[]
-  units: Unit[]
   onProductsSaved: (products: InvoiceProduct[]) => void
   onBack: () => void
 }
@@ -30,7 +28,6 @@ interface ProductsStepProps {
 export function ProductsStep({
   userId,
   initialProducts,
-  units,
   onProductsSaved,
   onBack,
 }: ProductsStepProps) {
